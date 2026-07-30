@@ -104,6 +104,8 @@ export default function RegisterMerchantForm() {
                 <input
                     className="w-full rounded border p-2"
                     value={name}
+                    disabled={loading}
+                    placeholder="Netflix"
                     onChange={(e) =>
                         setName(e.target.value)
                     }
@@ -117,6 +119,8 @@ export default function RegisterMerchantForm() {
 
                 <input
                     className="w-full rounded border p-2"
+                    disabled={loading}
+                    placeholder="Optional"
                     value={metadataURI}
                     onChange={(e) =>
                         setMetadataURI(
@@ -129,7 +133,7 @@ export default function RegisterMerchantForm() {
             <button
                 type="submit"
                 disabled={loading}
-                className="rounded bg-blue-600 px-4 py-2 text-white"
+                className={`rounded bg-blue-600 px-4 py-2 text-white ${loading ? "bg-blue-600/50" : "bg-blue-600" }`}
             >
                 {loading
                     ? "Registering..."

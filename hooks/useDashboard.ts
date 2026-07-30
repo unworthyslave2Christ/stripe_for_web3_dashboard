@@ -131,6 +131,8 @@ export function useDashboard() {
             ------------------------------------------------------------------
             */
 
+            console.log("Connected wallet:", address);
+
             const merchant =
 
                 await getMerchantBySmartAccount(
@@ -138,6 +140,8 @@ export function useDashboard() {
                     address,
 
                 );
+
+            console.log("merchantId: ", merchant.merchantId);
 
             /*
             ------------------------------------------------------------------

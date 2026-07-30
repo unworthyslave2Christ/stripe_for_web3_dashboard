@@ -7,7 +7,7 @@ import {
     registerMerchant,
     merchantExists,
     getMerchantIdBySmartAccount,
-    getMerchant,
+    getMerchantById
 } from "@/services/merchant";
 
 const CONTRACT_ADDRESS =
@@ -23,6 +23,9 @@ export function useMerchant() {
     const [loading, setLoading] =
         useState(false);
 
+    const [error, setError] =
+        useState<string>();
+
     const [merchantId, setMerchantId] =
         useState<bigint>();
 
@@ -37,6 +40,8 @@ export function useMerchant() {
 
         if (!publicClient)
             throw new Error("Public client unavailable.");
+
+        setError(undefined);
 
         setLoading(true);
 
@@ -63,17 +68,13 @@ export function useMerchant() {
                 setMerchantId(id);
 
                 const merchant =
-                    await getMerchant({
-                        publicClient,
-                        contractAddress: CONTRACT_ADDRESS,
-                        merchantId: id,
-                    });
+                    await getMerchantById(id);
 
                 return {
                     merchantId: id,
                     merchant,
                     alreadyRegistered: true,
-                };
+                }
             }
 
             /*
@@ -97,14 +98,37 @@ export function useMerchant() {
                 ...result,
                 alreadyRegistered: false,
             };
-        } finally {
-            setLoading(false);
+        
+        } catch (err) {
+
+            setError(
+
+                err instanceof Error
+                    ? err.message
+                    : "Merchant registration failed.",
+
+            );
+
+            throw err;
+
+            }
+
+            finally {
+
+                setLoading(false);
+
+            }
         }
-    }
 
     return {
+
         loading,
+
+        error,
+
         merchantId,
+
         createMerchant,
+
     };
 }
