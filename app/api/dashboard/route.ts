@@ -68,6 +68,9 @@ export async function GET(request: NextRequest) {
                 payoutWallet:
                 merchant.payout_wallet,
 
+                ownerWallet:
+                    merchant.owner_wallet,
+
                 name:
                 merchant.name,
                 

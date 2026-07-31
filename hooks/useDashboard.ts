@@ -37,6 +37,7 @@ import type {
     DashboardData,
 
 } from "@/types/dashboard";
+import { getMerchantByOwnerWallet } from "@/services/merchant";
 
 /* -------------------------------------------------------------------------- */
 /* Contract                                                                    */
@@ -99,6 +100,12 @@ export function useDashboard() {
             ------------------------------------------------------------------
             */
 
+            const merchantFromSupabase =
+                    await getMerchantByOwnerWallet(address);
+
+
+
+
             const exists =
                 await merchantExists(
 
@@ -111,7 +118,7 @@ export function useDashboard() {
 
                     },
 
-                    address,
+                    merchantFromSupabase.smart_account,
 
                 );
 
@@ -137,7 +144,7 @@ export function useDashboard() {
 
                 await getMerchantBySmartAccount(
 
-                    address,
+                    merchantFromSupabase.smart_account,
 
                 );
 

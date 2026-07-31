@@ -16,6 +16,8 @@ export interface Merchant {
 
     name: string;
 
+    ownerWallet: Address;
+
     metadataURI: string;
 
     status:

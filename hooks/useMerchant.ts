@@ -4,131 +4,124 @@ import { useState } from "react";
 import { usePublicClient, useWalletClient } from "wagmi";
 
 import {
-    registerMerchant,
-    merchantExists,
-    getMerchantIdBySmartAccount,
-    getMerchantById
+  registerMerchant,
+  merchantExists,
+  getMerchantIdBySmartAccount,
+  getMerchantById,
+  getMerchantByOwnerWallet,
 } from "@/services/merchant";
 
-const CONTRACT_ADDRESS =
-    process.env
-        .NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as `0x${string}`;
+import { createMerchantKernel } from "@/services/kernel.client";
+
+const CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as `0x${string}`;
 
 export function useMerchant() {
-    const publicClient = usePublicClient();
+  const publicClient = usePublicClient();
 
-    const { data: walletClient } =
-        useWalletClient();
+  const { data: walletClient } = useWalletClient();
 
-    const [loading, setLoading] =
-        useState(false);
+  const [loading, setLoading] = useState(false);
 
-    const [error, setError] =
-        useState<string>();
+  const [error, setError] = useState<string>();
 
-    const [merchantId, setMerchantId] =
-        useState<bigint>();
+  const [merchantId, setMerchantId] = useState<bigint>();
 
-    async function createMerchant(
-        merchantSmartAccount: `0x${string}`,
-        payoutWallet: `0x${string}`,
-        name: string,
-        metadataURI = "",
-    ) {
-        if (!walletClient)
-            throw new Error("Wallet not connected.");
+  async function createMerchant(
+    ownerWallet: `0x${string}`,
+    payoutWallet: `0x${string}`,
+    name: string,
+    metadataURI = "",
+  ) {
+    if (!walletClient) throw new Error("Wallet not connected.");
 
-        if (!publicClient)
-            throw new Error("Public client unavailable.");
+    if (!publicClient) throw new Error("Public client unavailable.");
 
-        setError(undefined);
+    setError(undefined);
 
-        setLoading(true);
+    setLoading(true);
 
-        try {
-            /*
-             * Already registered?
-             */
+    try {
+      /*
+       * Already registered?
+       */
 
-            const exists =
-                await merchantExists({
-                    publicClient,
-                    contractAddress: CONTRACT_ADDRESS,
-                    smartAccount: merchantSmartAccount,
-                });
+       const merchantFromSupabase =
+                          await getMerchantByOwnerWallet(ownerWallet);
 
-            if (exists) {
-                const id =
-                    await getMerchantIdBySmartAccount({
-                        publicClient,
-                        contractAddress: CONTRACT_ADDRESS,
-                        smartAccount: merchantSmartAccount,
-                    });
+      const exists = await merchantExists({
+        publicClient,
+        contractAddress: CONTRACT_ADDRESS,
+        smartAccount: merchantFromSupabase.smart_account,
+      });
 
-                setMerchantId(id);
+      if (exists) {
+        const id = await getMerchantIdBySmartAccount({
+          publicClient,
+          contractAddress: CONTRACT_ADDRESS,
+          smartAccount: merchantFromSupabase.smart_account,
+        });
 
-                const merchant =
-                    await getMerchantById(id);
+        setMerchantId(id);
 
-                return {
-                    merchantId: id,
-                    merchant,
-                    alreadyRegistered: true,
-                }
-            }
+        const merchant = await getMerchantById(id);
+        console.log("merchant: ", merchant);
 
-            /*
-             * Register new merchant.
-             */
+        return {
+          merchantId: id,
+          merchant,
+          alreadyRegistered: true,
+        };
+      }
 
-            const result =
-                await registerMerchant({
-                    walletClient,
-                    publicClient,
-                    contractAddress: CONTRACT_ADDRESS,
-                    merchantSmartAccount,
-                    payoutWallet,
-                    name,
-                    metadataURI,
-                });
 
-            setMerchantId(result.merchantId);
+      const merchantKernel = await createMerchantKernel({
+        ownerWalletClient: walletClient,
 
-            return {
-                ...result,
-                alreadyRegistered: false,
-            };
-        
-        } catch (err) {
+        publicClient,
+      });
 
-            setError(
+      /*
+       * Register new merchant.
+       */
 
-                err instanceof Error
-                    ? err.message
-                    : "Merchant registration failed.",
+      const [account] = await walletClient.getAddresses();
 
-            );
+      const result = await registerMerchant({
+        walletClient,
+        publicClient,
+        contractAddress: CONTRACT_ADDRESS,
+        ownerWallet: account,
+        merchantSmartAccount: merchantKernel.address,
+        payoutWallet: account,
+        name,
+        metadataURI,
+      });
 
-            throw err;
+      setMerchantId(result.merchantId);
 
-            }
+      return {
+        ...result,
+        alreadyRegistered: false,
+      };
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Merchant registration failed.",
+      );
 
-            finally {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
 
-                setLoading(false);
+  return {
+    loading,
 
-            }
-        }
+    error,
 
-    return {
+    merchantId,
 
-        loading,
-
-        error,
-
-        merchantId,
-
-        createMerchant,
-
-    };
+    createMerchant,
+  };
 }

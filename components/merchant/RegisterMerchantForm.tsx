@@ -10,6 +10,9 @@ import { toast } from "sonner";
 
 import { useRouter } from "next/navigation";
 
+// const kernel =
+//     await createMerchantKernel(address);
+
 export default function RegisterMerchantForm() {
     const router = useRouter();
 
@@ -44,6 +47,10 @@ export default function RegisterMerchantForm() {
         }
 
         try {
+        //     merchantSmartAccount: `0x${string}`,
+        // payoutWallet: `0x${string}`,
+        // name: string,
+        // metadataURI = "",
             const result =
                 await createMerchant(
                     address,

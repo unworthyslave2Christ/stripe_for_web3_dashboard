@@ -1,243 +1,180 @@
-
 import {
-    getContract,
-    type Address,
-    type WalletClient,
-    type PublicClient,
+  getContract,
+  type Address,
+  type WalletClient,
+  type PublicClient,
+  http,
 } from "viem";
 
 import protocolAbi from "@/abi/Web3BillingProtocol.json";
-
-/* -------------------------------------------------------------------------- */
-/* Supabase                                                                    */
-/* -------------------------------------------------------------------------- */
-
+import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { paymasterClient } from "./kernel.client";
+import { arbitrumSepolia } from "viem/chains";
+import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
 /* -------------------------------------------------------------------------- */
 /* Interfaces                                                                   */
 /* -------------------------------------------------------------------------- */
 
 interface RegisterMerchantParams {
+  walletClient: WalletClient;
 
-    walletClient: WalletClient;
+  publicClient: PublicClient;
 
-    publicClient: PublicClient;
+  contractAddress: Address;
 
-    contractAddress: Address;
+  ownerWallet: Address;
 
-    merchantSmartAccount: Address;
+  merchantSmartAccount: Address;
 
-    payoutWallet: Address;
+  payoutWallet: Address;
 
-    name: string;
+  name: string;
 
-    metadataURI?: string;
-
+  metadataURI?: string;
 }
-
-
 
 /* -------------------------------------------------------------------------- */
 /* Register Merchant                                                           */
 /* -------------------------------------------------------------------------- */
 
 export async function registerMerchant({
+  walletClient,
 
-    walletClient,
+  publicClient,
 
-    publicClient,
+  contractAddress,
 
-    contractAddress,
+  ownerWallet,
 
-    merchantSmartAccount,
+  merchantSmartAccount,
 
-    payoutWallet,
+  payoutWallet,
 
-    name,
+  name,
 
-    metadataURI = "",
-
+  metadataURI = "",
 }: RegisterMerchantParams) {
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Wallet Account
     --------------------------------------------------------------------------
     */
 
-    const [account] =
+  const [account] = await walletClient.getAddresses();
 
-        await walletClient.getAddresses();
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Estimate Gas
     --------------------------------------------------------------------------
     */
 
-    const gas =
+  const gas = await publicClient.estimateContractGas({
+    account,
 
-        await publicClient.estimateContractGas({
+    address: contractAddress,
 
-            account,
+    abi: protocolAbi,
 
-            address: contractAddress,
+    functionName: "registerMerchant",
 
-            abi: protocolAbi,
+    args: [merchantSmartAccount, payoutWallet, name, metadataURI],
+  });
 
-            functionName: "registerMerchant",
-
-            args: [
-
-                merchantSmartAccount,
-
-                payoutWallet,
-
-                name,
-
-                metadataURI,
-
-            ],
-
-        });
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Submit Transaction
     --------------------------------------------------------------------------
     */
 
-    const hash =
+  const hash = await walletClient.writeContract({
+    account,
 
-        await walletClient.writeContract({
+    chain: walletClient.chain,
 
-            account,
+    address: contractAddress,
 
-            chain: walletClient.chain,
+    abi: protocolAbi,
 
-            address: contractAddress,
+    functionName: "registerMerchant",
 
-            abi: protocolAbi,
+    args: [merchantSmartAccount, payoutWallet, name, metadataURI],
 
-            functionName: "registerMerchant",
+    gas,
+  });
 
-            args: [
-
-                merchantSmartAccount,
-
-                payoutWallet,
-
-                name,
-
-                metadataURI,
-
-            ],
-
-            gas,
-
-        });
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Wait For Confirmation
     --------------------------------------------------------------------------
     */
 
-    const receipt =
+  const receipt = await publicClient.waitForTransactionReceipt({
+    hash,
+  });
 
-        await publicClient.waitForTransactionReceipt({
+  if (receipt.status !== "success") {
+    throw new Error("Merchant registration transaction failed.");
+  }
 
-            hash,
-
-        });
-
-    if (receipt.status !== "success") {
-
-        throw new Error(
-
-            "Merchant registration transaction failed.",
-
-        );
-
-    }
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Retrieve MerchantCreated Event
     --------------------------------------------------------------------------
     */
 
-    const events =
+  const events = await publicClient.getContractEvents({
+    address: contractAddress,
 
-        await publicClient.getContractEvents({
+    abi: protocolAbi,
 
-            address: contractAddress,
+    eventName: "MerchantCreated",
 
-            abi: protocolAbi,
+    fromBlock: receipt.blockNumber,
 
-            eventName: "MerchantCreated",
+    toBlock: receipt.blockNumber,
+  });
 
-            fromBlock: receipt.blockNumber,
+  if (events.length !== 1) {
+    throw new Error("MerchantCreated event not found.");
+  }
 
-            toBlock: receipt.blockNumber,
+  const merchantId = (events[0] as any).args.merchantId as bigint;
 
-        });
+  const response = await fetch("/api/merchant", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      merchantId: Number(merchantId),
+      smartAccount: merchantSmartAccount,
+      ownerWallet: ownerWallet,
+      payoutWallet,
+      name,
+      metadataURI,
+    }),
+  });
 
-    if (events.length !== 1) {
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error ?? "Unable to mirror merchant.");
+  }
 
-        throw new Error(
-
-            "MerchantCreated event not found.",
-
-        );
-
-    }
-
-    const merchantId =
-
-        (events[0] as any)
-
-            .args
-
-            .merchantId as bigint;
-
-    
-    const response = await fetch("/api/merchant", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            merchantId: Number(merchantId),
-            smartAccount: merchantSmartAccount,
-            payoutWallet,
-            name,
-            metadataURI,
-        }),
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error ?? "Unable to mirror merchant.");
-    }
-
-
-    /*
+  /*
     --------------------------------------------------------------------------
     Return
     --------------------------------------------------------------------------
     */
 
-    return {
+  return {
+    merchantId,
 
-        merchantId,
+    hash,
 
-        hash,
-
-        receipt,
-
-    };
-
+    receipt,
+  };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -245,41 +182,29 @@ export async function registerMerchant({
 /* -------------------------------------------------------------------------- */
 
 interface ExistsParams {
+  publicClient: PublicClient;
 
-    publicClient: PublicClient;
+  contractAddress: Address;
 
-    contractAddress: Address;
-
-    smartAccount: Address;
-
+  smartAccount: Address;
 }
 
 export async function merchantExists({
+  publicClient,
 
-    publicClient,
+  contractAddress,
 
-    contractAddress,
-
-    smartAccount,
-
+  smartAccount,
 }: ExistsParams): Promise<boolean> {
+  return (await publicClient.readContract({
+    address: contractAddress,
 
-    return await publicClient.readContract({
+    abi: protocolAbi,
 
-        address: contractAddress,
+    functionName: "merchantExists",
 
-        abi: protocolAbi,
-
-        functionName: "merchantExists",
-
-        args: [
-
-            smartAccount,
-
-        ],
-
-    }) as boolean;
-
+    args: [smartAccount],
+  })) as boolean;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -287,41 +212,29 @@ export async function merchantExists({
 /* -------------------------------------------------------------------------- */
 
 interface MerchantLookupParams {
+  publicClient: PublicClient;
 
-    publicClient: PublicClient;
+  contractAddress: Address;
 
-    contractAddress: Address;
-
-    smartAccount: Address;
-
+  smartAccount: Address;
 }
 
 export async function getMerchantIdBySmartAccount({
+  publicClient,
 
-    publicClient,
+  contractAddress,
 
-    contractAddress,
-
-    smartAccount,
-
+  smartAccount,
 }: MerchantLookupParams): Promise<bigint> {
+  return (await publicClient.readContract({
+    address: contractAddress,
 
-    return await publicClient.readContract({
+    abi: protocolAbi,
 
-        address: contractAddress,
+    functionName: "merchantBySmartAccount",
 
-        abi: protocolAbi,
-
-        functionName: "merchantBySmartAccount",
-
-        args: [
-
-            smartAccount,
-
-        ],
-
-    }) as bigint;
-
+    args: [smartAccount],
+  })) as bigint;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -329,67 +242,82 @@ export async function getMerchantIdBySmartAccount({
 /* -------------------------------------------------------------------------- */
 
 interface GetMerchantParams {
+  publicClient: PublicClient;
 
-    publicClient: PublicClient;
+  contractAddress: Address;
 
-    contractAddress: Address;
-
-    merchantId: bigint;
-
+  merchantId: bigint;
 }
 
 export async function getMerchant({
+  publicClient,
 
-    publicClient,
+  contractAddress,
 
-    contractAddress,
-
-    merchantId,
-
+  merchantId,
 }: GetMerchantParams) {
+  const protocol = getContract({
+    address: contractAddress,
 
-    const protocol =
+    abi: protocolAbi,
 
-        getContract({
+    client: {
+      public: publicClient,
+    },
+  });
 
-            address: contractAddress,
+  return await protocol.read.getMerchant([merchantId]);
+}
 
-            abi: protocolAbi,
+export async function getMerchantById(merchantId: bigint) {
+  const response = await fetch(
+    `/api/merchant?merchantId=${Number(merchantId)}`,
+    {
+      cache: "no-store",
+    },
+  );
 
-            client: {
+  const json = await response.json();
 
-                public: publicClient,
+  if (!response.ok) {
+    throw new Error(json.error ?? "Unable to load merchant.");
+  }
 
-            },
-
-        });
-
-    return await protocol.read.getMerchant([
-
-        merchantId,
-
-    ]);
-
+  return json;
 }
 
 
-export async function getMerchantById(
-    merchantId: bigint,
+export async function getMerchantByOwnerWallet(
+    ownerWallet: Address,
 ) {
-    const response = await fetch(
-        `/api/merchant?merchantId=${Number(merchantId)}`,
-        {
-            cache: "no-store",
-        },
-    );
 
-    const json = await response.json();
+    const response =
+        await fetch(
+
+            `/api/merchant?ownerWallet=${ownerWallet}`,
+
+            {
+
+                cache: "no-store",
+
+            },
+
+        );
+
+    const json =
+        await response.json();
 
     if (!response.ok) {
+
         throw new Error(
-            json.error ?? "Unable to load merchant.",
+
+            json.error ??
+            "Unable to load merchant.",
+
         );
+
     }
 
     return json;
+
 }

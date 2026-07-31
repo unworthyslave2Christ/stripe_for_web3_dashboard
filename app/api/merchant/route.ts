@@ -14,6 +14,9 @@ const supabase = createClient(
 
 export async function GET(request: NextRequest) {
 
+    const ownerWallet =
+        request.nextUrl.searchParams.get("ownerWallet");
+
     const smartAccount =
         request.nextUrl.searchParams.get("smartAccount");
 
@@ -35,6 +38,16 @@ export async function GET(request: NextRequest) {
 
     }
 
+    else if (ownerWallet) {
+
+        query =
+            query.eq(
+                "owner_wallet",
+                ownerWallet,
+            );
+
+    }
+
     else if (merchantId) {
 
         query =
@@ -52,7 +65,7 @@ export async function GET(request: NextRequest) {
             {
 
                 error:
-                    "Provide smartAccount or merchantId.",
+                    "Provide smartAccount, ownerWallet or merchantId.",
 
             },
 
@@ -152,6 +165,9 @@ export async function POST(request: NextRequest) {
 
                 payout_wallet:
                     body.payoutWallet,
+
+                owner_wallet:
+                    body.ownerWallet,
 
                 name:
                     body.name,

@@ -51,11 +51,16 @@ export async function merchantExists(
 
     });
 
+    
+
     const exists = await protocol.read.merchantExists([
 
         smartAccount,
 
     ]);
+
+    console.log("smarAccount exists? ", smartAccount);
+    console.log(exists);
 
     return Boolean(exists);
 
@@ -112,6 +117,9 @@ export async function getMerchantBySmartAccount(
 
         name:
             json.name,
+
+        ownerWallet: 
+            json.owner_wallet as Address,
 
         metadataURI:
             json.metadata_uri ?? "",
