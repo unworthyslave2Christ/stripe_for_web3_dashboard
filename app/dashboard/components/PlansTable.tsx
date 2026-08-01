@@ -91,7 +91,7 @@ export default function PlansTable({
 
                                     <p className="mt-1 text-xs text-slate-400">
 
-                                        Plan #{plan.planId}
+                                        Plan #{plan.plan_id}
 
                                     </p>
 
@@ -107,13 +107,13 @@ export default function PlansTable({
 
                             <td className="px-6 py-5 text-sm text-slate-300">
 
-                                {plan.billingIntervalSeconds}s
+                                {plan.billing_interval_seconds}s
 
                             </td>
 
                             <td className="px-6 py-5 text-sm text-slate-300">
 
-                                {plan.subscriberCount ?? 0}
+                                {plan.subscriber_count ?? 0}
 
                             </td>
 
@@ -137,7 +137,7 @@ export default function PlansTable({
 
                                                             <Link
 
-                                    href={`/dashboard/plans/${plan.planId}`}
+                                    href={`/dashboard/plans/${plan.plan_id}`}
 
                                     className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
 

@@ -34,13 +34,15 @@ export default function BillingPlanPage() {
 
         setLoading(true);
 
+        console.log("Received planId: ", planId);
+
         try {
 
             const response =
 
                 await fetch(
 
-                    `/api/plans/${planId}`,
+                    `/api/plans?planId=${planId}`,
 
                     {
 
@@ -138,7 +140,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 text-slate-400">
 
-                        Billing Plan #{plan.planId}
+                        Billing Plan #{plan.plan_id}
 
                     </p>
 
@@ -192,7 +194,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 text-2xl font-semibold text-white">
 
-                        {plan.billingIntervalSeconds}s
+                        {plan.billing_interval_seconds}s
 
                     </p>
 
@@ -208,7 +210,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 break-all font-mono text-sm text-cyan-400">
 
-                        {plan.paymentToken}
+                        {plan.payment_token}
 
                     </p>
 
@@ -224,7 +226,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 text-xl font-semibold text-white">
 
-                        {plan.trialPeriod}s
+                        {plan.trial_period}s
 
                     </p>
 
@@ -240,7 +242,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 text-xl font-semibold text-white">
 
-                        {plan.maxSubscribers ?? "Unlimited"}
+                        {plan.max_subscribers ?? "Unlimited"}
 
                     </p>
 
@@ -256,7 +258,7 @@ export default function BillingPlanPage() {
 
                     <p className="mt-2 text-xl font-semibold text-emerald-400">
 
-                        {plan.allowRenewal ? "Enabled" : "Disabled"}
+                        {plan.allow_renewal ? "Enabled" : "Disabled"}
 
                     </p>
 

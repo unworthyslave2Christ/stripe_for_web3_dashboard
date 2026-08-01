@@ -16,15 +16,6 @@ import { getMerchantByOwnerWallet } from "@/services/merchant";
 
 export  default function PlansPage() {
 
-    // const merchantFromSupabase =
-    //     await getMerchantByOwnerWallet(ownerWallet as `0x${string}`);
-
-
-    // const merchantId = merchantFromSupabase.merchant_id
-    
-    // console.log("gotten merchantId: ", merchantId)
-    
-        
     const router =
         useRouter();
 
