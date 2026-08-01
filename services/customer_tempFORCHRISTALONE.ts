@@ -1,476 +1,476 @@
-// services/customers.ts
+// // services/customers.ts
 
-import type { Address } from "viem";
+// import type { Address } from "viem";
 
-import { parseCustomer, parseCustomers } from "./mappers/customer";
+// import { parseCustomer, parseCustomers } from "./mappers/customer";
 
-import type { Customer } from "@/types/dashboard";
+// import type { Customer } from "@/types/dashboard";
 
-// services/createCustomerKernel.ts
+// // services/createCustomerKernel.ts
 
-import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
+// import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
 
-import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+// import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 
-import { walletClientToSmartAccountSigner } from "permissionless";
+// import { walletClientToSmartAccountSigner } from "permissionless";
 
-import { http, type PublicClient, type WalletClient } from "viem";
+// import { http, type PublicClient, type WalletClient } from "viem";
 
-import { EncryptedSession, encryptPrivateKey } from "@/utils/crypto";
+// import { EncryptedSession, encryptPrivateKey } from "@/utils/crypto";
 
-import {
-  entryPoint,
-  kernelVersion,
-  chain,
-  paymasterClient,
-} from "./kernel.client";
+// import {
+//   entryPoint,
+//   kernelVersion,
+//   chain,
+//   paymasterClient,
+// } from "./kernel.client";
 
-import {
-    privateKeyToAccount,
-    generatePrivateKey,
-} from "viem/accounts";
-import { toECDSASigner } from "@zerodev/permissions/signers";
-import { deserializePermissionAccount, serializePermissionAccount, toInitConfig, toPermissionValidator } from "@zerodev/permissions";
-import { toSudoPolicy } from "@zerodev/permissions/policies";
+// import {
+//     privateKeyToAccount,
+//     generatePrivateKey,
+// } from "viem/accounts";
+// import { toECDSASigner } from "@zerodev/permissions/signers";
+// import { deserializePermissionAccount, serializePermissionAccount, toInitConfig, toPermissionValidator } from "@zerodev/permissions";
+// import { toSudoPolicy } from "@zerodev/permissions/policies";
 
-export interface CreateCustomerParams {
-  customerId: number;
+// export interface CreateCustomerParams {
+//   customerId: number;
 
-  merchantId: number;
+//   merchantId: number;
 
-  wallet: Address;
+//   wallet: Address;
 
-  smartAccount: Address;
+//   smartAccount: Address;
 
-  displayName: string;
+//   displayName: string;
 
-  email: string;
-}
+//   email: string;
+// }
 
-/* -------------------------------------------------------------------------- */
-/* Create Customer                                                             */
-/* -------------------------------------------------------------------------- */
+// /* -------------------------------------------------------------------------- */
+// /* Create Customer                                                             */
+// /* -------------------------------------------------------------------------- */
 
-export async function createCustomer(
-  params: CreateCustomerParams,
-): Promise<void> {
-  const response = await fetch(
-    "/api/customers",
+// export async function createCustomer(
+//   params: CreateCustomerParams,
+// ): Promise<void> {
+//   const response = await fetch(
+//     "/api/customers",
 
-    {
-      method: "POST",
+//     {
+//       method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
-      },
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
 
-      body: JSON.stringify(params),
-    },
-  );
+//       body: JSON.stringify(params),
+//     },
+//   );
 
-  const json = await response.json();
+//   const json = await response.json();
 
-  if (!response.ok) {
-    throw new Error(json.error ?? "Unable to create customer.");
-  }
-}
+//   if (!response.ok) {
+//     throw new Error(json.error ?? "Unable to create customer.");
+//   }
+// }
 
-/* -------------------------------------------------------------------------- */
-/* Get Customer By ID                                                          */
-/* -------------------------------------------------------------------------- */
+// /* -------------------------------------------------------------------------- */
+// /* Get Customer By ID                                                          */
+// /* -------------------------------------------------------------------------- */
 
-export async function getCustomerById(customerId: number): Promise<Customer> {
-  const response = await fetch(
-    `/api/customers?customerId=${customerId}`,
+// export async function getCustomerById(customerId: number): Promise<Customer> {
+//   const response = await fetch(
+//     `/api/customers?customerId=${customerId}`,
 
-    {
-      cache: "no-store",
-    },
-  );
+//     {
+//       cache: "no-store",
+//     },
+//   );
 
-  const json = await response.json();
+//   const json = await response.json();
 
-  if (!response.ok) {
-    throw new Error(json.error ?? "Unable to load customer.");
-  }
+//   if (!response.ok) {
+//     throw new Error(json.error ?? "Unable to load customer.");
+//   }
 
-  return parseCustomer(json);
-}
+//   return parseCustomer(json);
+// }
 
-/* -------------------------------------------------------------------------- */
-/* Get Customer By Wallet                                                      */
-/* -------------------------------------------------------------------------- */
+// /* -------------------------------------------------------------------------- */
+// /* Get Customer By Wallet                                                      */
+// /* -------------------------------------------------------------------------- */
 
-export async function getCustomerByWallet(wallet: Address): Promise<Customer> {
-  const response = await fetch(
-    `/api/customers?wallet=${wallet}`,
+// export async function getCustomerByWallet(wallet: Address): Promise<Customer> {
+//   const response = await fetch(
+//     `/api/customers?wallet=${wallet}`,
 
-    {
-      cache: "no-store",
-    },
-  );
+//     {
+//       cache: "no-store",
+//     },
+//   );
 
-  const json = await response.json();
+//   const json = await response.json();
 
-  if (!response.ok) {
-    throw new Error(json.error ?? "Unable to load customer.");
-  }
+//   if (!response.ok) {
+//     throw new Error(json.error ?? "Unable to load customer.");
+//   }
 
-  return parseCustomer(json);
-}
+//   return parseCustomer(json);
+// }
 
-/* -------------------------------------------------------------------------- */
-/* Get Customer By Smart Account                                               */
-/* -------------------------------------------------------------------------- */
+// /* -------------------------------------------------------------------------- */
+// /* Get Customer By Smart Account                                               */
+// /* -------------------------------------------------------------------------- */
 
-export async function getCustomerBySmartAccount(
-  smartAccount: Address,
-): Promise<Customer> {
-  const response = await fetch(
-    `/api/customers?smartAccount=${smartAccount}`,
+// export async function getCustomerBySmartAccount(
+//   smartAccount: Address,
+// ): Promise<Customer> {
+//   const response = await fetch(
+//     `/api/customers?smartAccount=${smartAccount}`,
 
-    {
-      cache: "no-store",
-    },
-  );
+//     {
+//       cache: "no-store",
+//     },
+//   );
 
-  const json = await response.json();
+//   const json = await response.json();
 
-  if (!response.ok) {
-    throw new Error(json.error ?? "Unable to load customer.");
-  }
+//   if (!response.ok) {
+//     throw new Error(json.error ?? "Unable to load customer.");
+//   }
 
-  return parseCustomer(json);
-}
+//   return parseCustomer(json);
+// }
 
-/* -------------------------------------------------------------------------- */
-/* Get All Customers                                                           */
-/* -------------------------------------------------------------------------- */
+// /* -------------------------------------------------------------------------- */
+// /* Get All Customers                                                           */
+// /* -------------------------------------------------------------------------- */
 
-export async function getCustomers(): Promise<Customer[]> {
-  const response = await fetch(
-    "/api/customers",
+// export async function getCustomers(): Promise<Customer[]> {
+//   const response = await fetch(
+//     "/api/customers",
 
-    {
-      cache: "no-store",
-    },
-  );
+//     {
+//       cache: "no-store",
+//     },
+//   );
 
-  const json = await response.json();
+//   const json = await response.json();
 
-  if (!response.ok) {
-    throw new Error(json.error ?? "Unable to load customers.");
-  }
+//   if (!response.ok) {
+//     throw new Error(json.error ?? "Unable to load customers.");
+//   }
 
-  return parseCustomers(json);
-}
-
-
-
-export interface CreateCustomerKernelParams {
-  ownerWalletClient: WalletClient;
-  publicClient: PublicClient;
-}
+//   return parseCustomers(json);
+// }
 
 
-export async function createCustomerKernel({
-  ownerWalletClient,
-  publicClient,
-}: CreateCustomerKernelParams) {
 
-     /*
-    --------------------------------------------------------------------------
-    Owner Signer
-    --------------------------------------------------------------------------
-    */
-
-    const ownerSigner = walletClientToSmartAccountSigner(
-        ownerWalletClient as any,
-    );
-
-    /*
-        --------------------------------------------------------------------------
-        Sudo Validator
-        --------------------------------------------------------------------------
-        */
-
-    const ownerValidator = await signerToEcdsaValidator(publicClient, {
-        signer: ownerSigner as any,
-
-        entryPoint,
-
-        kernelVersion,
-    });
+// export interface CreateCustomerKernelParams {
+//   ownerWalletClient: WalletClient;
+//   publicClient: PublicClient;
+// }
 
 
-    const sessionPrivateKey =
-        generatePrivateKey();
+// export async function createCustomerKernel({
+//   ownerWalletClient,
+//   publicClient,
+// }: CreateCustomerKernelParams) {
+
+//      /*
+//     --------------------------------------------------------------------------
+//     Owner Signer
+//     --------------------------------------------------------------------------
+//     */
+
+//     const ownerSigner = walletClientToSmartAccountSigner(
+//         ownerWalletClient as any,
+//     );
+
+//     /*
+//         --------------------------------------------------------------------------
+//         Sudo Validator
+//         --------------------------------------------------------------------------
+//         */
+
+//     const ownerValidator = await signerToEcdsaValidator(publicClient, {
+//         signer: ownerSigner as any,
+
+//         entryPoint,
+
+//         kernelVersion,
+//     });
+
+
+//     const sessionPrivateKey =
+//         generatePrivateKey();
     
-    const encryptedSession: EncryptedSession  =
-        encryptPrivateKey(
-            sessionPrivateKey,
-        );
+//     const encryptedSession: EncryptedSession  =
+//         encryptPrivateKey(
+//             sessionPrivateKey,
+//         );
     
-    let sessionKey =
-        privateKeyToAccount(sessionPrivateKey);
+//     let sessionKey =
+//         privateKeyToAccount(sessionPrivateKey);
 
-    const sessionPublicAddress = sessionKey.address;
+//     const sessionPublicAddress = sessionKey.address;
 
-    /*
-     * Session signer
-     */
+//     /*
+//      * Session signer
+//      */
 
-    const sessionSigner =
-        await toECDSASigner({
-            signer: sessionKey,
-        });
+//     const sessionSigner =
+//         await toECDSASigner({
+//             signer: sessionKey,
+//         });
 
 
-    /*
-    * Permission validator
-    */
+//     /*
+//     * Permission validator
+//     */
 
-    const permissionValidator =
-    await toPermissionValidator (
-        publicClient,
-        {
-            signer: sessionSigner,
-            entryPoint,
-            kernelVersion,
-            policies: [
-                toSudoPolicy({}),
-            ],
-        },
-    );
+//     const permissionValidator =
+//     await toPermissionValidator (
+//         publicClient,
+//         {
+//             signer: sessionSigner,
+//             entryPoint,
+//             kernelVersion,
+//             policies: [
+//                 toSudoPolicy({}),
+//             ],
+//         },
+//     );
 
 
     
 
  
-  /*
-    --------------------------------------------------------------------------
-    Kernel Account
-    --------------------------------------------------------------------------
-    */
+//   /*
+//     --------------------------------------------------------------------------
+//     Kernel Account
+//     --------------------------------------------------------------------------
+//     */
 
-  const account = await createKernelAccount(
-        publicClient,
-        {
-            entryPoint,
-            kernelVersion,
+//   const account = await createKernelAccount(
+//         publicClient,
+//         {
+//             entryPoint,
+//             kernelVersion,
 
-            plugins: {
-                sudo: ownerValidator,
-            },
+//             plugins: {
+//                 sudo: ownerValidator,
+//             },
 
-            initConfig:
-                await toInitConfig(
-                    permissionValidator,
-                ),
-        },
-    );
+//             initConfig:
+//                 await toInitConfig(
+//                     permissionValidator,
+//                 ),
+//         },
+//     );
 
-  /*
-    --------------------------------------------------------------------------
-    Kernel Client
-    --------------------------------------------------------------------------
-    */
+//   /*
+//     --------------------------------------------------------------------------
+//     Kernel Client
+//     --------------------------------------------------------------------------
+//     */
 
-  const client = createKernelAccountClient({   // a client to 
-    account,
-    chain,
-    bundlerTransport: http(process.env.BUNDLER_RPC!),
+//   const client = createKernelAccountClient({   // a client to 
+//     account,
+//     chain,
+//     bundlerTransport: http(process.env.BUNDLER_RPC!),
 
-    paymaster: {
-      async getPaymasterData(userOperation) {
-        return paymasterClient.sponsorUserOperation({
-          userOperation,
-        });
-      },
-    },
-  });
-
-
-  const serializedPermissionAccount =
-    await serializePermissionAccount(
-        account,
-        undefined,
-        undefined,
-        undefined,
-        permissionValidator,
-    );
+//     paymaster: {
+//       async getPaymasterData(userOperation) {
+//         return paymasterClient.sponsorUserOperation({
+//           userOperation,
+//         });
+//       },
+//     },
+//   });
 
 
-    /*
-        * Recover serialized account to verify integrity.
-        */
-
-    // const recoveredAccount =
-    //     await deserializePermissionAccount(
-    //         publicClient,
-    //         entryPoint,
-    //         kernelVersion,
-    //         serializedPermissionAccount,
-    //         sessionSigner,
-    //     );
+//   const serializedPermissionAccount =
+//     await serializePermissionAccount(
+//         account,
+//         undefined,
+//         undefined,
+//         undefined,
+//         permissionValidator,
+//     );
 
 
-    section("Creating Billing Permission");
+//     /*
+//         * Recover serialized account to verify integrity.
+//         */
 
-    const now =
-        new Date().toISOString();
-
-    const expiry =
-        new Date(
-            Date.now() + 365 * 24 * 60 * 60 * 1000,
-        ).toISOString();
-
-    /*
-     * -------------------------------------------------------------
-     * Persist permission.
-     * -------------------------------------------------------------
-     */
+//     // const recoveredAccount =
+//     //     await deserializePermissionAccount(
+//     //         publicClient,
+//     //         entryPoint,
+//     //         kernelVersion,
+//     //         serializedPermissionAccount,
+//     //         sessionSigner,
+//     //     );
 
 
+//     section("Creating Billing Permission");
 
-    const { error } =
-        await supabase
+//     const now =
+//         new Date().toISOString();
 
-            .from("billing_permissions")
+//     const expiry =
+//         new Date(
+//             Date.now() + 365 * 24 * 60 * 60 * 1000,
+//         ).toISOString();
 
-            .insert({
+//     /*
+//      * -------------------------------------------------------------
+//      * Persist permission.
+//      * -------------------------------------------------------------
+//      */
 
-                permission_id:
-                    ctx.permissionId,
 
-                customer_id:
-                    ctx.customerId,
 
-                session_public_key:
-                    ctx.sessionPublicKey,
+//     const { error } =
+//         await supabase
 
-                serialized_permission_account:
-                    serializedPermissionAccount,
+//             .from("billing_permissions")
 
-                encrypted_session:
-                    encryptedSession,
+//             .insert({
 
-                permission_expiry:
-                    expiry,
+//                 permission_id:
+//                     ctx.permissionId,
 
-                revoked:
-                    false,
+//                 customer_id:
+//                     ctx.customerId,
 
-                created_at:
-                    now,
+//                 session_public_key:
+//                     ctx.sessionPublicKey,
 
-                updated_at:
-                    now,
-            });
+//                 serialized_permission_account:
+//                     serializedPermissionAccount,
 
-    if (error)
-        throw error;
+//                 encrypted_session:
+//                     encryptedSession,
 
-    success("Billing permission stored.");
+//                 permission_expiry:
+//                     expiry,
+
+//                 revoked:
+//                     false,
+
+//                 created_at:
+//                     now,
+
+//                 updated_at:
+//                     now,
+//             });
+
+//     if (error)
+//         throw error;
+
+//     success("Billing permission stored.");
 
     
-    interface DueSubscription {
+//     interface DueSubscription {
     
-        subscription_id: number;
+//         subscription_id: number;
     
-        merchant_id: number;
+//         merchant_id: number;
     
-        plan_id: number;
+//         plan_id: number;
     
-        customer_id: string;
+//         customer_id: string;
     
-        smart_account: string;
+//         smart_account: string;
     
-        permission_id: string | null;
+//         permission_id: string | null;
     
-        status:
-            | "ACTIVE"
-            | "PAUSED"
-            | "CANCELLED";
+//         status:
+//             | "ACTIVE"
+//             | "PAUSED"
+//             | "CANCELLED";
     
-        next_billing_time: string;
+//         next_billing_time: string;
     
-        last_charged_at: string | null;
+//         last_charged_at: string | null;
     
-        cancelled_at: string | null;
+//         cancelled_at: string | null;
     
-        created_at: string;
+//         created_at: string;
     
-        merchant: Merchant;
+//         merchant: Merchant;
     
-        customer: Customer;
+//         customer: Customer;
     
-        plan: BillingPlan;
+//         plan: BillingPlan;
     
-        permission: BillingPermission | null;
-    }
+//         permission: BillingPermission | null;
+//     }
     
 
-    const encrypted =
-            subscription.permission!.encrypted_session;
+//     const encrypted =
+//             subscription.permission!.encrypted_session;
     
-        const privateKey =
-            decryptPrivateKey(encrypted);
+//         const privateKey =
+//             decryptPrivateKey(encrypted);
     
-            const signer =
-                    await toECDSASigner({
-                        signer: privateKeyToAccount(privateKey),
-                    });
+//             const signer =
+//                     await toECDSASigner({
+//                         signer: privateKeyToAccount(privateKey),
+//                     });
 
-    await deserializePermissionAccount(
-        publicClient,
-        entryPoint,
-        kernelVersion,
-        subscription.permission!.serialized_permission_account,
-        signer,
-    );
-
-
+//     await deserializePermissionAccount(
+//         publicClient,
+//         entryPoint,
+//         kernelVersion,
+//         subscription.permission!.serialized_permission_account,
+//         signer,
+//     );
 
 
-  /*
-    --------------------------------------------------------------------------
-    Return
-    --------------------------------------------------------------------------
-    */
 
-  return {
-    account,
 
-    client,
+//   /*
+//     --------------------------------------------------------------------------
+//     Return
+//     --------------------------------------------------------------------------
+//     */
 
-    address: account.address,
+//   return {
+//     account,
 
-    ownerValidator,
-  };
-}
+//     client,
 
-export async function getCustomerKernel(
-  walletClient: WalletClient,
-  publicClient: PublicClient,
-) {
-  const [ownerWallet] = await walletClient.getAddresses();
+//     address: account.address,
 
-  const customer = await getCustomerByWallet(ownerWallet);
+//     ownerValidator,
+//   };
+// }
 
-  const kernel = await createCustomerKernel({
-    ownerWalletClient: walletClient,
-    publicClient,
-  });
+// export async function getCustomerKernel(
+//   walletClient: WalletClient,
+//   publicClient: PublicClient,
+// ) {
+//   const [ownerWallet] = await walletClient.getAddresses();
 
-  if (kernel.address.toLowerCase() !== customer.smartAccount!.toLowerCase()) {
-    throw new Error("Connected wallet does not own this merchant.");
-  }
+//   const customer = await getCustomerByWallet(ownerWallet);
 
-  return {
-    customer,
-    kernel,
-  };
-}
+//   const kernel = await createCustomerKernel({
+//     ownerWalletClient: walletClient,
+//     publicClient,
+//   });
+
+//   if (kernel.address.toLowerCase() !== customer.smartAccount!.toLowerCase()) {
+//     throw new Error("Connected wallet does not own this merchant.");
+//   }
+
+//   return {
+//     customer,
+//     kernel,
+//   };
+// }
 
 

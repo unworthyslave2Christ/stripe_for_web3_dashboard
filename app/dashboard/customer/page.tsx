@@ -5,14 +5,25 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 
 import CustomerForm from "./components/CustomerForm";
+import { getMerchantByOwnerWallet } from "@/services/merchant";
+import { getCustomerByWallet } from "@/services/customer";
+import { Address } from "viem";
+import { useRouter } from "next/router";
 
 export default function CustomerPage() {
 
-    const {
+    const { address, isConnected } =
+            useAccount();
+    
+    // const router = useRouter();
 
-        isConnected,
+    // const merchant =  await getCustomerByWallet(address as Address);
+    
 
-    } = useAccount();
+    // if (merchant){
+    //     router.replace("/dashboard/customer/home");
+    // }
+
 
     return (
 

@@ -137,7 +137,7 @@ export default function PlansTable({
 
                                                             <Link
 
-                                    href={`/dashboard/plans/${plan.plan_id}`}
+                                    href={`/dashboard/merchant/plans/${plan.plan_id}`}
 
                                     className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-500 hover:text-cyan-400"
 

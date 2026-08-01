@@ -72,7 +72,7 @@ export default function CreatePlanPage() {
                 });
 
                 router.push(
-                    "/dashboard/plans",
+                    "/dashboard/merchant/plans",
                 );
 
         } catch (error){

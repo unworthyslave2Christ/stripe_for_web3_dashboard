@@ -1,297 +1,386 @@
-// dashboard/page.tsx
-
 "use client";
 
-import DashboardSkeleton from "./components/DashboardSkeleton";
-
-import MerchantHeader from "./components/MerchantHeader";
-import StatsGrid from "./components/StatsGrid";
-import QuickActions from "./components/QuickActions";
-import RecentPlans from "./components/RecentPlans";
-import RecentSubscriptions from "./components/RecentSubscriptions";
-import RecentCustomers from "./components/RecentCustomers";
-import RecentBillingActivity from "./components/RecentBillingActivity";
-import WorkerStatus from "./components/WorkerStatus";
-import { useRouter } from "next/navigation";
-
-import { useDashboard } from "@/hooks/useDashboard";
-
-/* -------------------------------------------------------------------------- */
-/* Page                                                                        */
-/* -------------------------------------------------------------------------- */
+import Link from "next/link";
+import { ArrowRight, ShieldCheck, Wallet, Repeat2, Store, Users } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function DashboardPage() {
+    return (
+        <main className="min-h-screen bg-slate-950 text-slate-50">
 
-    const {
+            {/* ------------------------------------------------------------------ */}
+            {/* Hero                                                               */}
+            {/* ------------------------------------------------------------------ */}
 
-        loading,
+            <section className="mx-auto flex max-w-7xl flex-col items-center px-8 py-24 text-center">
 
-        refreshing,
+                <span className="rounded-full border border-cyan-500/40 bg-cyan-500/10 px-4 py-1 text-sm font-medium text-cyan-400">
 
-        error,
+                    Web3 Subscription Infrastructure
 
-        refresh,
+                </span>
 
-        registered,
+                <h1 className="mt-8 max-w-5xl text-6xl font-extrabold tracking-tight">
 
-        merchant,
+                    Web3 Subscription Billing
 
-        stats,
+                </h1>
 
-        plans,
+                <p className="mt-5 text-2xl font-semibold text-cyan-400">
 
-        customers,
+                    The Stripe for Web3.
 
-        subscriptions,
+                </p>
 
-        billingAttempts,
+                <p className="mt-8 max-w-3xl text-lg leading-8 text-slate-400">
 
-        worker,
+                    Create subscription businesses powered by Account
+                    Abstraction. Customers authorize recurring payments once,
+                    merchants receive automated recurring revenue, and billing
+                    executes securely on-chain through permissioned smart
+                    accounts.
 
-    } = useDashboard();
+                </p>
 
-    /* ---------------------------------------------------------------------- */
-    /* Loading                                                                 */
-    /* ---------------------------------------------------------------------- */
+                <div className="mt-12">
 
-    if (loading) {
-
-        return (
-
-            <main className="mx-auto max-w-7xl p-6">
-
-                <DashboardSkeleton />
-
-            </main>
-
-        );
-
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* Merchant Not Registered                                                 */
-    /* ---------------------------------------------------------------------- */
-
-    if (!registered) {
-
-        return (
-
-            <main className="mx-auto max-w-3xl p-6">
-
-                <div className="rounded-xl border border-amber-700 bg-amber-950/40 p-10 text-center">
-
-                    <h1 className="text-3xl font-bold text-white">
-
-                        Merchant Account Not Found
-
-                    </h1>
-
-                    <p className="mt-4 text-slate-300">
-
-                        Your connected smart account is not registered as a
-                        merchant on the billing protocol.
-
-                    </p>
+                    <ConnectButton />
 
                 </div>
 
-            </main>
+                <div className="mt-12 flex flex-col gap-5 sm:flex-row">
 
-        );
+                    <Link
+                        href="/dashboard/merchant"
+                        className="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-lg font-semibold transition hover:bg-cyan-600"
+                    >
+                        Register as Merchant
 
-    }
+                        <ArrowRight className="ml-3 h-5 w-5" />
+                    </Link>
 
-    /* ---------------------------------------------------------------------- */
-    /* Dashboard Error                                                         */
-    /* ---------------------------------------------------------------------- */
+                    <Link
+                        href="/dashboard/customer"
+                        className="inline-flex items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-lg font-semibold transition hover:border-cyan-500 hover:bg-slate-900"
+                    >
+                        Register as Customer
 
-    if (error) {
+                    </Link>
 
-        return (
+                </div>
 
-            <main className="mx-auto max-w-3xl p-6">
+            </section>
 
-                <div className="rounded-xl border border-red-700 bg-red-950/40 p-10">
+            {/* ------------------------------------------------------------------ */}
+            {/* Statistics (Future Live Data)                                      */}
+            {/* ------------------------------------------------------------------ */}
 
-                    <h2 className="text-2xl font-bold text-white">
+            <section className="mx-auto max-w-7xl px-8">
 
-                        Unable to Load Dashboard
+                <div className="grid gap-6 md:grid-cols-4">
+
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
+
+                        <p className="text-sm uppercase tracking-wide text-slate-500">
+
+                            Merchants
+
+                        </p>
+
+                        <h2 className="mt-4 text-4xl font-bold">
+
+                            —
+
+                        </h2>
+
+                        <p className="mt-2 text-sm text-slate-500">
+
+                            Live protocol statistic
+
+                        </p>
+
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
+
+                        <p className="text-sm uppercase tracking-wide text-slate-500">
+
+                            Customers
+
+                        </p>
+
+                        <h2 className="mt-4 text-4xl font-bold">
+
+                            —
+
+                        </h2>
+
+                        <p className="mt-2 text-sm text-slate-500">
+
+                            Live protocol statistic
+
+                        </p>
+
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
+
+                        <p className="text-sm uppercase tracking-wide text-slate-500">
+
+                            Active Plans
+
+                        </p>
+
+                        <h2 className="mt-4 text-4xl font-bold">
+
+                            —
+
+                        </h2>
+
+                        <p className="mt-2 text-sm text-slate-500">
+
+                            Live protocol statistic
+
+                        </p>
+
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
+
+                        <p className="text-sm uppercase tracking-wide text-slate-500">
+
+                            Total Volume
+
+                        </p>
+
+                        <h2 className="mt-4 text-4xl font-bold">
+
+                            —
+
+                        </h2>
+
+                        <p className="mt-2 text-sm text-slate-500">
+
+                            Live protocol statistic
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            {/* ------------------------------------------------------------------ */}
+            {/* Features                                                           */}
+            {/* ------------------------------------------------------------------ */}
+
+            <section className="mx-auto mt-24 max-w-7xl px-8">
+
+                <h2 className="text-center text-4xl font-bold">
+
+                    Built for Subscription Businesses
+
+                </h2>
+
+                <p className="mx-auto mt-4 max-w-3xl text-center text-slate-400">
+
+                    Everything required to launch and operate decentralized
+                    recurring billing on-chain.
+
+                </p>
+
+                <div className="mt-16 grid gap-8 md:grid-cols-3">
+
+                    <FeatureCard
+                        icon={<ShieldCheck className="h-8 w-8 text-cyan-400" />}
+                        title="Permissioned Billing"
+                        description="Customers approve recurring payments once. No repeated wallet confirmations."
+                    />
+
+                    <FeatureCard
+                        icon={<Repeat2 className="h-8 w-8 text-cyan-400" />}
+                        title="Automated Recurring Charges"
+                        description="Billing workers execute scheduled subscription payments automatically."
+                    />
+
+                    <FeatureCard
+                        icon={<Wallet className="h-8 w-8 text-cyan-400" />}
+                        title="Account Abstraction"
+                        description="Built around smart accounts, session keys and ZeroDev infrastructure."
+                    />
+
+                    <FeatureCard
+                        icon={<Store className="h-8 w-8 text-cyan-400" />}
+                        title="Merchant Management"
+                        description="Create subscription plans, manage pricing and monitor recurring revenue."
+                    />
+
+                    <FeatureCard
+                        icon={<Users className="h-8 w-8 text-cyan-400" />}
+                        title="Customer Portal"
+                        description="Discover merchants, subscribe to plans and manage active subscriptions."
+                    />
+
+                    <FeatureCard
+                        icon={<ShieldCheck className="h-8 w-8 text-cyan-400" />}
+                        title="Secure Session Keys"
+                        description="Permission accounts are serialized while session keys remain encrypted for billing."
+                    />
+
+                </div>
+
+            </section>
+
+            {/* ------------------------------------------------------------------ */}
+            {/* Recent Merchants (Future)                                          */}
+            {/* ------------------------------------------------------------------ */}
+
+            <section className="mx-auto mt-28 max-w-7xl px-8">
+
+                <div className="flex items-center justify-between">
+
+                    <h2 className="text-3xl font-bold">
+
+                        Recent Merchants
 
                     </h2>
 
-                    <p className="mt-4 text-red-300">
+                    <span className="text-sm text-slate-500">
 
-                        {error}
+                        Coming Soon
 
-                    </p>
-
-                    <button
-
-                        onClick={refresh}
-
-                        disabled={refreshing}
-
-                        className="mt-8 rounded-lg bg-red-600 px-5 py-3 font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
-
-                    >
-
-                        {refreshing
-
-                            ? "Retrying..."
-
-                            : "Retry"}
-
-                    </button>
+                    </span>
 
                 </div>
 
-            </main>
+                <div className="mt-8 rounded-2xl border border-dashed border-slate-700 p-20 text-center text-slate-500">
 
-        );
+                    Merchant carousel will appear here.
 
-    }
+                </div>
 
-    /* ---------------------------------------------------------------------- */
-    /* Safety                                                                  */
-    /* ---------------------------------------------------------------------- */
+            </section>
 
-    if (!merchant || !stats) {
+            {/* ------------------------------------------------------------------ */}
+            {/* Featured Businesses                                                */}
+            {/* ------------------------------------------------------------------ */}
 
-        return null;
+            <section className="mx-auto mt-24 max-w-7xl px-8">
 
-    }
+                <div className="flex items-center justify-between">
 
+                    <h2 className="text-3xl font-bold">
 
-    const router = useRouter();
+                        Featured Subscription Businesses
 
-    const handleCreatePlan = () => {
+                    </h2>
 
-        router.push("/dashboard/plans/new");
+                    <span className="text-sm text-slate-500">
 
-    };
+                        Coming Soon
 
-    const handleViewPlans = () => {
+                    </span>
 
-        router.push("/dashboard/plans");
+                </div>
 
-    };
+                <div className="mt-8 rounded-2xl border border-dashed border-slate-700 p-20 text-center text-slate-500">
 
-    const handleViewCustomers = () => {
+                    Featured merchants and plans will appear here.
 
-        router.push("/dashboard/customers");
+                </div>
 
-    };
+            </section>
 
-    /* ---------------------------------------------------------------------- */
-    /* Dashboard                                                               */
-    /* ---------------------------------------------------------------------- */
+            {/* ------------------------------------------------------------------ */}
+            {/* Technology                                                         */}
+            {/* ------------------------------------------------------------------ */}
 
-    return (
+            <section className="mx-auto mt-24 mb-24 max-w-7xl px-8">
 
-        <main className="mx-auto max-w-7xl space-y-8 p-6">
+                <div className="rounded-3xl border border-cyan-500/20 bg-gradient-to-r from-slate-900 to-slate-800 p-12">
 
-            {/* ---------------------------------------------------------- */}
-            {/* Merchant Header                                            */}
-            {/* ---------------------------------------------------------- */}
+                    <h2 className="text-4xl font-bold">
 
-            <MerchantHeader
+                        Powered by Account Abstraction
 
-                merchant={merchant}
+                    </h2>
 
-                worker={worker!}
+                    <p className="mt-6 max-w-4xl text-lg leading-8 text-slate-300">
 
-            />
+                        Built upon ERC-4337 smart accounts, ZeroDev Kernel,
+                        permissioned session keys, Paymasters, Bundlers and
+                        automated billing workers to deliver enterprise-grade
+                        recurring payments for Web3 businesses.
 
-            {/* ---------------------------------------------------------- */}
-            {/* Statistics                                                 */}
-            {/* ---------------------------------------------------------- */}
+                    </p>
 
-            <StatsGrid
+                    <div className="mt-10 flex flex-wrap gap-4">
 
-                stats={stats}
+                        <Badge text="ERC-4337" />
 
-            />
+                        <Badge text="ZeroDev Kernel" />
 
-            {/* ---------------------------------------------------------- */}
-            {/* Quick Actions                                              */}
-            {/* ---------------------------------------------------------- */}
+                        <Badge text="Session Keys" />
 
-            <QuickActions
+                        <Badge text="Paymasters" />
 
-                onCreatePlan={handleCreatePlan}
+                        <Badge text="Bundlers" />
 
-                onViewPlans={handleViewPlans}
+                        <Badge text="Recurring Billing" />
 
-                onViewCustomers={handleViewCustomers}
+                    </div>
 
-                onRefresh={refresh}
+                </div>
 
-                refreshing={refreshing}
+            </section>
 
-            />
-
-            {/* ---------------------------------------------------------- */}
-            {/* Billing Plans                                              */}
-            {/* ---------------------------------------------------------- */}
-
-            <RecentPlans
-
-                plans={plans}
-
-            />
-                        {/* ---------------------------------------------------------- */}
-            {/* Recent Subscriptions                                       */}
-            {/* ---------------------------------------------------------- */}
-
-            <RecentSubscriptions
-
-                subscriptions={subscriptions}
-
-            />
-
-            {/* ---------------------------------------------------------- */}
-            {/* Bottom Dashboard Grid                                      */}
-            {/* ---------------------------------------------------------- */}
-
-            <div className="grid gap-8 xl:grid-cols-2">
-
-                {/* -------------------------------------------------- */}
-                {/* Customers                                          */}
-                {/* -------------------------------------------------- */}
-
-                <RecentCustomers
-
-                    customers={customers}
-
-                />
-
-                {/* -------------------------------------------------- */}
-                {/* Billing Activity                                   */}
-                {/* -------------------------------------------------- */}
-
-                <RecentBillingActivity
-
-                    billingAttempts={billingAttempts}
-
-                />
-
-            </div>
-
-            {/* ---------------------------------------------------------- */}
-            {/* Worker Status                                              */}
-            {/* ---------------------------------------------------------- */}
-
-            {worker && (
-
-                <WorkerStatus
-
-                    worker={worker}
-
-                />
-
-            )}
         </main>
-
     );
+}
 
+interface FeatureCardProps {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+}
+
+function FeatureCard({
+    icon,
+    title,
+    description,
+}: FeatureCardProps) {
+    return (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8 transition hover:border-cyan-500">
+
+            {icon}
+
+            <h3 className="mt-6 text-2xl font-semibold">
+
+                {title}
+
+            </h3>
+
+            <p className="mt-4 leading-7 text-slate-400">
+
+                {description}
+
+            </p>
+
+        </div>
+    );
+}
+
+function Badge({
+    text,
+}: {
+    text: string;
+}) {
+    return (
+        <span className="rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400">
+
+            {text}
+
+        </span>
+    );
 }

@@ -1,12 +1,18 @@
 "use client";
 
 import { useState } from "react";
-
+import { useAccount } from "wagmi";
 import { useCustomer } from "@/hooks/useCustomer";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CustomerForm() {
 
-    const {registerCustomer} =
+    const router = useRouter();
+
+    const { address } = useAccount();
+
+    const { registerCustomer, loading } =
         useCustomer();
 
     const [displayName, setDisplayName] =
@@ -15,28 +21,92 @@ export default function CustomerForm() {
     const [email, setEmail] =
         useState("");
 
-    const [loading, setLoading] =
-        useState(false);
-
     async function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>,
+        e: React.FormEvent,
     ) {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        setLoading(true);
+        if (!address) {
 
-        try {
+            toast.info(
+                "Connect your wallet first.",
+            );
 
-            await registerCustomer( displayName, email);
-
-            // alert("Customer successfully registered")
+            return;
 
         }
 
-        finally {
+        if (!displayName.trim()) {
 
-            setLoading(false);
+            toast.warning(
+                "Display name is required.",
+            );
+
+            return;
+
+        }
+
+        if (!email.trim()) {
+
+            toast.warning(
+                "Email is required.",
+            );
+
+            return;
+
+        }
+
+        try {
+
+            const result =
+                await registerCustomer(
+                    displayName,
+                    email,
+                );
+
+            if (result.alreadyRegistered) {
+
+                toast.info(
+                    "Customer already registered.",
+                );
+
+                router.push(
+                    "/dashboard/customer/home",
+                );
+
+                return;
+
+            }
+
+            toast.success(
+                "Customer successfully registered.",
+            );
+
+            setDisplayName("");
+            setEmail("");
+
+            router.push(
+                "/dashboard/customer/home",
+            );
+
+        }
+
+        catch (err) {
+
+            console.error(err);
+
+            toast.error(
+                "Customer registration failed.",
+                {
+
+                    description:
+                        err instanceof Error
+                            ? err.message
+                            : "Unknown error",
+
+                },
+            );
 
         }
 
@@ -45,85 +115,67 @@ export default function CustomerForm() {
     return (
 
         <form
-
             onSubmit={handleSubmit}
-
-            className="space-y-6 rounded-xl border border-slate-800 bg-slate-900 p-8"
-
+            className="space-y-4 max-w-xl"
         >
 
             <div>
 
-                <label className="mb-2 block text-sm font-medium text-slate-300">
+                <label>
 
                     Display Name
 
                 </label>
 
                 <input
-
-                    required
-
                     value={displayName}
-
-                    onChange={(event) =>
+                    disabled={loading}
+                    onChange={(e) =>
                         setDisplayName(
-                            event.target.value,
+                            e.target.value,
                         )
                     }
-
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white"
-
+                    className="w-full rounded border p-2"
                 />
 
             </div>
 
             <div>
 
-                <label className="mb-2 block text-sm font-medium text-slate-300">
+                <label>
 
                     Email
 
                 </label>
 
                 <input
-
-                    required
-
                     type="email"
-
                     value={email}
-
-                    onChange={(event) =>
+                    disabled={loading}
+                    onChange={(e) =>
                         setEmail(
-                            event.target.value,
+                            e.target.value,
                         )
                     }
-
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white"
-
+                    className="w-full rounded border p-2"
                 />
 
             </div>
 
             <button
-
                 type="submit"
-
                 disabled={loading}
-
-                className="rounded-lg bg-cyan-600 px-6 py-3 font-medium text-white"
-
+                className={`rounded px-4 py-2 text-white ${
+                    loading
+                        ? "bg-cyan-600/50"
+                        : "bg-cyan-600"
+                }`}
             >
 
                 {
-
                     loading
-
                         ? "Registering..."
-
                         : "Register Customer"
-
                 }
 
             </button>

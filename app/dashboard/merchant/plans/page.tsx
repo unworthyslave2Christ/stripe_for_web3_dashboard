@@ -131,7 +131,7 @@ export  default function PlansPage() {
 
                     onClick={() =>
                         router.push(
-                            "/dashboard/plans/create",
+                            "/dashboard/merchant/plans/create",
                         )
                     }
 
@@ -184,7 +184,7 @@ export  default function PlansPage() {
 
                             onClick={() =>
                                 router.push(
-                                    "/dashboard/plans/create",
+                                    "/dashboard/merchant/plans/create",
                                 )
                             }
 

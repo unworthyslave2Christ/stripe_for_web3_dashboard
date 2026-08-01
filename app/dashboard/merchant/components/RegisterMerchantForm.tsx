@@ -67,7 +67,7 @@ export default function RegisterMerchantForm() {
                     },
                 );
 
-                router.push("/dashboard");
+                router.push("/dashboard/merchant/home");
 
                 return;
             }
