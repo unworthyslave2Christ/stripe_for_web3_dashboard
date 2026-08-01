@@ -4,7 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { useAccount } from "wagmi";
 
-import RegisterMerchantForm from "@/components/merchant/RegisterMerchantForm";
+import RegisterMerchantForm from "@/app/dashboard/merchant/components/RegisterMerchantForm";
 
 export default function MerchantPage() {
     const { isConnected } =

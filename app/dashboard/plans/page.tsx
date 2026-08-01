@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 
 
-import PlansTable from "../components/PlansTable";
+import PlansTable from "./components/PlansTable";
 
 import type {
 
@@ -131,7 +131,7 @@ export  default function PlansPage() {
 
                     onClick={() =>
                         router.push(
-                            "/dashboard/plans/new",
+                            "/dashboard/plans/create",
                         )
                     }
 
@@ -184,7 +184,7 @@ export  default function PlansPage() {
 
                             onClick={() =>
                                 router.push(
-                                    "/dashboard/plans/new",
+                                    "/dashboard/plans/create",
                                 )
                             }
 
