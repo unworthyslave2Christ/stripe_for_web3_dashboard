@@ -38,10 +38,10 @@ const publicClient = createPublicClient({
 
 const paymasterClient = createZeroDevPaymasterClient({
     chain,
-    transport: http(process.env.PAYMASTER_RPC!),
+    transport: http(process.env.NEXT_PUBLIC_PAYMASTER_RPC!),
 });
 
-const bundlerTransport = http(process.env.BUNDLER_RPC!);
+const bundlerTransport = http(process.env.NEXT_PUBLIC_BUNDLER_RPC!);
 
 
 

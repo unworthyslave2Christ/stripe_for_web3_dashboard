@@ -27,6 +27,7 @@ import {
     KERNEL_V3_3,
 } from "@zerodev/sdk/constants";
 
+import "dotenv/config";
 
 import {providerToSmartAccountSigner, walletClientToSmartAccountSigner} from "permissionless"
 
@@ -53,10 +54,9 @@ const publicClient = createPublicClient({
 
 const paymasterClient = createZeroDevPaymasterClient({
     chain,
-    transport: http(process.env.PAYMASTER_RPC!),
+    transport: http(process.env.NEXT_PUBLIC_PAYMASTER_RPC!),
 });
 
-const bundlerTransport = http(process.env.BUNDLER_RPC!);
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
@@ -86,7 +86,7 @@ function createClient(
         chain,
 
         bundlerTransport:
-            bundlerTransport,
+            http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
 
         paymaster: {
 
@@ -182,6 +182,8 @@ export async function createMerchantKernel({
             },
         );
 
+    console.log("Bundler RPC:", process.env.BUNDLER_RPC);
+
     const client =
         createKernelAccountClient({
 
@@ -190,7 +192,7 @@ export async function createMerchantKernel({
             chain,
 
             bundlerTransport:
-                http(process.env.BUNDLER_RPC!),
+                http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
 
             paymaster: {
 

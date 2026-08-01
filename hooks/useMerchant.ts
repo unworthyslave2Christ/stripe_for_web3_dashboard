@@ -45,39 +45,53 @@ export function useMerchant() {
       /*
        * Already registered?
        */
+      let merchantFromSupabase = null;
 
-       const merchantFromSupabase =
-                          await getMerchantByOwnerWallet(ownerWallet);
+      try {
 
-      const exists = await merchantExists({
-        publicClient,
-        contractAddress: CONTRACT_ADDRESS,
-        smartAccount: merchantFromSupabase.smart_account,
-      });
+          merchantFromSupabase =
+              await getMerchantByOwnerWallet(ownerWallet);
 
-      if (exists) {
-        const id = await getMerchantIdBySmartAccount({
+      }
+
+      catch (error) {
+
+          // Merchant not yet mirrored into Supabase.
+          merchantFromSupabase = null;
+
+      }
+
+      if (merchantFromSupabase){
+        const exists = await merchantExists({
           publicClient,
           contractAddress: CONTRACT_ADDRESS,
           smartAccount: merchantFromSupabase.smart_account,
         });
 
-        setMerchantId(id);
 
-        const merchant = await getMerchantById(id);
-        console.log("merchant: ", merchant);
+        if (exists) {
+          const id = await getMerchantIdBySmartAccount({
+            publicClient,
+            contractAddress: CONTRACT_ADDRESS,
+            smartAccount: merchantFromSupabase.smart_account,
+          });
 
-        return {
-          merchantId: id,
-          merchant,
-          alreadyRegistered: true,
-        };
+          setMerchantId(id);
+
+          const merchant = await getMerchantById(id);
+          console.log("merchant: ", merchant);
+
+          return {
+            merchantId: id,
+            merchant,
+            alreadyRegistered: true,
+          };
+        }
+
       }
-
 
       const merchantKernel = await createMerchantKernel({
         ownerWalletClient: walletClient,
-
         publicClient,
       });
 

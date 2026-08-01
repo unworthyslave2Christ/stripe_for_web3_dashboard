@@ -59,28 +59,36 @@ export interface DashboardStats {
 /* -------------------------------------------------------------------------- */
 /* Billing Plan                                                                */
 /* -------------------------------------------------------------------------- */
-
 export interface BillingPlan {
 
     planId: number;
 
-    name: string;
+    merchantId: number;
 
-    paymentToken: Address;
+    paymentToken: `0x${string}`;
 
     amount: string;
 
     billingIntervalSeconds: number;
 
-    subscriberCount: number;      // derived
+    name: string;
 
     status:
         | "ACTIVE"
-        | "INACTIVE";
+        | "PAUSED"
+        | "ARCHIVED";
+
+    trialPeriod: number;
+
+    maxSubscribers: number | null;
+
+    allowRenewal: boolean;
 
     createdAt: string;
 
     updatedAt: string;
+
+    subscriberCount: number;
 
 }
 

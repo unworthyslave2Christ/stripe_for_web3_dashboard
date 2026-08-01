@@ -9,7 +9,7 @@ import {
 import protocolAbi from "@/abi/Web3BillingProtocol.json";
 import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
-import { paymasterClient } from "./kernel.client";
+import { createMerchantKernel, paymasterClient } from "./kernel.client";
 import { arbitrumSepolia } from "viem/chains";
 import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
@@ -320,4 +320,43 @@ export async function getMerchantByOwnerWallet(
 
     return json;
 
+}
+
+// TODO: Persist merchant across merchant registration and bill planning and also for customers
+// TODO: Graceful route-level error handling with error.tsx, file-leve error handling component level error  handling
+// TODO: Route restriction to unauthorized and unauthenticated accounts, Rate limiting, the 5-check fullstack security audit list
+// TODO: Inpecting and removal of sensitive information from client bundle
+// TODO: Graciously enabling rainbow kit across all instances of localhost(app) on all profiles
+// Graciously incorporating the best practices in next js fundamentals vercel course
+
+
+export async function getMerchantKernel(
+    walletClient: WalletClient,
+    publicClient: PublicClient,
+) {
+    const [ownerWallet] =
+        await walletClient.getAddresses();
+
+    const merchant =
+        await getMerchantByOwnerWallet(ownerWallet);
+
+    const kernel =
+        await createMerchantKernel({
+            ownerWalletClient: walletClient,
+            publicClient,
+        });
+
+    if (
+        kernel.address.toLowerCase() !==
+        merchant.smart_account.toLowerCase()
+    ) {
+        throw new Error(
+            "Connected wallet does not own this merchant."
+        );
+    }
+
+    return {
+        merchant,
+        kernel,
+    };
 }
