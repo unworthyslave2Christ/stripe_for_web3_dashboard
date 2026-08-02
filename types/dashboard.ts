@@ -54,6 +54,8 @@ export interface DashboardStats {
 
     failedBillings: number;
 
+    totalMerchants: number;
+
 }
 
 /* -------------------------------------------------------------------------- */
@@ -258,4 +260,72 @@ export interface DashboardData {
 
     worker: Worker;
 
+}
+
+
+export interface MerchantWithPlans {
+
+    merchant: Merchant;
+
+    plans: BillingPlan[];
+
+}
+
+
+export interface CustomerSubscription {
+
+    subscription: Subscription;
+
+    merchant: Merchant;
+
+    plan: BillingPlan;
+
+}
+
+
+export interface CustomerDashboardData {
+
+    customer: Customer;
+
+    merchants: MerchantWithPlans[];
+
+    activeSubscriptions: CustomerSubscription[];
+
+}
+
+
+export interface BillingPermission {
+
+    permissionId: string;      // bytes32 hex string
+
+    customerId: string;
+
+    sessionPublicKey: Address;
+
+    serializedPermissionAccount: string;
+
+    encryptedSession: string;
+
+    permissionExpiry: string;
+
+    revoked: boolean;
+
+    createdAt: string;
+
+    updatedAt: string;
+
+}
+
+export interface MerchantSummary extends Merchant {
+    planCount: number;
+}
+
+export interface CustomerDashboardData2 {
+    customer: Customer;
+
+    merchants: MerchantSummary[];
+
+    selectedMerchant?: Merchant;
+
+    plans: BillingPlan[];
 }

@@ -16,7 +16,6 @@ import { walletClientToSmartAccountSigner } from "permissionless";
 
 import { http, type PublicClient, type WalletClient } from "viem";
 
-
 import {
   entryPoint,
   kernelVersion,
@@ -24,12 +23,14 @@ import {
   paymasterClient,
 } from "./kernel.client";
 
-import {
-    privateKeyToAccount,
-    generatePrivateKey,
-} from "viem/accounts";
+import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { toECDSASigner } from "@zerodev/permissions/signers";
-import { deserializePermissionAccount, serializePermissionAccount, toInitConfig, toPermissionValidator } from "@zerodev/permissions";
+import {
+  deserializePermissionAccount,
+  serializePermissionAccount,
+  toInitConfig,
+  toPermissionValidator,
+} from "@zerodev/permissions";
 import { toSudoPolicy } from "@zerodev/permissions/policies";
 
 export interface CreateCustomerParams {
@@ -44,7 +45,6 @@ export interface CreateCustomerParams {
   sessionPrivateKey: Address;
 
   serializedPermissionAccount: string;
-
 }
 
 /* -------------------------------------------------------------------------- */
@@ -165,114 +165,141 @@ export async function getCustomers(): Promise<Customer[]> {
   return parseCustomers(json);
 }
 
-
-
-
 export interface CreateCustomerKernelParams {
   ownerWalletClient: WalletClient;
   publicClient: PublicClient;
 }
 
 export interface CustomerKernelRegistration {
-    smartAccount: `0x${string}`;
-    sessionPrivateKey: `0x${string}`;
-    serializedPermissionAccount: string;
+  smartAccount: `0x${string}`;
+  sessionPrivateKey: `0x${string}`;
+  serializedPermissionAccount: string;
 }
 
 export async function createCustomerKernel({
-    ownerWalletClient,
-    publicClient,
+  ownerWalletClient,
+  publicClient,
 }: CreateCustomerKernelParams): Promise<CustomerKernelRegistration> {
+  const ownerSigner = walletClientToSmartAccountSigner(
+    ownerWalletClient as any,
+  );
 
-    const ownerSigner =
-        walletClientToSmartAccountSigner(ownerWalletClient as any);
+  const ownerValidator = await signerToEcdsaValidator(publicClient, {
+    signer: ownerSigner as any,
+    entryPoint,
+    kernelVersion,
+  });
 
-    const ownerValidator =
-        await signerToEcdsaValidator(publicClient, {
-            signer: ownerSigner as any,
-            entryPoint,
-            kernelVersion,
-        });
+  /*
+   * Generate ONE random session key
+   */
 
-    /*
-     * Generate ONE random session key
-     */
+  const sessionPrivateKey = generatePrivateKey();
 
-    const sessionPrivateKey = generatePrivateKey();
+  const sessionAccount = privateKeyToAccount(sessionPrivateKey);
 
-    const sessionAccount =
-        privateKeyToAccount(sessionPrivateKey);
+  const sessionSigner = await toECDSASigner({
+    signer: sessionAccount,
+  });
 
-    const sessionSigner =
-        await toECDSASigner({
-            signer: sessionAccount,
-        });
+  const permissionValidator = await toPermissionValidator(publicClient, {
+    signer: sessionSigner,
+    entryPoint,
+    kernelVersion,
+    policies: [toSudoPolicy({})],
+  });
 
-    const permissionValidator =
-        await toPermissionValidator(publicClient, {
-            signer: sessionSigner,
-            entryPoint,
-            kernelVersion,
-            policies: [
-                toSudoPolicy({}),
-            ],
-        });
+  const kernel = await createKernelAccount(publicClient, {
+    entryPoint,
 
-    const kernel =
-        await createKernelAccount(publicClient, {
+    kernelVersion,
 
-            entryPoint,
+    plugins: {
+      sudo: ownerValidator,
+    },
 
-            kernelVersion,
+    initConfig: await toInitConfig(permissionValidator),
+  });
 
-            plugins: {
-                sudo: ownerValidator,
-            },
+  const serializedPermissionAccount = await serializePermissionAccount(
+    kernel,
+    undefined,
+    undefined,
+    undefined,
+    permissionValidator,
+  );
 
-            initConfig:
-                await toInitConfig(permissionValidator),
-        });
+  return {
+    smartAccount: kernel.address,
 
-    const serializedPermissionAccount =
-        await serializePermissionAccount(
-            kernel,
-            undefined,
-            undefined,
-            undefined,
-            permissionValidator,
-        );
+    sessionPrivateKey: sessionPrivateKey,
 
-    return {
-
-        smartAccount: kernel.address,
-
-        sessionPrivateKey: sessionPrivateKey,
-
-        serializedPermissionAccount,
-    };
+    serializedPermissionAccount,
+  };
 }
 
-// export async function getCustomerKernel(
-//   walletClient: WalletClient,
-//   publicClient: PublicClient,
-// ) {
-//   const [ownerWallet] = await walletClient.getAddresses();
+export async function getCustomerKernel(
+  walletClient: WalletClient,
+  publicClient: PublicClient,
+) {
+  const [wallet] = await walletClient.getAddresses();
 
-//   const customer = await getCustomerByWallet(ownerWallet);
+  const response = await fetch(
+    "/api/customer/kernel",
 
-//   const kernel = await createCustomerKernel({
-//     ownerWalletClient: walletClient,
-//     publicClient,
-//   });
+    {
+      method: "POST",
 
-//   if (kernel.address.toLowerCase() !== customer.smartAccount!.toLowerCase()) {
-//     throw new Error("Connected wallet does not own this merchant.");
-//   }
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-//   return {
-//     customer,
-//     kernel,
-//   };
-// }
+      body: JSON.stringify({
+        wallet,
+      }),
+    },
+  );
 
+  if (!response.ok) {
+    const error = await response.json();
 
+    throw new Error(error.error ?? "Unable to load customer kernel.");
+  }
+
+  const {
+      customer,
+
+      kernelAddress,
+
+      serializedPermissionAccount,
+
+      sessionPrivateKey
+  } = await response.json();
+
+  const signer =
+        await toECDSASigner({
+            signer: privateKeyToAccount(sessionPrivateKey),
+        });
+
+  const kernel = await deserializePermissionAccount(
+    publicClient,
+
+    entryPoint,
+
+    kernelVersion,
+
+    serializedPermissionAccount,
+
+    signer,
+  );
+
+  if ((kernel.address.toLowerCase() !== customer.smartAccount.toLowerCase()) && (kernelAddress.toLowerCase() !== customer.smartAccount.toLowerCase())) {
+    throw new Error("Kernel verification failed.");
+  }
+
+  return {
+    customer,
+
+    kernel,
+  };
+}

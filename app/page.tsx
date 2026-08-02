@@ -1,10 +1,9 @@
-'use client'
 
-import { useRouter } from "next/router"
+import { redirect } from "next/navigation"
 
 
-export default function RootPage(){
-  const router = useRouter();
+export default function RootPage() {
 
-  router.replace("/dashboard");
+    redirect("/dashboard");
+
 }
