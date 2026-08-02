@@ -14,11 +14,16 @@ interface ActiveSubscriptionsProps {
 
     subscriptions: Subscription[];
 
+    onBrowseMerchants?: () => void
+
+
 }
 
 export default function ActiveSubscriptions({
 
     subscriptions,
+    
+    onBrowseMerchants
 
 }: ActiveSubscriptionsProps) {
 
@@ -28,9 +33,14 @@ export default function ActiveSubscriptions({
 
     ) {
 
-        return <EmptySubscriptions />;
+        return <EmptySubscriptions 
+            onBrowseMerchants={onBrowseMerchants}
+        />;
+
 
     }
+
+    
 
     const activeCount =
 
