@@ -205,7 +205,17 @@ export async function POST(request: NextRequest) {
 
       sessionPrivateKey: sessionPrivateKey,
 
-      permissionId: permission.permission_id
+      permissionId: permission.permission_id,
+
+      permission: {
+        permissionId: permission.permission_id,
+
+        sessionPublicKey: permission.session_public_key,
+
+        permissionExpiry: permission.permission_expiry,
+
+        revoked: permission.revoked
+      }
     });
   } catch (error) {
     console.error(error);

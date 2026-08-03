@@ -1,270 +1,231 @@
 "use client";
 
-import { createSupabaseClient } from "@/utils/supabase/client";
-
 import type { Address } from "viem";
-
 import type { Subscription } from "@/types/dashboard";
 
-/* -------------------------------------------------------------------------- */
-/* Supabase                                                                    */
-/* -------------------------------------------------------------------------- */
+export interface MirrorSubscriptionParams {
+    subscriptionId: number;
 
-const supabase = createSupabaseClient();
+    customerId: string;
 
-/* -------------------------------------------------------------------------- */
-/* Types                                                                       */
-/* -------------------------------------------------------------------------- */
+    merchantId: number;
 
-export interface CreateSubscriptionParams {
-  customerId: string;
+    planId: number;
 
-  merchantId: number;
+    planBillingIntervalSeconds: number;
 
-  planId: number;
+    smartAccount: Address;
 
-  smartAccount: Address;
+    transactionHash: `0x${string}`;
 
-  transactionHash: `0x${string}`;
+    permissionId: `0x${string}`
 }
 
 export interface SubscriptionRecord extends Subscription {
-  transactionHash: `0x${string}`;
+    transactionHash: `0x${string}`;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Create Subscription Record                                                  */
+/* Mirror Subscription                                                         */
 /* -------------------------------------------------------------------------- */
 
-export async function createSubscription({
-  customerId,
-  merchantId,
-  planId,
-  smartAccount,
-  transactionHash,
-}: CreateSubscriptionParams): Promise<SubscriptionRecord> {
-  /*
-    --------------------------------------------------------------------------
-    Lookup Billing Permission
-    --------------------------------------------------------------------------
-    */
+export async function mirrorSubscription(
+    payload: MirrorSubscriptionParams,
+): Promise<SubscriptionRecord> {
 
-  const { data: permission, error: permissionError } = await supabase
+    const response = await fetch(
+        "/api/customers/subscriptions",
+        {
+            method: "POST",
 
-    .from("billing_permissions")
+            headers: {
+                "Content-Type": "application/json",
+            },
 
-    .select("permission_id")
+            body: JSON.stringify(payload),
+        },
+    );
 
-    .eq("customer_id", customerId)
+    if (!response.ok) {
 
-    .eq("revoked", false)
+        const error = await response.json();
 
-    .single();
+        throw new Error(
+            error.error ??
+            "Unable to mirror subscription.",
+        );
 
-  if (permissionError || !permission) {
-    throw new Error("Active billing permission not found.");
-  }
+    }
 
-  /*
-    --------------------------------------------------------------------------
-    Create Subscription Row
-    --------------------------------------------------------------------------
-    */
+    return await response.json();
 
-  const { data, error } = await supabase
-
-    .from("subscriptions")
-
-    .insert({
-      merchant_id: merchantId,
-
-      customer_id: customerId,
-
-      plan_id: planId,
-
-      smart_account: smartAccount,
-
-      permission_id: permission.permission_id,
-
-      status: "ACTIVE",
-
-      transaction_hash: transactionHash,
-
-      last_charged_at: null,
-
-      cancelled_at: null,
-    })
-
-    .select()
-
-    .single();
-
-  if (error || !data) {
-    throw new Error(error?.message ?? "Unable to create subscription.");
-  }
-
-  return data as SubscriptionRecord;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Get Customer Subscriptions                                                  */
+/* Customer Subscriptions                                                      */
 /* -------------------------------------------------------------------------- */
 
 export async function getCustomerSubscriptions(
-  customerId: string,
+    customerId: string,
 ): Promise<SubscriptionRecord[]> {
-  const { data, error } = await supabase
 
-    .from("subscriptions")
+    const response = await fetch(
+        `/api/customers/${customerId}/subscriptions`,
+        {
+            cache: "no-store",
+        },
+    );
 
-    .select("*")
+    if (!response.ok) {
 
-    .eq("customer_id", customerId)
+        throw new Error(
+            "Unable to fetch subscriptions.",
+        );
 
-    .order("created_at", {
-      ascending: false,
-    });
+    }
 
-  if (error) {
-    throw new Error(error.message);
-  }
+    return await response.json();
 
-  return (data ?? []) as SubscriptionRecord[];
 }
 
 /* -------------------------------------------------------------------------- */
-/* Get Subscription                                                            */
+/* Subscription                                                                */
 /* -------------------------------------------------------------------------- */
 
 export async function getSubscription(
-  subscriptionId: number,
+    subscriptionId: number,
 ): Promise<SubscriptionRecord | null> {
-  const { data, error } = await supabase
 
-    .from("subscriptions")
+    const response = await fetch(
+        `/api/subscriptions/${subscriptionId}`,
+        {
+            cache: "no-store",
+        },
+    );
 
-    .select("*")
+    if (response.status === 404) {
 
-    .eq("subscription_id", subscriptionId)
+        return null;
 
-    .single();
-
-  if (error) {
-    if (error.code === "PGRST116") {
-      return null;
     }
 
-    throw new Error(error.message);
-  }
+    if (!response.ok) {
 
-  return data as SubscriptionRecord;
+        throw new Error(
+            "Unable to load subscription.",
+        );
+
+    }
+
+    return await response.json();
+
 }
 
 /* -------------------------------------------------------------------------- */
-/* Pause Subscription Record                                                   */
+/* Pause                                                                       */
 /* -------------------------------------------------------------------------- */
 
 export async function pauseSubscriptionRecord(
-  subscriptionId: number,
+    subscriptionId: number,
 ): Promise<void> {
-  const { error } = await supabase
 
-    .from("subscriptions")
-
-    .update({
-      status: "PAUSED",
-    })
-
-    .eq(
-      "subscription_id",
-
-      subscriptionId,
+    const response = await fetch(
+        `/api/subscriptions/${subscriptionId}/pause`,
+        {
+            method: "PATCH",
+        },
     );
 
-  if (error) {
-    throw new Error(error.message);
-  }
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to pause subscription.",
+        );
+
+    }
+
 }
 
 /* -------------------------------------------------------------------------- */
-/* Resume Subscription Record                                                  */
+/* Resume                                                                      */
 /* -------------------------------------------------------------------------- */
 
 export async function resumeSubscriptionRecord(
-  subscriptionId: number,
+    subscriptionId: number,
 ): Promise<void> {
-  const { error } = await supabase
 
-    .from("subscriptions")
-
-    .update({
-      status: "ACTIVE",
-    })
-
-    .eq(
-      "subscription_id",
-
-      subscriptionId,
+    const response = await fetch(
+        `/api/subscriptions/${subscriptionId}/resume`,
+        {
+            method: "PATCH",
+        },
     );
 
-  if (error) {
-    throw new Error(error.message);
-  }
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to resume subscription.",
+        );
+
+    }
+
 }
 
 /* -------------------------------------------------------------------------- */
-/* Cancel Subscription Record                                                  */
+/* Cancel                                                                      */
 /* -------------------------------------------------------------------------- */
 
 export async function cancelSubscriptionRecord(
-  subscriptionId: number,
+    subscriptionId: number,
 ): Promise<void> {
-  const { error } = await supabase
 
-    .from("subscriptions")
-
-    .update({
-      status: "CANCELLED",
-
-      cancelled_at: new Date().toISOString(),
-    })
-
-    .eq(
-      "subscription_id",
-
-      subscriptionId,
+    const response = await fetch(
+        `/api/subscriptions/${subscriptionId}/cancel`,
+        {
+            method: "PATCH",
+        },
     );
 
-  if (error) {
-    throw new Error(error.message);
-  }
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to cancel subscription.",
+        );
+
+    }
+
 }
 
 /* -------------------------------------------------------------------------- */
-/* Update Billing Information                                                  */
+/* Billing Update                                                              */
 /* -------------------------------------------------------------------------- */
 
 export async function updateBillingInformation(
-  subscriptionId: number,
-  nextBillingTime: string,
+    subscriptionId: number,
+    nextBillingTime: string,
 ): Promise<void> {
-  const { error } = await supabase
 
-    .from("subscriptions")
+    const response = await fetch(
+        `/api/subscriptions/${subscriptionId}/billing`,
+        {
+            method: "PATCH",
 
-    .update({
-      last_charged_at: new Date().toISOString(),
+            headers: {
+                "Content-Type": "application/json",
+            },
 
-      next_billing_time: nextBillingTime,
-    })
-
-    .eq(
-      "subscription_id",
-
-      subscriptionId,
+            body: JSON.stringify({
+                nextBillingTime,
+            }),
+        },
     );
 
-  if (error) {
-    throw new Error(error.message);
-  }
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to update billing.",
+        );
+
+    }
+
 }

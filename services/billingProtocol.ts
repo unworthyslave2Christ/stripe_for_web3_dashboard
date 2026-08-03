@@ -2,7 +2,7 @@
 
 "use client";
 
-import { encodeFunctionData, type Address } from "viem";
+import { encodeFunctionData, PublicClient, type Address } from "viem";
 
 import type { KernelAccountClient, CreateKernelAccountReturnType,} from "@zerodev/sdk";
 
@@ -32,6 +32,10 @@ export interface SubscribeParams extends BillingProtocolContext {
   smartAccount: Address;
 
   permissionId: `0x${string}`;
+
+  publicClient: PublicClient;
+
+
 }
 
 export interface PauseSubscriptionParams extends BillingProtocolContext {
@@ -45,6 +49,12 @@ export interface ResumeSubscriptionParams extends BillingProtocolContext {
 export interface CancelSubscriptionParams extends BillingProtocolContext {
   subscriptionId: bigint;
 }
+
+export type SubscriptionCreatedArgs = {
+        subscriptionId: bigint,
+        planId: bigint;
+        subscriber: string;
+    };
 
 /* -------------------------------------------------------------------------- */
 /* Subscribe                                                                   */
@@ -60,6 +70,8 @@ export async function subscribeToBillingPlan({
   smartAccount,
 
   permissionId,
+
+  publicClient
 }: SubscribeParams) {
   /*
     --------------------------------------------------------------------------
@@ -111,10 +123,34 @@ export async function subscribeToBillingPlan({
     hash,
   });
 
+  const events =
+    await publicClient.getContractEvents({
+        address: process.env.NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS as Address,
+        abi: protocolAbi,
+        eventName: "SubscriptionCreated",
+        fromBlock: receipt.receipt.blockNumber,
+        toBlock: receipt.receipt.blockNumber,
+    });
+
+  if(events.length !== 1) {
+    throw new Error("SubscriptionCreated event not emitted.");
+  }
+
+  const subscriptionCreated = events[0];
+
+  if (!("args" in subscriptionCreated)) {
+      throw new Error("SubscriptionCreated event has no args.");
+  }
+
+  const argsSubscriptionCreated = subscriptionCreated.args as SubscriptionCreatedArgs;
+
+
   return {
     userOperationHash: hash,
 
     receipt,
+
+    subscriptionId: argsSubscriptionCreated.subscriptionId
   };
 }
 
@@ -178,6 +214,8 @@ export async function pauseSubscription({
   const receipt = await kernelClient.waitForUserOperationReceipt({
     hash,
   });
+
+
 
   return {
     userOperationHash: hash,
@@ -321,3 +359,54 @@ export async function cancelSubscription({
     receipt,
   };
 }
+
+
+
+export interface ApproveBillingOperatorParams
+    extends BillingProtocolContext {
+
+    merchantId: bigint;
+
+    operator: Address;
+}
+
+export async function approveBillingOperator({
+    kernel,
+    kernelClient,
+    merchantId,
+    operator,
+}: ApproveBillingOperatorParams) {
+
+    const data = encodeFunctionData({
+        abi: protocolAbi,
+        functionName: "approveBillingOperator",
+        args: [
+            merchantId,
+            operator,
+        ],
+    });
+
+    const callData = await kernel.encodeCalls([
+        {
+            to: CONTRACT_ADDRESS as Address,
+            value: 0n,
+            data,
+        },
+    ]);
+
+    const hash =
+        await kernelClient.sendUserOperation({
+            callData,
+        });
+
+    const receipt =
+        await kernelClient.waitForUserOperationReceipt({
+            hash,
+        });
+
+    return {
+        userOperationHash: hash,
+        receipt,
+    };
+}
+

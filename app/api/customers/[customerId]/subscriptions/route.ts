@@ -9,8 +9,8 @@ import { createClient } from "@supabase/supabase-js";
 /* -------------------------------------------------------------------------- */
 
 const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 /* -------------------------------------------------------------------------- */
@@ -18,397 +18,257 @@ const supabase = createClient(
 /* -------------------------------------------------------------------------- */
 
 export async function GET(
-    request: NextRequest,
-    {
-        params,
-    }: {
-        params: Promise<{
-            customerId: string;
-        }>;
-    },
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{
+      customerId: string;
+    }>;
+  },
 ) {
-    try {
+  try {
+    const { customerId } = await params;
 
-        const { customerId } = await params;
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Verify Customer
         ----------------------------------------------------------------------
         */
 
-        const {
+    const {
+      data: customer,
 
-            data: customer,
+      error: customerError,
+    } = await supabase
 
-            error: customerError,
+      .from("customers")
 
-        } = await supabase
+      .select("customer_id")
 
-            .from("customers")
+      .eq("customer_id", customerId)
 
-            .select("customer_id")
+      .single();
 
-            .eq(
-                "customer_id",
-                customerId,
-            )
+    if (customerError || !customer) {
+      return NextResponse.json(
+        {
+          error: "Customer not found.",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
 
-            .single();
-
-        if (customerError || !customer) {
-
-            return NextResponse.json(
-                {
-                    error: "Customer not found.",
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Load Subscriptions
         ----------------------------------------------------------------------
         */
 
-        const {
+    const {
+      data: subscriptions,
 
-            data: subscriptions,
+      error,
+    } = await supabase
 
-            error,
+      .from("subscriptions")
 
-        } = await supabase
+      .select("*")
 
-            .from("subscriptions")
+      .eq("customer_id", customerId)
 
-            .select("*")
+      .order("next_billing_time", {
+        ascending: true,
+      });
 
-            .eq(
-                "customer_id",
-                customerId,
-            )
+    if (error) {
+      return NextResponse.json(
+        {
+          error: error.message,
+        },
+        {
+          status: 500,
+        },
+      );
+    }
 
-            .order(
-                "next_billing_time",
-                {
-                    ascending: true,
-                },
-            );
-
-        if (error) {
-
-            return NextResponse.json(
-                {
-                    error: error.message,
-                },
-                {
-                    status: 500,
-                },
-            );
-
-        }
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Empty
         ----------------------------------------------------------------------
         */
 
-        if (!subscriptions?.length) {
+    if (!subscriptions?.length) {
+      return NextResponse.json([]);
+    }
 
-            return NextResponse.json([]);
-
-        }
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Merchant IDs
         ----------------------------------------------------------------------
         */
 
-        const merchantIds = [
+    const merchantIds = [
+      ...new Set(subscriptions.map((subscription) => subscription.merchant_id)),
+    ];
 
-            ...new Set(
-
-                subscriptions.map(
-                    subscription =>
-                        subscription.merchant_id,
-                ),
-
-            ),
-
-        ];
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Plan IDs
         ----------------------------------------------------------------------
         */
 
-        const planIds = [
+    const planIds = [
+      ...new Set(subscriptions.map((subscription) => subscription.plan_id)),
+    ];
 
-            ...new Set(
-
-                subscriptions.map(
-                    subscription =>
-                        subscription.plan_id,
-                ),
-
-            ),
-
-        ];
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Merchants
         ----------------------------------------------------------------------
         */
 
-        const {
+    const { data: merchants } = await supabase
 
-            data: merchants,
+      .from("merchants")
 
-        } = await supabase
+      .select("*")
 
-            .from("merchants")
+      .in("merchant_id", merchantIds);
 
-            .select("*")
-
-            .in(
-                "merchant_id",
-                merchantIds,
-            );
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Billing Plans
         ----------------------------------------------------------------------
         */
 
-        const {
+    const { data: plans } = await supabase
 
-            data: plans,
+      .from("billing_plans")
 
-        } = await supabase
+      .select("*")
 
-            .from("billing_plans")
+      .in("plan_id", planIds);
 
-            .select("*")
-
-            .in(
-                "plan_id",
-                planIds,
-            );
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Billing Permissions
         ----------------------------------------------------------------------
         */
 
-        const {
+    const { data: permissions } = await supabase
 
-            data: permissions,
+      .from("billing_permissions")
 
-        } = await supabase
+      .select("permission_id, revoked")
 
-            .from("billing_permissions")
+      .eq("customer_id", customerId);
 
-            .select(
-                "permission_id, revoked",
-            )
-
-            .eq(
-                "customer_id",
-                customerId,
-            );
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Lookup Maps
         ----------------------------------------------------------------------
         */
 
-        const merchantMap =
-            new Map(
-                merchants?.map(
-                    merchant => [
+    const merchantMap = new Map(
+      merchants?.map((merchant) => [merchant.merchant_id, merchant]) ?? [],
+    );
 
-                        merchant.merchant_id,
+    const planMap = new Map(plans?.map((plan) => [plan.plan_id, plan]) ?? []);
 
-                        merchant,
+    const permissionMap = new Map(
+      permissions?.map((permission) => [
+        permission.permission_id,
 
-                    ],
-                ) ?? [],
-            );
+        permission,
+      ]) ?? [],
+    );
 
-        const planMap =
-            new Map(
-                plans?.map(
-                    plan => [
-
-                        plan.plan_id,
-
-                        plan,
-
-                    ],
-                ) ?? [],
-            );
-
-        const permissionMap =
-            new Map(
-                permissions?.map(
-                    permission => [
-
-                        permission.permission_id,
-
-                        permission,
-
-                    ],
-                ) ?? [],
-            );
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Aggregate
         ----------------------------------------------------------------------
         */
 
-        const result =
-            subscriptions.map(
-                subscription => {
+    const result = subscriptions.map((subscription) => {
+      const merchant = merchantMap.get(subscription.merchant_id);
 
-                    const merchant =
-                        merchantMap.get(
-                            subscription.merchant_id,
-                        );
+      const plan = planMap.get(subscription.plan_id);
 
-                    const plan =
-                        planMap.get(
-                            subscription.plan_id,
-                        );
+      const permission = permissionMap.get(subscription.permission_id);
 
-                    const permission =
-                        permissionMap.get(
-                            subscription.permission_id,
-                        );
+      return {
+        subscriptionId: subscription.subscription_id,
 
-                    return {
+        status: subscription.status,
 
-                        subscriptionId:
-                            subscription.subscription_id,
+        smartAccount: subscription.smart_account,
 
-                        status:
-                            subscription.status,
+        createdAt: subscription.created_at,
 
-                        smartAccount:
-                            subscription.smart_account,
+        cancelledAt: subscription.cancelled_at,
 
-                        createdAt:
-                            subscription.created_at,
+        lastChargedAt: subscription.last_charged_at,
 
-                        cancelledAt:
-                            subscription.cancelled_at,
+        nextBillingTime: subscription.next_billing_time,
 
-                        lastChargedAt:
-                            subscription.last_charged_at,
+        merchant: {
+          merchantId: merchant?.merchant_id,
 
-                        nextBillingTime:
-                            subscription.next_billing_time,
+          name: merchant?.name,
 
-                        merchant: {
+          metadataURI: merchant?.metadata_uri,
 
-                            merchantId:
-                                merchant?.merchant_id,
+          payoutWallet: merchant?.payout_wallet,
 
-                            name:
-                                merchant?.name,
+          status: merchant?.status,
+        },
 
-                            metadataURI:
-                                merchant?.metadata_uri,
+        plan: {
+          planId: plan?.plan_id,
 
-                            payoutWallet:
-                                merchant?.payout_wallet,
+          name: plan?.name,
 
-                            status:
-                                merchant?.status,
+          token: plan?.payment_token,
 
-                        },
+          amount: plan?.amount,
 
-                        plan: {
+          billingInterval: plan?.billing_interval,
 
-                            planId:
-                                plan?.plan_id,
+          maxPayments: plan?.max_payments,
 
-                            name:
-                                plan?.name,
+          trialPeriod: plan?.trial_period,
 
-                            token:
-                                plan?.payment_token,
+          status: plan?.status,
+        },
 
-                            amount:
-                                plan?.amount,
+        permission: {
+          permissionId: subscription.permission_id,
 
-                            billingInterval:
-                                plan?.billing_interval,
+          revoked: permission?.revoked ?? true,
+        },
+      };
+    });
 
-                            maxPayments:
-                                plan?.max_payments,
-
-                            trialPeriod:
-                                plan?.trial_period,
-
-                            status:
-                                plan?.status,
-
-                        },
-
-                        permission: {
-
-                            permissionId:
-                                subscription.permission_id,
-
-                            revoked:
-                                permission?.revoked ??
-                                true,
-
-                        },
-
-                    };
-
-                },
-            );
-
-        /*
+    /*
         ----------------------------------------------------------------------
         Success
         ----------------------------------------------------------------------
         */
 
-        return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error(error);
 
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        return NextResponse.json(
-            {
-                error:
-                    error instanceof Error
-                        ? error.message
-                        : "Unknown error",
-            },
-            {
-                status: 500,
-            },
-        );
-
-    }
-
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }

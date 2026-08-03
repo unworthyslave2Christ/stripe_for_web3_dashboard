@@ -7,6 +7,8 @@ import type {
     Merchant,
     BillingPlan,
 } from "@/types/dashboard";
+import { BackButton } from "@/components/common/BackButton";
+import { CustomerDashboardButton } from "@/components/common/CustomerDashboardButton";
 
 interface MerchantHeaderProps {
     merchant: Merchant;
@@ -27,14 +29,13 @@ export default function MerchantHeader({
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
 
             <div className="mb-8 flex items-center justify-between">
+                <div className="flex gap-2">
+                    <BackButton/>
 
-                <Link
-                    href="/dashboard/customer/merchants"
-                    className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-500 hover:text-white"
-                >
-                    <ArrowLeft size={18} />
-                    Back
-                </Link>
+                    <CustomerDashboardButton />
+
+                </div>
+
 
                 <span
                     className={`rounded-full px-4 py-2 text-xs font-semibold ${

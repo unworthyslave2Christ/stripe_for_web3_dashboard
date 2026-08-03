@@ -6,6 +6,7 @@ import type { Merchant, Customer, Subscription } from "@/types/dashboard";
 
 // import protocolAbi from "@/abi/Web3BillingProtocol.json";
 
+
 import {
   createPublicClient,
   erc20Abi,
@@ -14,9 +15,8 @@ import {
   type Address,
   type PublicClient,
   type WalletClient,
-  http
+  http,
 } from "viem";
-
 
 /* -------------------------------------------------------------------------- */
 /* Current Customer                                                            */
@@ -69,46 +69,38 @@ export async function getCurrentCustomer(
 /* -------------------------------------------------------------------------- */
 
 export async function getFeaturedMerchants(): Promise<Merchant[]> {
-    const response = await fetch(
-        "/api/merchant/featured",
-        {
-            method: "GET",
-            cache: "no-store",
-        },
-    );
+  const response = await fetch("/api/merchant/featured", {
+    method: "GET",
+    cache: "no-store",
+  });
 
-    if (!response.ok) {
-        throw new Error(
-            "Unable to load featured merchants.",
-        );
-    }
+  if (!response.ok) {
+    throw new Error("Unable to load featured merchants.");
+  }
 
-    const data = await response.json();
+  const data = await response.json();
 
-    console.log(
-        "merchant data received:",
-        data,
-    );
+  console.log("merchant data received:", data);
 
-    return (data ?? []).map((merchant: any) => ({
-        merchantId: merchant.merchant_id,
+  return (data ?? []).map((merchant: any) => ({
+    merchantId: merchant.merchant_id,
 
-        smartAccount: merchant.smart_account,
+    smartAccount: merchant.smart_account,
 
-        payoutWallet: merchant.payout_wallet,
+    payoutWallet: merchant.payout_wallet,
 
-        ownerWallet: merchant.owner_wallet,
+    ownerWallet: merchant.owner_wallet,
 
-        name: merchant.name,
+    name: merchant.name,
 
-        metadataURI: merchant.metadata_uri,
+    metadataURI: merchant.metadata_uri,
 
-        status: merchant.status,
+    status: merchant.status,
 
-        createdAt: merchant.created_at,
+    createdAt: merchant.created_at,
 
-        updatedAt: merchant.updated_at,
-    }));
+    updatedAt: merchant.updated_at,
+  }));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -118,40 +110,26 @@ export async function getFeaturedMerchants(): Promise<Merchant[]> {
 export async function getActiveSubscriptions(
   customerId: string,
 ): Promise<Subscription[]> {
-
   console.log("customerId: ", customerId);
 
   const response = await fetch(
-
     `/api/customers/${customerId}/subscriptions`,
 
     {
       cache: "no-store",
     },
-
   );
 
   if (!response.ok) {
-
-    throw new Error(
-
-      "Unable to fetch active subscriptions.",
-
-    );
-
+    throw new Error("Unable to fetch active subscriptions.");
   }
 
   return await response.json();
-
 }
-
-
 
 /* -------------------------------------------------------------------------- */
 /* Blockchain                                                                  */
 /* -------------------------------------------------------------------------- */
-
-
 
 import type { BillingPlan } from "@/types/dashboard";
 
@@ -178,6 +156,7 @@ export async function getWalletBalance(
 
   publicClient?: PublicClient,
 ): Promise<WalletBalance> {
+
   const client =
     publicClient ??
     createPublicClient({
@@ -185,6 +164,7 @@ export async function getWalletBalance(
 
       transport: http(),
     });
+    
 
   const contract = getContract({
     address: token,
@@ -250,29 +230,21 @@ export async function getWalletBalances(
 /* -------------------------------------------------------------------------- */
 
 export async function getMerchantPlans(
-    merchantId: number,
+  merchantId: number,
 ): Promise<BillingPlan[]> {
+  const response = await fetch(
+    `/api/merchant/${merchantId}/plans`,
 
-    const response = await fetch(
+    {
+      cache: "no-store",
+    },
+  );
 
-        `/api/merchant/${merchantId}/plans`,
+  if (!response.ok) {
+    throw new Error("Unable to load merchant plans.");
+  }
 
-        {
-            cache: "no-store",
-        },
-
-    );
-
-    if (!response.ok) {
-
-        throw new Error(
-            "Unable to load merchant plans.",
-        );
-
-    }
-
-    return await response.json();
-
+  return await response.json();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -286,6 +258,11 @@ export async function hasEnoughBalance(
 
   publicClient?: PublicClient,
 ): Promise<boolean> {
+
+  console.log("plan =", plan);
+  console.log("wallet =", wallet);
+  console.log("payment token =", plan.paymentToken);
+
   const balance = await getWalletBalance(
     wallet,
 
@@ -297,22 +274,12 @@ export async function hasEnoughBalance(
   return balance.raw >= BigInt(plan.amount);
 }
 
-/* -------------------------------------------------------------------------- */
-/* Subscribe                                                                   */
-/* -------------------------------------------------------------------------- */
-
-
-import { chain } from "@/services/kernel.client";
-
 import { getCustomerKernel } from "@/services/customer";
-
 import { getMerchantById } from "@/services/merchant";
-
-import { createSubscription } from "@/services/subscription";
-
+import { mirrorSubscription } from "@/services/subscription";
 import { approveTokenIfNeeded } from "@/services/token";
-
 import { subscribeToBillingPlan } from "@/services/billingProtocol";
+import { chain } from "./kernel.client";
 
 export interface SubscribeParams {
   walletClient: WalletClient;
@@ -326,26 +293,20 @@ export interface SubscribeParams {
 
 export async function subscribe({
   walletClient,
-
   publicClient,
-
   customerId,
-
   plan,
 }: SubscribeParams) {
   /*
     --------------------------------------------------------------------------
-    Balance
+    Phase 1
+    Validate Customer Balance
     --------------------------------------------------------------------------
     */
 
-  const enoughBalance = await hasEnoughBalance(
-    (await walletClient.getAddresses())[0],
+  const wallet = (await walletClient.getAddresses())[0];
 
-    plan,
-
-    publicClient,
-  );
+  const enoughBalance = await hasEnoughBalance(wallet, plan, publicClient);
 
   if (!enoughBalance) {
     throw new Error("Insufficient token balance for recurring billing.");
@@ -353,35 +314,56 @@ export async function subscribe({
 
   /*
     --------------------------------------------------------------------------
-    Customer Kernel
+    Phase 2
+    Load Customer Context
     --------------------------------------------------------------------------
     */
 
   const {
-    kernel,
-
     customer,
 
-    kernelClient,
+    kernel: customerKernel,
 
-    permissionId
-  } = await getCustomerKernel(
-    walletClient,
+    kernelClient: customerKernelClient,
 
-    publicClient,
-  );
+    permission,
+  } = await getCustomerKernel(walletClient, publicClient);
+
+  console.log("permission: ", permission)
+
+  if (!customer.smartAccount) {
+    throw new Error("Customer Smart Account is missing.");
+  }
+
+  console.log("customerKernel retrieved...");
 
   /*
     --------------------------------------------------------------------------
-    Merchant
+    Phase 3
+    Load Merchant
     --------------------------------------------------------------------------
     */
 
-  const merchant = await getMerchantById(plan.merchantId as unknown as bigint);
+  const merchant = await getMerchantById(BigInt(plan.merchantId));
+
+  if (!merchant) {
+    throw new Error("Merchant not found.");
+  }
 
   /*
     --------------------------------------------------------------------------
-    ERC20 Approval
+    Optional Merchant Validation
+    --------------------------------------------------------------------------
+    */
+
+  if (merchant.status !== "ACTIVE") {
+    throw new Error("Merchant is inactive.");
+  }
+
+  /*
+    --------------------------------------------------------------------------
+    Phase 4
+    Approve ERC20
     --------------------------------------------------------------------------
     */
 
@@ -401,45 +383,72 @@ export async function subscribe({
 
   /*
     --------------------------------------------------------------------------
-    Subscribe On Chain
+    Phase 5
+    Subscribe On-Chain
     --------------------------------------------------------------------------
     */
 
-  const result = await subscribeToBillingPlan({
+  const {
+    userOperationHash,
 
-      kernel,
+    receipt,
 
-      kernelClient,
+    subscriptionId
+  } = await subscribeToBillingPlan({
+    kernel: customerKernel,
 
-      planId: BigInt(plan.planId),
+    kernelClient: customerKernelClient,
 
-      smartAccount: customer.smartAccount!,
+    planId: BigInt(plan.planId),
 
-      permissionId: permissionId,
+    smartAccount: customer.smartAccount,
 
+    permissionId: permission.permissionId,
+
+    publicClient: publicClient
   });
 
   /*
     --------------------------------------------------------------------------
-    Persist Subscription
+    Phase 6
+    Mirror Into Supabase
     --------------------------------------------------------------------------
     */
 
-  const subscription = await createSubscription({
+  const subscription = await mirrorSubscription({
+    
+    subscriptionId: Number(subscriptionId),
+
     customerId,
 
     merchantId: plan.merchantId,
 
+    planBillingIntervalSeconds: plan.billingIntervalSeconds,
+
     planId: plan.planId,
 
-    smartAccount: customer.smartAccount!,
+    smartAccount: customer.smartAccount,
 
-    transactionHash: result.userOperationHash,
+    transactionHash: userOperationHash,
+
+    permissionId: permission.permissionId
   });
 
+  /*
+    --------------------------------------------------------------------------
+    Done
+    --------------------------------------------------------------------------
+    */
+
   return {
+    merchant,
+
+    customer,
+
     subscription,
 
-    transactionHash: result.userOperationHash,
+    receipt,
+
+    transactionHash: userOperationHash,
   };
 }

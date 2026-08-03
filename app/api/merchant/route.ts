@@ -104,6 +104,8 @@ export async function POST(request: NextRequest) {
         created_at: now,
 
         updated_at: now,
+
+        billing_operator: body.billingOperator
       });
 
     if (error) {

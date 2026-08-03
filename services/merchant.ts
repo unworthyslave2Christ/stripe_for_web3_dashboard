@@ -12,6 +12,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { createMerchantKernel, paymasterClient } from "./kernel.client";
 import { arbitrumSepolia } from "viem/chains";
 import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
+import { approveBillingOperator } from "./billingProtocol";
 
 /* -------------------------------------------------------------------------- */
 /* Interfaces                                                                   */
@@ -33,6 +34,8 @@ interface RegisterMerchantParams {
   name: string;
 
   metadataURI?: string;
+
+  billingOperator?: Address
 }
 
 /* -------------------------------------------------------------------------- */
@@ -55,6 +58,8 @@ export async function registerMerchant({
   name,
 
   metadataURI = "",
+
+  billingOperator
 }: RegisterMerchantParams) {
   /*
     --------------------------------------------------------------------------
@@ -142,6 +147,8 @@ export async function registerMerchant({
 
   const merchantId = (events[0] as any).args.merchantId as bigint;
 
+
+
   const response = await fetch("/api/merchant", {
     method: "POST",
     headers: {
@@ -154,6 +161,7 @@ export async function registerMerchant({
       payoutWallet,
       name,
       metadataURI,
+      billingOperator: billingOperator
     }),
   });
 

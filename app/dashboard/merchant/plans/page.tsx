@@ -13,6 +13,8 @@ import type {
 
 } from "@/types/dashboard";
 import { getMerchantByOwnerWallet } from "@/services/merchant";
+import { BackButton } from "@/components/common/BackButton";
+import { MerchantDashboardButton } from "@/components/common/MerchantDashboardButton";
 
 export  default function PlansPage() {
 
@@ -127,21 +129,27 @@ export  default function PlansPage() {
 
                 </div>
 
-                <button
+                <div className="flex items-stretch">
 
-                    onClick={() =>
-                        router.push(
-                            "/dashboard/merchant/plans/create",
-                        )
-                    }
+                    <button
 
-                    className="rounded-lg bg-cyan-600 px-6 py-3 font-medium text-white transition hover:bg-cyan-500"
+                        onClick={() =>
+                            router.push(
+                                "/dashboard/merchant/plans/create",
+                            )
+                        }
 
-                >
+                        className="rounded-lg  bg-cyan-600 px-6 py-3 font-medium text-white transition hover:bg-cyan-500"
 
-                    + Create Plan
+                    >
 
-                </button>
+                        + Create Plan
+
+                    </button>
+
+                    <MerchantDashboardButton />
+                </div>
+
 
             </div>
 

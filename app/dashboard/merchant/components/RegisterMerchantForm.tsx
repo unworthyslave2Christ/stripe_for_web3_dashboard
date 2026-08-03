@@ -82,7 +82,7 @@ export default function RegisterMerchantForm() {
             setName("");
             setMetadataURI("");
 
-            router.push("/dashboard");
+            router.push("/dashboard/merchant/home");
         } catch (err) {
             console.error(err);
 

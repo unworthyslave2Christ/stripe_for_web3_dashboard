@@ -12,6 +12,7 @@ import {
 } from "@/services/merchant";
 
 import { createMerchantKernel } from "@/services/kernel.client";
+import { approveBillingOperator } from "@/services/billingProtocol";
 
 const CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as `0x${string}`;
@@ -95,6 +96,9 @@ export function useMerchant() {
         publicClient,
       });
 
+     
+  
+
       /*
        * Register new merchant.
        */
@@ -110,6 +114,21 @@ export function useMerchant() {
         payoutWallet: account,
         name,
         metadataURI,
+        billingOperator: process.env.NEXT_PUBLIC_BILLING_OPERATOR_ADDRESS as `0x${string}`
+      });
+
+      /*
+      --------------------------------------------------------------------------
+      Approve Billing Operator
+      --------------------------------------------------------------------------
+      */
+      
+      await approveBillingOperator({
+          kernel: merchantKernel.account,
+          kernelClient: merchantKernel.client,
+          merchantId: BigInt(result.merchantId),
+          operator:
+              process.env.NEXT_PUBLIC_BILLING_OPERATOR_ADDRESS as `0x${string}`,
       });
 
       setMerchantId(result.merchantId);

@@ -230,6 +230,8 @@ export function useCustomerDashboard() {
       return;
     }
 
+    console.log("plan@subscribeToPlan: ", plan);
+
     try {
       setSubscribing(true);
 

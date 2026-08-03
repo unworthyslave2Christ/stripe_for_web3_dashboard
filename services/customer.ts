@@ -245,7 +245,7 @@ export async function getCustomerKernel(
   const [wallet] = await walletClient.getAddresses();
 
   const response = await fetch(
-    "/api/customer/kernel",
+    "/api/customers/kernel",
 
     {
       method: "POST",
@@ -266,7 +266,7 @@ export async function getCustomerKernel(
     throw new Error(error.error ?? "Unable to load customer kernel.");
   }
 
-  const {
+  let {
       customer,
 
       kernelAddress,
@@ -275,8 +275,12 @@ export async function getCustomerKernel(
 
       sessionPrivateKey,
 
-      permissionId
+      permissionId,
+
+      permission
   } = await response.json();
+
+  customer = {...customer, smartAccount: customer.smart_account};
 
   const signer =
         await toECDSASigner({
@@ -295,7 +299,12 @@ export async function getCustomerKernel(
     signer,
   );
 
-  if ((kernel.address.toLowerCase() !== customer.smartAccount.toLowerCase()) && (kernelAddress.toLowerCase() !== customer.smartAccount.toLowerCase())) {
+  console.log("kernel created GRACIOUSLY...")
+
+  console.log("kernel.address.toLowerCase(): ", kernel.address.toLowerCase() );
+  console.log("customer.smartAccount.toLowerCase(): ", customer.smartAccount.toLowerCase());
+
+  if ((kernel.address.toLowerCase() !== customer.smart_account.toLowerCase()) ) {
     throw new Error("Kernel verification failed.");
   }
 
@@ -322,6 +331,8 @@ export async function getCustomerKernel(
 
     kernelClient,
 
-    permissionId
+    permissionId,
+
+    permission
   };
 }

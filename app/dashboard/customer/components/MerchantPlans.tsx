@@ -15,7 +15,6 @@ interface MerchantPlansProps {
     loading?: boolean;
 
     onSubscribe: (
-        merchant: Merchant,
         plan: BillingPlan,
     ) => void;
 }
@@ -205,7 +204,6 @@ export default function MerchantPlans({
                                     disabled={loading}
                                     onClick={() =>
                                         onSubscribe(
-                                            merchant,
                                             plan,
                                         )
                                     }

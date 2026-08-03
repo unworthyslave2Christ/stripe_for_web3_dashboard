@@ -12,6 +12,8 @@ import MerchantSelector from "../components/MerchantSelector";
 import FeaturedMerchants from "../components/FeaturedMerchants";
 import MerchantGrid from "../components/MerchantGrid";
 
+import { BackButton } from "@/components/common/BackButton";
+
 export default function CustomerMerchantsPage() {
 
     const [selectedMerchantId, setSelectedMerchantId] =
@@ -116,12 +118,16 @@ export default function CustomerMerchantsPage() {
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10">
 
             <div>
+                <div className="flex justify-between items-center">
+                    <h1 className="text-4xl font-bold text-white">
 
-                <h1 className="text-4xl font-bold text-white">
+                        Browse Subscription Businesses
 
-                    Browse Subscription Businesses
+                    </h1>
+                    <BackButton />
+                </div>
 
-                </h1>
+               
 
                 <p className="mt-3 max-w-3xl text-slate-400">
 

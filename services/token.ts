@@ -84,6 +84,8 @@ export async function approveTokenIfNeeded({
     args: [owner, spender],
   });
 
+
+
   /*
     --------------------------------------------------------------------------
     Already Approved
@@ -113,6 +115,7 @@ export async function approveTokenIfNeeded({
   });
 
   const hash = await walletClient.writeContract(request);
+
   /*
     --------------------------------------------------------------------------
     Wait For Confirmation

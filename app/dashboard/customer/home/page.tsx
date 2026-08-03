@@ -82,6 +82,50 @@ export default function CustomerHomePage() {
                 walletBalances={walletBalances}
             />
 
+            <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
+
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+                    <div>
+
+                        <h2 className="text-3xl font-bold text-white">
+
+                            Discover Subscription Businesses
+
+                        </h2>
+
+                        <p className="mt-3 max-w-2xl text-slate-400">
+
+                            Browse verified Web3 businesses, explore their
+                            subscription plans, and subscribe using your
+                            Account Abstraction smart account.
+
+                        </p>
+
+                    </div>
+
+                    <button
+
+                        type="button"
+
+                        onClick={() =>
+                            router.push(
+                                "/dashboard/customer/merchants",
+                            )
+                        }
+
+                        className="rounded-xl bg-cyan-600 px-8 py-4 text-lg font-semibold text-white transition hover:bg-cyan-500"
+
+                    >
+
+                        Browse Merchants →
+
+                    </button>
+
+                </div>
+
+            </section>
+
           
             <ActiveSubscriptions
 
