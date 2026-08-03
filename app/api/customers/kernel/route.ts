@@ -203,7 +203,9 @@ export async function POST(request: NextRequest) {
 
       serializedPermissionAccount: permission.serialized_permission_account,
 
-      sessionPrivateKey: sessionPrivateKey
+      sessionPrivateKey: sessionPrivateKey,
+
+      permissionId: permission.permission_id
     });
   } catch (error) {
     console.error(error);

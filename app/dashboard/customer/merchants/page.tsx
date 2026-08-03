@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { useCustomerDashboard } from "@/hooks/useCustomerDashboard";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import MerchantSelector from "../components/MerchantSelector";
 import FeaturedMerchants from "../components/FeaturedMerchants";
@@ -39,13 +39,25 @@ export default function CustomerMerchantsPage() {
 
     } = useCustomerDashboard();
 
-    const filteredMerchants =
-    selectedMerchantId === null
-        ? merchants
-        : merchants.filter(
-              merchant =>
-                  merchant.merchantId === selectedMerchantId,
-          );
+    let filteredMerchants = selectedMerchantId === null
+            ? merchants
+            : merchants.filter(
+                merchant =>
+                    merchant.merchantId === selectedMerchantId,
+            );
+;
+
+    useEffect(()=>{
+        filteredMerchants =
+        selectedMerchantId === null
+            ? merchants
+            : merchants.filter(
+                merchant =>
+                    merchant.merchantId === selectedMerchantId,
+            );
+
+    }, [selectedMerchantId])
+
 
     /*
     --------------------------------------------------------------------------

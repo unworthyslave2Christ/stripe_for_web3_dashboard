@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 /* -------------------------------------------------------------------------- */
@@ -13,124 +13,63 @@ const supabase = createClient(
 /* -------------------------------------------------------------------------- */
 
 export async function GET(request: NextRequest) {
+  const ownerWallet = request.nextUrl.searchParams.get("ownerWallet");
 
-    const ownerWallet =
-        request.nextUrl.searchParams.get("ownerWallet");
+  const smartAccount = request.nextUrl.searchParams.get("smartAccount");
 
-    const smartAccount =
-        request.nextUrl.searchParams.get("smartAccount");
+  const merchantId = request.nextUrl.searchParams.get("merchantId");
 
-    const merchantId =
-        request.nextUrl.searchParams.get("merchantId");
+  let query = supabase.from("merchants").select("*");
 
-    let query =
-        supabase
-            .from("merchants")
-            .select("*");
+  if (smartAccount) {
+    query = query.eq("smart_account", smartAccount);
+  } else if (ownerWallet) {
+    query = query.eq("owner_wallet", ownerWallet);
+  } else if (merchantId) {
+    query = query.eq("merchant_id", Number(merchantId));
+  } else {
+    return NextResponse.json(
+      {
+        error: "Provide smartAccount, ownerWallet or merchantId.",
+      },
 
-    if (smartAccount) {
+      {
+        status: 400,
+      },
+    );
+  }
 
-        query =
-            query.eq(
-                "smart_account",
-                smartAccount,
-            );
+  const {
+    data,
 
-    }
+    error,
+  } = await query.maybeSingle();
 
-    else if (ownerWallet) {
+  if (error) {
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
 
-        query =
-            query.eq(
-                "owner_wallet",
-                ownerWallet,
-            );
+      {
+        status: 500,
+      },
+    );
+  }
 
-    }
+  if (!data) {
+    return NextResponse.json(
+      {
+        error: "Merchant not found.",
+      },
 
-    else if (merchantId) {
+      {
+        status: 404,
+      },
+    );
+  }
 
-        query =
-            query.eq(
-                "merchant_id",
-                Number(merchantId),
-            );
-
-    }
-
-    else {
-
-        return NextResponse.json(
-
-            {
-
-                error:
-                    "Provide smartAccount, ownerWallet or merchantId.",
-
-            },
-
-            {
-
-                status: 400,
-
-            },
-
-        );
-
-    }
-
-    const {
-
-        data,
-
-        error,
-
-    } = await query.maybeSingle();
-
-    if (error) {
-
-        return NextResponse.json(
-
-            {
-
-                error:
-                    error.message,
-
-            },
-
-            {
-
-                status: 500,
-
-            },
-
-        );
-
-    }
-
-    if (!data) {
-
-        return NextResponse.json(
-
-            {
-
-                error:
-                    "Merchant not found.",
-
-            },
-
-            {
-
-                status: 404,
-
-            },
-
-        );
-
-    }
-
-    return NextResponse.json(data);
-
+  return NextResponse.json(data);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -138,107 +77,59 @@ export async function GET(request: NextRequest) {
 /* -------------------------------------------------------------------------- */
 
 export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
 
-    try {
+    const now = new Date().toISOString();
 
-        const body =
-            await request.json();
+    const { error } = await supabase
 
-        const now =
-            new Date().toISOString();
+      .from("merchants")
 
-        const {
+      .upsert({
+        merchant_id: body.merchantId,
 
-            error,
+        smart_account: body.smartAccount,
 
-        } = await supabase
+        payout_wallet: body.payoutWallet,
 
-            .from("merchants")
+        owner_wallet: body.ownerWallet,
 
-            .upsert({
+        name: body.name,
 
-                merchant_id:
-                    body.merchantId,
+        metadata_uri: body.metadataURI,
 
-                smart_account:
-                    body.smartAccount,
+        status: "ACTIVE",
 
-                payout_wallet:
-                    body.payoutWallet,
+        created_at: now,
 
-                owner_wallet:
-                    body.ownerWallet,
+        updated_at: now,
+      });
 
-                name:
-                    body.name,
+    if (error) {
+      return NextResponse.json(
+        {
+          error: error.message,
+        },
 
-                metadata_uri:
-                    body.metadataURI,
-
-                status:
-                    "ACTIVE",
-
-                created_at:
-                    now,
-
-                updated_at:
-                    now,
-
-            });
-
-        if (error) {
-
-            return NextResponse.json(
-
-                {
-
-                    error:
-                        error.message,
-
-                },
-
-                {
-
-                    status: 500,
-
-                },
-
-            );
-
-        }
-
-        return NextResponse.json({
-
-            success: true,
-
-        });
-
+        {
+          status: 500,
+        },
+      );
     }
 
-    catch (error) {
+    return NextResponse.json({
+      success: true,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
 
-        return NextResponse.json(
-
-            {
-
-                error:
-
-                    error instanceof Error
-
-                        ? error.message
-
-                        : "Unknown error",
-
-            },
-
-            {
-
-                status: 500,
-
-            },
-
-        );
-
-    }
-
+      {
+        status: 500,
+      },
+    );
+  }
 }

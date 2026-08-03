@@ -273,7 +273,9 @@ export async function getCustomerKernel(
 
       serializedPermissionAccount,
 
-      sessionPrivateKey
+      sessionPrivateKey,
+
+      permissionId
   } = await response.json();
 
   const signer =
@@ -297,9 +299,29 @@ export async function getCustomerKernel(
     throw new Error("Kernel verification failed.");
   }
 
+  const kernelClient = createKernelAccountClient({
+              account: kernel,
+              chain,
+              bundlerTransport: http(process.env.NEXT_PUBLIC_BUNDLER_RPC),
+              paymaster: {
+                  getPaymasterData(userOperation) {
+                      return paymasterClient.sponsorUserOperation({
+                          userOperation,
+                      });
+                  },
+              },
+          });
+
+
+  
+
   return {
     customer,
 
     kernel,
+
+    kernelClient,
+
+    permissionId
   };
 }

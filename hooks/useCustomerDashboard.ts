@@ -24,6 +24,7 @@ import {
   getWalletBalances,
   subscribe,
 } from "@/services/customerDashboard";
+import { getCustomerByWallet } from "@/services/customer";
 
 export function useCustomerDashboard() {
   const { address } = useAccount();
@@ -116,7 +117,9 @@ export function useCustomerDashboard() {
                 --------------------------------------------------------------
                 */
 
-      const currentCustomer = await getCurrentCustomer(address);
+      const currentCustomer = await getCustomerByWallet(address);
+
+      console.log("currentCustomer: ", currentCustomer);
 
       if (!currentCustomer) {
         setCustomer(null);
@@ -132,6 +135,7 @@ export function useCustomerDashboard() {
         return;
       }
 
+      console.log("currentCustomer received: ", currentCustomer);
       setCustomer(currentCustomer);
 
       /*
@@ -140,6 +144,7 @@ export function useCustomerDashboard() {
                 --------------------------------------------------------------
                 */
 
+     
       const merchantList = await getFeaturedMerchants();
 
       setMerchants(merchantList);
@@ -350,6 +355,10 @@ export function useCustomerDashboard() {
     --------------------------------------------------------------------------
     */
 
+    console.log("Merchants:", merchants);
+    console.log("Featured:", featuredMerchants);
+    console.log("Plans:", merchantPlans);
+
   return {
     /*
         --------------------------------------------------------------
@@ -373,7 +382,7 @@ export function useCustomerDashboard() {
 
     featuredMerchants,
 
-    merchants: filteredMerchants,
+    merchants: merchants,
 
     merchantPlans,
 

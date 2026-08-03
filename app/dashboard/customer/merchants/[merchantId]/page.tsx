@@ -1,10 +1,10 @@
-// app/dashboard/customer/merchants/[merchantId]/page.tsx
-
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
-import { notFound, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+
+import { toast } from "sonner";
 
 import { useCustomerDashboard } from "@/hooks/useCustomerDashboard";
 
@@ -12,6 +12,8 @@ import MerchantHeader from "../../components/MerchantHeader";
 import MerchantPlans from "../../components/MerchantPlans";
 
 export default function CustomerMerchantPage() {
+
+    const router = useRouter();
 
     const params = useParams();
 
@@ -32,6 +34,88 @@ export default function CustomerMerchantPage() {
         subscribeToPlan,
 
     } = useCustomerDashboard();
+
+    /*
+    --------------------------------------------------------------------------
+    Derived State
+    --------------------------------------------------------------------------
+    */
+
+    const merchant =
+        merchants.find(
+            merchant =>
+                merchant.merchantId === merchantId,
+        );
+
+    const plans =
+        merchantPlans[merchantId] ?? [];
+
+    const balances = useMemo(
+
+        () =>
+
+            Object.fromEntries(
+
+                walletBalances.map(balance => [
+
+                    balance.token.toLowerCase(),
+
+                    balance.formatted,
+
+                ]),
+
+            ),
+
+        [walletBalances],
+
+    );
+
+    /*
+    --------------------------------------------------------------------------
+    Merchant Redirect
+    --------------------------------------------------------------------------
+    */
+
+    useEffect(() => {
+
+        if (loading) return;
+
+        if (merchant) return;
+
+        toast.error(
+
+            "Merchant not found.",
+
+            {
+
+                description:
+                    "Redirecting back to merchants...",
+
+            },
+
+        );
+
+        const timeout = setTimeout(() => {
+
+            router.replace(
+
+                "/dashboard/customer/merchants",
+
+            );
+
+        }, 2000);
+
+        return () => clearTimeout(timeout);
+
+    }, [
+
+        loading,
+
+        merchant,
+
+        router,
+
+    ]);
 
     /*
     --------------------------------------------------------------------------
@@ -65,55 +149,37 @@ export default function CustomerMerchantPage() {
 
     /*
     --------------------------------------------------------------------------
-    Merchant
+    Merchant Missing
     --------------------------------------------------------------------------
     */
-
-    const merchant = merchants.find(
-
-        merchant => merchant.merchantId === merchantId,
-
-    );
 
     if (!merchant) {
 
-        notFound();
+        return (
+
+            <div className="flex min-h-[70vh] items-center justify-center">
+
+                <div className="rounded-xl border border-slate-800 bg-slate-900 p-10 text-center">
+
+                    <h2 className="text-2xl font-semibold text-white">
+
+                        Merchant Not Found
+
+                    </h2>
+
+                    <p className="mt-4 text-slate-400">
+
+                        Redirecting you back to the merchants page...
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
 
     }
-
-    /*
-    --------------------------------------------------------------------------
-    Plans
-    --------------------------------------------------------------------------
-    */
-
-    const plans = merchantPlans[merchantId] ?? [];
-
-    /*
-    --------------------------------------------------------------------------
-    Wallet Balances
-    --------------------------------------------------------------------------
-    */
-
-    const balances = useMemo(
-
-        () =>
-
-            Object.fromEntries(
-
-                walletBalances.map(balance => [
-
-                    balance.token.toLowerCase(),
-
-                    balance.formatted,
-
-                ]),
-
-            ),
-
-        [walletBalances],
-
-    );
 
     /*
     --------------------------------------------------------------------------
@@ -128,6 +194,8 @@ export default function CustomerMerchantPage() {
             <MerchantHeader
 
                 merchant={merchant}
+
+                plans={plans}
 
             />
 

@@ -64,40 +64,51 @@ export async function getCurrentCustomer(
 /* Featured Merchants                                                          */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Featured Merchants                                                         */
+/* -------------------------------------------------------------------------- */
+
 export async function getFeaturedMerchants(): Promise<Merchant[]> {
-  const { data, error } = await supabase
+    const response = await fetch(
+        "/api/merchant/featured",
+        {
+            method: "GET",
+            cache: "no-store",
+        },
+    );
 
-    .from("merchants")
+    if (!response.ok) {
+        throw new Error(
+            "Unable to load featured merchants.",
+        );
+    }
 
-    .select("*")
+    const data = await response.json();
 
-    .eq("status", "ACTIVE")
+    console.log(
+        "merchant data received:",
+        data,
+    );
 
-    .order("created_at", {
-      ascending: false,
-    });
+    return (data ?? []).map((merchant: any) => ({
+        merchantId: merchant.merchant_id,
 
-  if (error) throw error;
+        smartAccount: merchant.smart_account,
 
-  return (data ?? []).map((merchant) => ({
-    merchantId: merchant.merchant_id,
+        payoutWallet: merchant.payout_wallet,
 
-    smartAccount: merchant.smart_account,
+        ownerWallet: merchant.owner_wallet,
 
-    payoutWallet: merchant.payout_wallet,
+        name: merchant.name,
 
-    ownerWallet: merchant.owner_wallet,
+        metadataURI: merchant.metadata_uri,
 
-    name: merchant.name,
+        status: merchant.status,
 
-    metadataURI: merchant.metadata_uri,
+        createdAt: merchant.created_at,
 
-    status: merchant.status,
-
-    createdAt: merchant.created_at,
-
-    updatedAt: merchant.updated_at,
-  }));
+        updatedAt: merchant.updated_at,
+    }));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -107,44 +118,34 @@ export async function getFeaturedMerchants(): Promise<Merchant[]> {
 export async function getActiveSubscriptions(
   customerId: string,
 ): Promise<Subscription[]> {
-  const { data, error } = await supabase
 
-    .from("subscriptions")
+  console.log("customerId: ", customerId);
 
-    .select("*")
+  const response = await fetch(
 
-    .eq("customer_id", customerId)
+    `/api/customers/${customerId}/subscriptions`,
 
-    .eq("status", "ACTIVE")
+    {
+      cache: "no-store",
+    },
 
-    .order("next_billing_time");
+  );
 
-  if (error) throw error;
+  if (!response.ok) {
 
-  return (data ?? []).map((subscription) => ({
-    subscriptionId: subscription.subscription_id,
+    throw new Error(
 
-    merchantId: subscription.merchant_id,
+      "Unable to fetch active subscriptions.",
 
-    planId: subscription.plan_id,
+    );
 
-    customerId: subscription.customer_id,
+  }
 
-    customerName: "",
+  return await response.json();
 
-    smartAccount: subscription.smart_account,
-
-    status: subscription.status,
-
-    nextBillingTime: subscription.next_billing_time,
-
-    lastChargedAt: subscription.last_charged_at,
-
-    cancelledAt: subscription.cancelled_at,
-
-    createdAt: subscription.created_at,
-  }));
 }
+
+
 
 /* -------------------------------------------------------------------------- */
 /* Blockchain                                                                  */
@@ -244,64 +245,34 @@ export async function getWalletBalances(
 /* Merchant Plans                                                              */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Merchant Plans                                                              */
+/* -------------------------------------------------------------------------- */
+
 export async function getMerchantPlans(
-  merchantId: number,
+    merchantId: number,
 ): Promise<BillingPlan[]> {
-  const { data, error } = await supabase
 
-    .from("billing_plans")
+    const response = await fetch(
 
-    .select("*")
+        `/api/merchant/${merchantId}/plans`,
 
-    .eq(
-      "merchant_id",
+        {
+            cache: "no-store",
+        },
 
-      merchantId,
-    )
-
-    .eq(
-      "status",
-
-      "ACTIVE",
-    )
-
-    .order(
-      "amount",
-
-      {
-        ascending: true,
-      },
     );
 
-  if (error) throw error;
+    if (!response.ok) {
 
-  return (data ?? []).map((plan) => ({
-    planId: plan.plan_id,
+        throw new Error(
+            "Unable to load merchant plans.",
+        );
 
-    merchantId: plan.merchant_id,
+    }
 
-    paymentToken: plan.payment_token,
+    return await response.json();
 
-    amount: plan.amount,
-
-    billingIntervalSeconds: plan.billing_interval_seconds,
-
-    name: plan.name,
-
-    status: plan.status,
-
-    trialPeriod: plan.trial_period,
-
-    maxSubscribers: plan.max_subscribers,
-
-    allowRenewal: plan.allow_renewal,
-
-    createdAt: plan.created_at,
-
-    updatedAt: plan.updated_at,
-
-    subscriberCount: plan.subscriber_count,
-  }));
 }
 
 /* -------------------------------------------------------------------------- */
@@ -390,6 +361,10 @@ export async function subscribe({
     kernel,
 
     customer,
+
+    kernelClient,
+
+    permissionId
   } = await getCustomerKernel(
     walletClient,
 
@@ -431,16 +406,17 @@ export async function subscribe({
     */
 
   const result = await subscribeToBillingPlan({
-    kernelClient: kernel.client!,
 
-    contractAddress: process.env
-      .NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS as `0x${string}`,
+      kernel,
 
-    merchantSmartAccount: merchant.smartAccount,
+      kernelClient,
 
-    customerSmartAccount: customer.smartAccount!,
+      planId: BigInt(plan.planId),
 
-    planId: BigInt(plan.planId),
+      smartAccount: customer.smartAccount!,
+
+      permissionId: permissionId,
+
   });
 
   /*
