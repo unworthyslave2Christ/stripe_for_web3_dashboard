@@ -178,7 +178,7 @@ export default function DashboardPage() {
 
     const handleViewCustomers = () => {
 
-        router.push("/dashboard/customers");
+        router.push("/dashboard/merchant/customers");
 
     };
 
