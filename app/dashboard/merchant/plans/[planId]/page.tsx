@@ -10,8 +10,17 @@ import type {
 
 } from "@/types/dashboard";
 import { BackButton } from "@/components/common/BackButton";
+import { useCreatePlan } from "@/hooks/usePlans";
+import { usePublicClient } from "wagmi";
+import { erc20Abi } from "viem";
+
+
+
+
+
 
 export default function BillingPlanPage() {
+    const publicClient = usePublicClient();
 
     const router = useRouter();
 
@@ -25,9 +34,35 @@ export default function BillingPlanPage() {
 
     }>();
 
-    const [plan, setPlan] =
+    
+    const {modifyPlan, loading: loading2, modificationSuccessful, getTokenMetadata} = useCreatePlan()
+    
 
-        useState<BillingPlan | null>(null);
+    const [plan, setPlan] =
+    
+    useState<BillingPlan | null>(null);
+
+    const isActive = plan?.status === "ACTIVE";
+    const isPaused = plan?.status === "PAUSED";
+    const isArchived = plan?.status === "ARCHIVED";
+
+    const [tokenInfo, setTokenInfo] =
+            useState<{
+                symbol: string;
+                decimals: number;
+            } | null>(null);
+
+        useEffect(() => {
+
+            if (!plan?.payment_token) return;
+
+            getTokenMetadata(
+                plan.payment_token as `0x${string}`,
+            )
+                .then(setTokenInfo)
+                .catch(console.error);
+
+        }, [plan]);
 
     const [loading, setLoading] =
 
@@ -205,19 +240,33 @@ export default function BillingPlanPage() {
 
                 <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
 
-                    <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-400">
+                    Payment Token
+                </p>
 
-                        Payment Token
+                <div className="mt-2">
+
+                    <p className="text-lg font-semibold text-white">
+
+                        {tokenInfo?.symbol ?? "Loading..."}
 
                     </p>
 
-                    <p className="mt-2 break-all font-mono text-sm text-cyan-400">
+                    <p className="text-sm text-slate-400">
+
+                        {tokenInfo?.decimals ?? "--"} Decimals
+
+                    </p>
+
+                    <p className="mt-3 break-all font-mono text-xs text-cyan-400">
 
                         {plan.payment_token}
 
                     </p>
 
                 </div>
+
+            </div>
 
                 <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
 
@@ -295,6 +344,10 @@ export default function BillingPlanPage() {
 
                             className="rounded-lg bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-500"
 
+                            onClick={() => {
+                                router.push(`/dashboard/merchant/plans/${plan.plan_id}/edit`)
+                            }}
+
                         >
 
                             Edit Plan
@@ -302,23 +355,112 @@ export default function BillingPlanPage() {
                         </button>
 
                         <button
+                            disabled={!isActive || loading2}
+                            className={`rounded-lg border px-5 py-3 font-medium transition
+                                ${
+                                    !isActive
+                                        ? "cursor-not-allowed border-slate-700 text-slate-600"
+                                        : "border-amber-600 text-amber-400 hover:bg-amber-600/10"
+                                }`}
+                            onClick={async () => 
+                                {
+                                    await modifyPlan(
+                                        "pausePlan",
+                                        1,
+                                        "pause",
+                                        plan
+                                    )
 
-                            className="rounded-lg border border-amber-600 px-5 py-3 font-medium text-amber-400 transition hover:bg-amber-600/10"
+                                    if(modificationSuccessful) {
+                                        router.refresh()
+    
+                                        setPlan(prev =>
+                                            prev
+                                                ? {
+                                                    ...prev,
+                                                    status: "PAUSED",
+                                                }
+                                                : prev,
+                                        );
+                                    }
 
+                                }
+                            }
                         >
-
                             Pause Plan
-
                         </button>
 
                         <button
+                            disabled={isArchived || loading2}
+                            className={`rounded-lg border px-5 py-3 font-medium transition
+                                ${
+                                    isArchived
+                                        ? "cursor-not-allowed border-slate-700 text-slate-600"
+                                        : "border-red-600 text-red-400 hover:bg-red-600/10"
+                                }`}
+                    
+                            onClick={async () => 
+                                {
+                                    await modifyPlan(
+                                        "archivePlan",
+                                        2,
+                                        "archive",
+                                        plan
+                                    )
 
-                            className="rounded-lg border border-red-600 px-5 py-3 font-medium text-red-400 transition hover:bg-red-600/10"
-
+                                    if(modificationSuccessful) {
+                                        router.refresh()
+    
+                                        setPlan(prev =>
+                                            prev
+                                                ? {
+                                                    ...prev,
+                                                    status: "PAUSED",
+                                                }
+                                                : prev,
+                                        );
+                                    }
+                                }
+                            }
                         >
-
                             Archive Plan
+                        </button>
 
+                        <button
+                            disabled={!isPaused || loading2}
+                            className={`rounded-lg border px-5 py-3 font-medium transition
+                                ${
+                                    !isPaused
+                                        ? "cursor-not-allowed border-slate-700 text-slate-600"
+                                        : "border-emerald-600 text-emerald-400 hover:bg-emerald-600/10"
+                                }`}
+                            
+
+                            onClick={async () => 
+                                {
+                                     await modifyPlan(
+                                        "activatePlan",
+                                        0,
+                                        "resume",
+                                        plan
+                                    )
+
+                                    if(modificationSuccessful) {
+                                        router.refresh()
+    
+                                        setPlan(prev =>
+                                            prev
+                                                ? {
+                                                    ...prev,
+                                                    status: "PAUSED",
+                                                }
+                                                : prev,
+                                        );
+                                    }
+                                }
+                            }
+                        >
+                            Resume Plan
                         </button>
 
                         <button
@@ -332,7 +474,6 @@ export default function BillingPlanPage() {
                         </button>
 
                     </div>
-
 
                     <BackButton />
 

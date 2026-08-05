@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCreatePlan } from "@/hooks/useCreatePlan";
+import { useCreatePlan } from "@/hooks/usePlans";
 
 import { useEffect } from "react";
 

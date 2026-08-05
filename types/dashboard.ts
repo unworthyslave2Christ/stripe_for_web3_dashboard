@@ -56,6 +56,8 @@ export interface DashboardStats {
 
     totalMerchants: number;
 
+
+
 }
 
 /* -------------------------------------------------------------------------- */
@@ -91,6 +93,12 @@ export interface BillingPlan {
     updatedAt: string;
 
     subscriberCount: number;
+
+    metadataURI?: string;
+
+    billingPeriodNamed?: string;
+
+    trialPeriodNamed?: string;
 
 }
 
