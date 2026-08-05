@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useCustomerDashboard } from "@/hooks/useCustomerDashboard";
 
 import MerchantHeader from "../../components/MerchantHeader";
+
 import MerchantPlans from "../../components/MerchantPlans";
 
 export default function CustomerMerchantPage() {

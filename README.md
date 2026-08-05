@@ -1,36 +1,218 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<img src="./merchant.png" />
 
-## Getting Started
 
-First, run the development server:
+<img src="./customer.png" />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Stripe for Web3 Dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Merchant dashboard for managing decentralized recurring subscriptions powered by Account Abstraction.
 
-## Learn More
+The dashboard provides an experience similar to Stripe while interacting entirely with on-chain subscription infrastructure.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Merchant Dashboard
 
-## Deploy on Vercel
+- Merchant overview
+- Revenue statistics
+- Billing analytics
+- Worker status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Billing Plans
+
+- Create plans
+- Edit plans
+- View plans
+- Pause plans
+- Archive plans
+- View subscribers
+
+---
+
+### Customers
+
+- Customer directory
+- Active subscriptions
+- Billing status
+- Subscription history
+
+---
+
+### Billing Activity
+
+- Successful billings
+- Failed billings
+- Retry history
+- Worker activity
+
+---
+
+## Tech Stack
+
+Frontend
+
+- Next.js
+- React
+- TypeScript
+- TailwindCSS
+
+Blockchain
+
+- Viem
+- Wagmi
+- RainbowKit
+- ERC-4337
+
+Backend
+
+- Supabase
+- PostgreSQL
+
+Authentication
+
+- Wallet Authentication
+
+---
+
+## Project Structure
+
+
+app/
+
+dashboard/
+
+merchant/
+
+plans/
+
+customers/
+
+components/
+
+hooks/
+
+lib/
+
+types/
+
+
+
+---
+
+## Main Pages
+
+Dashboard
+
+/dashboard/merchant/home
+
+
+Plans
+
+/dashboard/merchant/plans
+
+
+Create Plan
+
+/dashboard/merchant/plans/create
+
+
+Plan Details
+
+/dashboard/merchant/plans/[planId]
+
+
+Subscribers
+
+/dashboard/merchant/plans/[planId]/subscribers
+
+
+Customers
+
+/dashboard/merchant/customers
+
+
+---
+
+## Dashboard Capabilities
+
+- Total Revenue
+- Monthly Revenue
+- Successful Billings
+- Failed Billings
+- Active Plans
+- Active Subscriptions
+- Customers
+- Worker Health
+
+---
+
+## Merchant Workflow
+
+
+Connect Wallet
+
+↓
+
+Register Merchant
+
+↓
+
+Create Billing Plan
+
+↓
+
+Customer Subscribes
+
+↓
+
+Worker Executes Billing
+
+↓
+
+Revenue Dashboard Updates
+
+
+---
+
+## Future SDK
+
+The dashboard represents one consumer of the protocol.
+
+Upcoming SDKs will allow third-party applications to integrate subscriptions without interacting directly with smart contracts.
+
+Planned SDKs include
+
+- JavaScript SDK
+- React SDK
+- Next.js SDK
+- REST API
+- Mobile SDK
+
+---
+
+## Roadmap
+
+Current MVP
+
+- Merchant dashboard
+- Billing plans
+- Customers
+- Billing analytics
+- Worker monitoring
+
+Future
+
+- Team management
+- Invoice generation
+- Subscription analytics
+- Embedded checkout
+- SDK documentation
+- White-label merchant portal
+- API Keys
+- Webhooks
