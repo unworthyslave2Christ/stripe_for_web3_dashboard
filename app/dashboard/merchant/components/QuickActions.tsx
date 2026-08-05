@@ -36,7 +36,7 @@ export default function QuickActions({
 
     return (
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 
             {/* ---------------------------------------------------------- */}
             {/* Create Plan                                                */}
@@ -90,31 +90,6 @@ export default function QuickActions({
 
             </button>
 
-            {/* ---------------------------------------------------------- */}
-            {/* Customers                                                  */}
-            {/* ---------------------------------------------------------- */}
-
-            <button
-
-                onClick={onViewCustomers}
-
-                className="rounded-xl border border-slate-800 bg-slate-900 p-5 text-left transition hover:border-slate-700 hover:bg-slate-800"
-
-            >
-
-                <h3 className="text-lg font-semibold text-white">
-
-                    Customers
-
-                </h3>
-
-                <p className="mt-2 text-sm text-slate-400">
-
-                    View all subscribed customers.
-
-                </p>
-
-            </button>
 
             {/* ---------------------------------------------------------- */}
             {/* Refresh                                                    */}

@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import type {
 
     BillingPlan,
 
 } from "@/types/dashboard";
+import { BackButton } from "@/components/common/BackButton";
 
 export default function BillingPlanPage() {
+
+    const router = useRouter();
 
     const {
 
@@ -284,47 +287,54 @@ export default function BillingPlanPage() {
 
                 </p>
 
-                <div className="mt-6 flex flex-wrap gap-4">
+                <div className="flex justify-between">
 
-                    <button
+                    <div className="mt-6 flex flex-wrap gap-4">
 
-                        className="rounded-lg bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-500"
+                        <button
 
-                    >
+                            className="rounded-lg bg-cyan-600 px-5 py-3 font-medium text-white transition hover:bg-cyan-500"
 
-                        Edit Plan
+                        >
 
-                    </button>
+                            Edit Plan
 
-                    <button
+                        </button>
 
-                        className="rounded-lg border border-amber-600 px-5 py-3 font-medium text-amber-400 transition hover:bg-amber-600/10"
+                        <button
 
-                    >
+                            className="rounded-lg border border-amber-600 px-5 py-3 font-medium text-amber-400 transition hover:bg-amber-600/10"
 
-                        Pause Plan
+                        >
 
-                    </button>
+                            Pause Plan
 
-                    <button
+                        </button>
 
-                        className="rounded-lg border border-red-600 px-5 py-3 font-medium text-red-400 transition hover:bg-red-600/10"
+                        <button
 
-                    >
+                            className="rounded-lg border border-red-600 px-5 py-3 font-medium text-red-400 transition hover:bg-red-600/10"
 
-                        Archive Plan
+                        >
 
-                    </button>
+                            Archive Plan
 
-                    <button
+                        </button>
 
-                        className="rounded-lg border border-slate-700 px-5 py-3 font-medium text-slate-300 transition hover:border-slate-600 hover:bg-slate-800"
+                        <button
 
-                    >
+                            className="rounded-lg border border-slate-700 px-5 py-3 font-medium text-slate-300 transition hover:border-slate-600 hover:bg-slate-800"
+                            onClick={ () => {router.push(`/dashboard/merchant/plans/${plan.plan_id}/subscribers`)}}
+                        >
 
-                        View Subscribers
+                            View Subscribers
 
-                    </button>
+                        </button>
+
+                    </div>
+
+
+                    <BackButton />
 
                 </div>
 

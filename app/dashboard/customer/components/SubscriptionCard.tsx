@@ -61,7 +61,7 @@ export default function SubscriptionCard({
 
                             merchant?.name ??
 
-                            `Merchant #${subscription.merchantId}`
+                            `Merchant #${subscription.merchant.merchantId}`
 
                         }
 
@@ -73,7 +73,7 @@ export default function SubscriptionCard({
 
                             plan?.name ??
 
-                            `Plan #${subscription.planId}`
+                            `Plan #${subscription.plan.planId}`
 
                         }
 

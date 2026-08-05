@@ -22,7 +22,7 @@ export default function WalletBalances({
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
 
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-between w-full">
 
                 <div>
 
@@ -72,7 +72,7 @@ export default function WalletBalances({
 
                 ) : (
 
-                    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="flex flex-col w-full gap-5">
 
                         {
 
@@ -84,29 +84,37 @@ export default function WalletBalances({
 
                                         key={balance.token}
 
-                                        className="rounded-2xl border border-slate-800 bg-slate-950 p-6 transition hover:border-cyan-700"
+                                        className="rounded-2xl border w-fit border-slate-800 bg-slate-950 p-6 transition hover:border-cyan-700"
 
                                     >
 
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex justify-between flex-col w-full">
 
-                                            <div>
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center">
 
-                                                <h3 className="text-xl font-semibold text-white">
+                                                    <h3 className="text-xl font-semibold text-white">
+                                                        {
+
+                                                            balance.symbol
+
+                                                        }
+                                                    </h3>
+
+                                                    <div className="text-3xl">
+
+                                                        🪙
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <p className="mt-1 text-3xl font-bold text-cyan-400">
 
                                                     {
 
-                                                        balance.symbol
-
-                                                    }
-
-                                                </h3>
-
-                                                <p className="mt-1 text-xs text-slate-500">
-
-                                                    {
-
-                                                        balance.token
+                                                        balance.formatted
 
                                                     }
 
@@ -114,36 +122,18 @@ export default function WalletBalances({
 
                                             </div>
 
-                                            <div className="text-3xl">
-
-                                                🪙
-
-                                            </div>
-
-                                        </div>
-
-                                        <div className="mt-8">
-
-                                            <p className="text-sm uppercase tracking-wider text-slate-500">
-
-                                                Available
-
-                                            </p>
-
-                                            <p className="mt-2 text-3xl font-bold text-cyan-400">
+                                            <p className="text-xs text-slate-500 mt-2">
 
                                                 {
 
-                                                    balance.formatted
+                                                    balance.token
 
                                                 }
 
                                             </p>
 
                                         </div>
-
                                     </div>
-
                                 ),
 
                             )

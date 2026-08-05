@@ -14,6 +14,8 @@ interface MerchantPlansProps {
 
     loading?: boolean;
 
+    activePlanIds: Set<number>;
+
     onSubscribe: (
         plan: BillingPlan,
     ) => void;
@@ -25,6 +27,7 @@ export default function MerchantPlans({
     balances,
     loading = false,
     onSubscribe,
+    activePlanIds
 }: MerchantPlansProps) {
 
     if (plans.length === 0) {
@@ -81,6 +84,9 @@ export default function MerchantPlans({
                             balances[
                                 plan.paymentToken.toLowerCase()
                             ] ?? "0";
+
+                        const alreadySubscribed =
+                            activePlanIds.has(plan.planId);
 
                         return (
 
@@ -200,23 +206,27 @@ export default function MerchantPlans({
                                 </div>
 
                                 <button
-                                    type="button"
-                                    disabled={loading}
+                                    disabled={
+                                        loading ||
+                                        alreadySubscribed
+                                    }
                                     onClick={() =>
                                         onSubscribe(
                                             plan,
                                         )
                                     }
-                                    className="mt-8 w-full rounded-xl bg-cyan-600 py-3 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                    className={`w-full rounded-lg py-3 font-medium transition ${
+                                        alreadySubscribed
+                                            ? "cursor-not-allowed bg-slate-700 text-slate-400"
+                                            : "bg-cyan-600 text-white hover:bg-cyan-500"
+                                    }`}
                                 >
 
-                                    {
-
-                                        loading
+                                    {alreadySubscribed
+                                        ? "Already Subscribed"
+                                        : loading
                                             ? "Subscribing..."
-                                            : "Subscribe"
-
-                                    }
+                                            : "Subscribe"}
 
                                 </button>
 

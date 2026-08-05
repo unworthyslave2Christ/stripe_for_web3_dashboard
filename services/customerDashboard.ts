@@ -6,7 +6,6 @@ import type { Merchant, Customer, Subscription } from "@/types/dashboard";
 
 // import protocolAbi from "@/abi/Web3BillingProtocol.json";
 
-
 import {
   createPublicClient,
   erc20Abi,
@@ -156,7 +155,6 @@ export async function getWalletBalance(
 
   publicClient?: PublicClient,
 ): Promise<WalletBalance> {
-
   const client =
     publicClient ??
     createPublicClient({
@@ -164,7 +162,6 @@ export async function getWalletBalance(
 
       transport: http(),
     });
-    
 
   const contract = getContract({
     address: token,
@@ -173,6 +170,8 @@ export async function getWalletBalance(
 
     client,
   });
+
+  console
 
   const [raw, decimals, symbol] = await Promise.all([
     contract.read.balanceOf([wallet]),
@@ -191,9 +190,18 @@ export async function getWalletBalance(
 
     raw,
 
-    formatted: formatUnits(raw, decimals),
+    formatted: formatContractBalance(formatUnits(raw, decimals)),
   };
 }
+
+const formatContractBalance = (balance: string): string => {
+  if (!balance.includes(".")) return balance;
+
+  const indexOfPoint = balance.indexOf(".");
+  const indexOf2ndDecimalPlace = indexOfPoint + 2;
+
+  return balance.slice(0, indexOf2ndDecimalPlace);
+};
 
 /* -------------------------------------------------------------------------- */
 /* Wallet Balances For Every Active Plan Token                                */
@@ -258,7 +266,6 @@ export async function hasEnoughBalance(
 
   publicClient?: PublicClient,
 ): Promise<boolean> {
-
   console.log("plan =", plan);
   console.log("wallet =", wallet);
   console.log("payment token =", plan.paymentToken);
@@ -280,6 +287,49 @@ import { mirrorSubscription } from "@/services/subscription";
 import { approveTokenIfNeeded } from "@/services/token";
 import { subscribeToBillingPlan } from "@/services/billingProtocol";
 import { chain } from "./kernel.client";
+
+
+import Web3BillingProtocolABI from "@/abi/Web3BillingProtocol.json";
+
+const BILLING_CONTRACT = process.env
+  .NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS as `0x${string}`;
+
+export async function hasActiveSubscription(
+  publicClient: PublicClient,
+  subscriber: `0x${string}`,
+  planId: bigint,
+) {
+  const subscriptionIds = (await publicClient.readContract({
+    address: BILLING_CONTRACT,
+
+    abi: Web3BillingProtocolABI,
+
+    functionName: "getPlanSubscriptions",
+
+    args: [planId],
+  })) as bigint[];
+
+  for (const subscriptionId of subscriptionIds) {
+    const subscription = await publicClient.readContract({
+      address: BILLING_CONTRACT,
+
+      abi: Web3BillingProtocolABI,
+
+      functionName: "getSubscription",
+
+      args: [subscriptionId],
+    }) as Subscription;
+
+    if (
+      subscription.subscriber!.toLowerCase() === subscriber.toLowerCase() &&
+      subscription.status === "ACTIVE"
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 export interface SubscribeParams {
   walletClient: WalletClient;
@@ -303,6 +353,7 @@ export async function subscribe({
     Validate Customer Balance
     --------------------------------------------------------------------------
     */
+  console.log("Plan at subscribe: ", plan);
 
   const wallet = (await walletClient.getAddresses())[0];
 
@@ -329,7 +380,27 @@ export async function subscribe({
     permission,
   } = await getCustomerKernel(walletClient, publicClient);
 
-  console.log("permission: ", permission)
+
+  const alreadySubscribed =
+      await hasActiveSubscription(
+
+          publicClient,
+
+          customer.smartAccount,
+
+          BigInt(plan.planId),
+
+      );
+
+  if (alreadySubscribed) {
+
+      throw new Error(
+          "You already have an active subscription to this plan."
+      );
+
+  }
+
+  console.log("permission: ", permission);
 
   if (!customer.smartAccount) {
     throw new Error("Customer Smart Account is missing.");
@@ -393,7 +464,7 @@ export async function subscribe({
 
     receipt,
 
-    subscriptionId
+    subscriptionId,
   } = await subscribeToBillingPlan({
     kernel: customerKernel,
 
@@ -405,7 +476,7 @@ export async function subscribe({
 
     permissionId: permission.permissionId,
 
-    publicClient: publicClient
+    publicClient: publicClient,
   });
 
   /*
@@ -416,7 +487,6 @@ export async function subscribe({
     */
 
   const subscription = await mirrorSubscription({
-    
     subscriptionId: Number(subscriptionId),
 
     customerId,
@@ -431,7 +501,7 @@ export async function subscribe({
 
     transactionHash: userOperationHash,
 
-    permissionId: permission.permissionId
+    permissionId: permission.permissionId,
   });
 
   /*

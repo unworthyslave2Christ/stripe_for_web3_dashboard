@@ -34,6 +34,10 @@ export interface CreatePlanParams {
   maxSubscribers?: number | null;
 
   metadataURI?: string;
+
+  billingPeriodNamed?: string;
+
+  trialPeriodNamed?: string;
 }
 
 export async function createPlan({
@@ -56,6 +60,10 @@ export async function createPlan({
   maxSubscribers = null,
 
   metadataURI = "",
+
+  billingPeriodNamed,
+
+  trialPeriodNamed
 }: CreatePlanParams) {
 
    
@@ -206,6 +214,10 @@ console.log("Public RPC:", process.env.RPC_URL);
         metadataURI,
 
         name,
+
+        billingPeriodNamed,
+
+        trialPeriodNamed
       }),
     },
   );

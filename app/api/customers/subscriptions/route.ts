@@ -33,6 +33,28 @@ export async function POST(request: NextRequest) {
     
   } = body;
 
+  const {data: existing} = await supabase
+  
+    .from("subscriptions")
+
+    .select("id")
+
+    .eq("customer_id", customerId)
+
+    .eq("plan_id", planId)
+
+    .eq("status", "ACTIVE")
+
+    .maybeSingle();
+
+  if (existing) {
+
+      throw new Error(
+          "Customer already has an active subscription to this plan.",
+      );
+
+  }
+
   console.log("permissionId: ", permissionId);
 
   const nextBillingTime = new Date(

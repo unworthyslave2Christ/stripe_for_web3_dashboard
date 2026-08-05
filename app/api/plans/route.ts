@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
   }
 
   const {
-    data,
+    data: plans,
 
     error,
   } = await query.order("created_at", {
@@ -77,7 +77,26 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json(data);
+  const plansWithCounts = await Promise.all(
+    plans.map(async (plan) => {
+
+        const { count } = await supabase
+            .from("subscriptions")
+            .select("*", {
+                count: "exact",
+                head: true,
+            })
+            .eq("plan_id", plan.plan_id);
+
+        return {
+            ...plan,
+            subscriber_count: count ?? 0,
+        };
+
+    }),
+);
+
+  return NextResponse.json(plansWithCounts);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -118,6 +137,10 @@ export async function POST(request: NextRequest) {
         created_at: now,
 
         updated_at: now,
+
+        billing_period_named: body.billingPeriodNamed,
+
+        trial_period_named: body.trialPeriodNamed
       });
 
     if (error) {

@@ -33,7 +33,25 @@ export default function CustomerMerchantPage() {
 
         subscribeToPlan,
 
+        subscriptions
+
     } = useCustomerDashboard();
+
+    const activePlanIds = useMemo(() => {
+
+        return new Set(
+
+            subscriptions
+                .filter(subscription =>
+                    subscription.status === "ACTIVE",
+                )
+                .map(subscription =>
+                    subscription.plan.planId,
+                ),
+
+        );
+
+    }, [subscriptions]);
 
     /*
     --------------------------------------------------------------------------
@@ -210,6 +228,8 @@ export default function CustomerMerchantPage() {
                 loading={subscribing}
 
                 onSubscribe={subscribeToPlan}
+
+                activePlanIds={activePlanIds}
 
             />
 

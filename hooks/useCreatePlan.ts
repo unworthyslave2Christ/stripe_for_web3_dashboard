@@ -24,6 +24,10 @@ export interface CreateBillingPlanParams {
   maxSubscribers?: number | null;
 
   metadataURI?: string;
+
+  billingPeriodNamed: string;
+
+  trialPeriodNamed: string;
 }
 
 export function useCreatePlan() {
@@ -74,6 +78,10 @@ export function useCreatePlan() {
           maxSubscribers: params.maxSubscribers,
 
           metadataURI: params.metadataURI,
+
+          billingPeriodNamed: params.billingPeriodNamed,
+
+          trialPeriodNamed: params.trialPeriodNamed
         });
 
         setPlanId(result.planId);

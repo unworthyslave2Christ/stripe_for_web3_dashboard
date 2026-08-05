@@ -11,6 +11,7 @@ import type {
     WalletBalance,
 
 } from "@/services/customerDashboard";
+import WalletBalances from "./WalletBalanceCard";
 
 interface CustomerOverviewProps {
 
@@ -134,83 +135,13 @@ export default function CustomerOverview({
             {/* Wallet Assets                                                  */}
             {/* -------------------------------------------------------------- */}
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div className="space-y-4">
 
-                <h2 className="mb-6 text-xl font-semibold text-white">
+                <WalletBalances
+                    balances={walletBalances!}
+                />
 
-                    Wallet Assets
-
-                </h2>
-
-                {
-
-                    walletBalances.length === 0 && (
-
-                        <div className="rounded-xl border border-dashed border-slate-700 py-12 text-center">
-
-                            <p className="text-slate-500">
-
-                                No supported subscription tokens found.
-
-                            </p>
-
-                        </div>
-
-                    )
-
-                }
-
-                <div className="space-y-4">
-
-                    {
-
-                        walletBalances.map(
-
-                            balance => (
-
-                                <div
-
-                                    key={balance.token}
-
-                                    className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-4"
-
-                                >
-
-                                    <div>
-
-                                        <p className="font-semibold text-white">
-
-                                            {balance.symbol}
-
-                                        </p>
-
-                                        <p className="mt-1 font-mono text-xs text-slate-500">
-
-                                            {balance.token}
-
-                                        </p>
-
-                                    </div>
-
-                                    <div className="text-right">
-
-                                        <p className="text-lg font-semibold text-cyan-400">
-
-                                            {balance.formatted}
-
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            ),
-
-                        )
-
-                    }
-
-                </div>
+                
 
             </div>
 

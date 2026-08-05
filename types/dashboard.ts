@@ -138,6 +138,8 @@ export interface Subscription {
 
     smartAccount: Address;
 
+    subscriber?: Address;
+
     status:
         | "ACTIVE"
         | "PAUSED"
