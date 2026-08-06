@@ -35,7 +35,7 @@ interface RegisterMerchantParams {
 
   metadataURI?: string;
 
-  billingOperator?: Address
+  billingOperator?: Address;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -59,7 +59,7 @@ export async function registerMerchant({
 
   metadataURI = "",
 
-  billingOperator
+  billingOperator,
 }: RegisterMerchantParams) {
   /*
     --------------------------------------------------------------------------
@@ -147,8 +147,6 @@ export async function registerMerchant({
 
   const merchantId = (events[0] as any).args.merchantId as bigint;
 
-
-
   const response = await fetch("/api/merchant", {
     method: "POST",
     headers: {
@@ -161,7 +159,7 @@ export async function registerMerchant({
       payoutWallet,
       name,
       metadataURI,
-      billingOperator: billingOperator
+      billingOperator: billingOperator,
     }),
   });
 
@@ -294,40 +292,22 @@ export async function getMerchantById(merchantId: bigint) {
   return json;
 }
 
+export async function getMerchantByOwnerWallet(ownerWallet: Address) {
+  const response = await fetch(
+    `/api/merchant?ownerWallet=${ownerWallet}`,
 
-export async function getMerchantByOwnerWallet(
-    ownerWallet: Address,
-) {
+    {
+      cache: "no-store",
+    },
+  );
 
-    const response =
-        await fetch(
+  const json = await response.json();
 
-            `/api/merchant?ownerWallet=${ownerWallet}`,
+  if (!response.ok) {
+    throw new Error(json.error ?? "Unable to load merchant.");
+  }
 
-            {
-
-                cache: "no-store",
-
-            },
-
-        );
-
-    const json =
-        await response.json();
-
-    if (!response.ok) {
-
-        throw new Error(
-
-            json.error ??
-            "Unable to load merchant.",
-
-        );
-
-    }
-
-    return json;
-
+  return json;
 }
 
 // TODO: Persist merchant across merchant registration and bill planning and also for customers
@@ -337,34 +317,25 @@ export async function getMerchantByOwnerWallet(
 // TODO: Graciously enabling rainbow kit across all instances of localhost(app) on all profiles
 // Graciously incorporating the best practices in next js fundamentals vercel course
 
-
 export async function getMerchantKernel(
-    walletClient: WalletClient,
-    publicClient: PublicClient,
+  walletClient: WalletClient,
+  publicClient: PublicClient,
 ) {
-    const [ownerWallet] =
-        await walletClient.getAddresses();
+  const [ownerWallet] = await walletClient.getAddresses();
 
-    const merchant =
-        await getMerchantByOwnerWallet(ownerWallet);
+  const merchant = await getMerchantByOwnerWallet(ownerWallet);
 
-    const kernel =
-        await createMerchantKernel({
-            ownerWalletClient: walletClient,
-            publicClient,
-        });
+  const kernel = await createMerchantKernel({
+    ownerWalletClient: walletClient,
+    publicClient,
+  });
 
-    if (
-        kernel.address.toLowerCase() !==
-        merchant.smart_account.toLowerCase()
-    ) {
-        throw new Error(
-            "Connected wallet does not own this merchant."
-        );
-    }
+  if (kernel.address.toLowerCase() !== merchant.smart_account.toLowerCase()) {
+    throw new Error("Connected wallet does not own this merchant.");
+  }
 
-    return {
-        merchant,
-        kernel,
-    };
+  return {
+    merchant,
+    kernel,
+  };
 }

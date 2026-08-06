@@ -1,41 +1,30 @@
 // services/kernel.ts
 
-import {
-    createPublicClient,
-    http,
-    PublicClient,
-    WalletClient
-} from "viem";
+import { createPublicClient, http, PublicClient, WalletClient } from "viem";
 
 import { arbitrumSepolia } from "viem/chains";
 
-
 import {
-    createKernelAccount,
-    createKernelAccountClient,
-    createZeroDevPaymasterClient,
-    type CreateKernelAccountReturnType,
+  createKernelAccount,
+  createKernelAccountClient,
+  createZeroDevPaymasterClient,
+  type CreateKernelAccountReturnType,
 } from "@zerodev/sdk";
 
-import {
-    signerToEcdsaValidator,
-} from "@zerodev/ecdsa-validator";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 
-
-import {
-    getEntryPoint,
-    KERNEL_V3_3,
-} from "@zerodev/sdk/constants";
+import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
 import "dotenv/config";
 
-import {providerToSmartAccountSigner, walletClientToSmartAccountSigner} from "permissionless"
-
+import {
+  providerToSmartAccountSigner,
+  walletClientToSmartAccountSigner,
+} from "permissionless";
 
 // import { type SmartAccountSigner } from "@zerodev/sdk"
 
- // ✅ Type resolved here
-
+// ✅ Type resolved here
 
 /* -------------------------------------------------------------------------- */
 /* Configuration                                                               */
@@ -48,176 +37,113 @@ const entryPoint = getEntryPoint("0.7");
 const kernelVersion = KERNEL_V3_3;
 
 const publicClient = createPublicClient({
-    chain,
-    transport: http(process.env.RPC_URL!),
+  chain,
+  transport: http(process.env.RPC_URL!),
 });
 
 const paymasterClient = createZeroDevPaymasterClient({
-    chain,
-    transport: http(process.env.NEXT_PUBLIC_PAYMASTER_RPC!),
+  chain,
+  transport: http(process.env.NEXT_PUBLIC_PAYMASTER_RPC!),
 });
-
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
 /* -------------------------------------------------------------------------- */
 
-export type KernelAccount =
-    CreateKernelAccountReturnType<"0.7">;
+export type KernelAccount = CreateKernelAccountReturnType<"0.7">;
 
-export type KernelClient =
-    Awaited<
-        ReturnType<typeof createKernelAccountClient>
-    >;
-
+export type KernelClient = Awaited<
+  ReturnType<typeof createKernelAccountClient>
+>;
 
 /* -------------------------------------------------------------------------- */
 /* Internal Helper                                                             */
 /* -------------------------------------------------------------------------- */
 
-function createClient(
-    account: KernelAccount,
-): KernelClient {
+function createClient(account: KernelAccount): KernelClient {
+  return createKernelAccountClient({
+    account,
 
-    return createKernelAccountClient({
+    chain,
 
-        account,
+    bundlerTransport: http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
 
-        chain,
-
-        bundlerTransport:
-            http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
-
-        paymaster: {
-
-            getPaymasterData(userOperation) {
-
-                return paymasterClient
-                    .sponsorUserOperation({
-                        userOperation,
-                    });
-
-            },
-
-        },
-
-    });
-
+    paymaster: {
+      getPaymasterData(userOperation) {
+        return paymasterClient.sponsorUserOperation({
+          userOperation,
+        });
+      },
+    },
+  });
 }
-
-
-
-
-
-
 
 /* -------------------------------------------------------------------------- */
 /* Create Blank Kernel Client                                                  */
 /* -------------------------------------------------------------------------- */
 
-export function createKernelClient(
-    account: KernelAccount,
-): KernelClient {
-
-    return createClient(account);
-
+export function createKernelClient(account: KernelAccount): KernelClient {
+  return createClient(account);
 }
 
 /* -------------------------------------------------------------------------- */
 /* Shared ZeroDev Exports                                                      */
 /* -------------------------------------------------------------------------- */
 
-export {
+export { publicClient, chain, entryPoint, kernelVersion, paymasterClient };
 
-    publicClient,
+export interface CreateMerchantKernelParams {
+  ownerWalletClient: WalletClient;
+
+  publicClient: PublicClient;
+}
+
+export async function createMerchantKernel({
+  ownerWalletClient,
+  publicClient,
+}: CreateMerchantKernelParams) {
+  const ownerSigner = walletClientToSmartAccountSigner(
+    ownerWalletClient as any,
+  );
+
+  const ownerValidator = await signerToEcdsaValidator(publicClient, {
+    signer: ownerSigner as any,
+    entryPoint,
+    kernelVersion,
+  });
+
+  const account = await createKernelAccount(publicClient, {
+    entryPoint,
+    kernelVersion,
+
+    plugins: {
+      sudo: ownerValidator,
+    },
+  });
+
+  console.log("Bundler RPC:", process.env.BUNDLER_RPC);
+
+  const client = createKernelAccountClient({
+    account,
 
     chain,
 
-    entryPoint,
+    bundlerTransport: http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
 
-    kernelVersion,
-
-    paymasterClient,
-
-};
-
-
-export interface CreateMerchantKernelParams {
-
-    ownerWalletClient: WalletClient;
-
-    publicClient: PublicClient;
-
-}
-
-
-export async function createMerchantKernel({
-    ownerWalletClient,
-    publicClient,
-}: CreateMerchantKernelParams) {
-
-    const ownerSigner =  walletClientToSmartAccountSigner(ownerWalletClient as any);
-
-
-    const ownerValidator =
-        await signerToEcdsaValidator(
-            publicClient,
-            {
-                signer: ownerSigner as any,
-                entryPoint,
-                kernelVersion,
-            },
-        );
-
-    const account =
-        await createKernelAccount(
-            publicClient,
-            {
-                entryPoint,
-                kernelVersion,
-
-                plugins: {
-                    sudo: ownerValidator,
-                },
-            },
-        );
-
-    console.log("Bundler RPC:", process.env.BUNDLER_RPC);
-
-    const client =
-        createKernelAccountClient({
-
-            account,
-
-            chain,
-
-            bundlerTransport:
-                http(process.env.NEXT_PUBLIC_BUNDLER_RPC!),
-
-            paymaster: {
-
-                getPaymasterData(userOperation) {
-
-                    return paymasterClient
-                        .sponsorUserOperation({
-                            userOperation,
-                        });
-
-                },
-
-            },
-
+    paymaster: {
+      getPaymasterData(userOperation) {
+        return paymasterClient.sponsorUserOperation({
+          userOperation,
         });
+      },
+    },
+  });
 
-    return {
+  return {
+    account,
 
-        account,
+    client,
 
-        client,
-
-        address:
-            account.address,
-
-    };
-
+    address: account.address,
+  };
 }

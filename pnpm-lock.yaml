@@ -14,6 +14,9 @@ importers:
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.11
         version: 2.2.11(@tanstack/react-query@5.101.4(react@19.2.4))(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))(wagmi@3.7.5(@tanstack/query-core@5.101.4)(@tanstack/react-query@5.101.4(react@19.2.4))(@types/react@19.2.18)(react@19.2.4)(typescript@5.9.3)(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))
+      '@stripe-for-web3/sdk':
+        specifier: file:..\stripe-for-web3-sdk\stripe-for-web3-sdk-0.1.0.tgz
+        version: file:../stripe-for-web3-sdk/stripe-for-web3-sdk-0.1.0.tgz(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
       '@supabase/ssr':
         specifier: ^0.12.4
         version: 0.12.4(@supabase/supabase-js@2.111.0)
@@ -701,6 +704,16 @@ packages:
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
 
+  '@stripe-for-web3/sdk@file:../stripe-for-web3-sdk/stripe-for-web3-sdk-0.1.0.tgz':
+    resolution: {integrity: sha512-tzKf1oRrb9brOUCjPaORvjJZuxH7VFkscVFAt3j8/PqXH/5uJgmEZ60uohT1kJ6QfE5r4GL9zw8W3ktmNqRUjA==, tarball: file:../stripe-for-web3-sdk/stripe-for-web3-sdk-0.1.0.tgz}
+    version: 0.1.0
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@zerodev/ecdsa-validator': ^5.4.9
+      '@zerodev/sdk': ^5.5.10
+      permissionless: ^0.1.49
+      viem: ^2.55.11
+
   '@supabase/auth-js@2.111.0':
     resolution: {integrity: sha512-hbRLgyQZEX0SDyF4LYXpv94qOIQyFATfpT5SIs2V0SisHnisVRkYgiPQWzv80l4S2mO3qof78rmoH9j5zoFsYQ==}
     engines: {node: '>=22.0.0'}
@@ -1097,6 +1110,13 @@ packages:
     resolution: {integrity: sha512-9NVE8/sQIKRo42UOoYKkNdmmHJY8VlT4t+2MHD2ipLg21cpbY9fS17TGZh61+Bl3qlqc8pP23I6f89z9im7kuA==}
     peerDependencies:
       '@zerodev/sdk': ^5.4.13
+      viem: ^2.28.0
+
+  '@zerodev/permissions@5.6.0':
+    resolution: {integrity: sha512-1pLABtA3A6EytVubvxNK35lsBZhi8FSeA/RcUrd317/iobA9fd+FLGbY2DFDefiGof/q/t5+GWY32WkIjE9QoQ==}
+    peerDependencies:
+      '@zerodev/sdk': ^5.4.0
+      '@zerodev/webauthn-key': ^5.4.0
       viem: ^2.28.0
 
   '@zerodev/permissions@5.6.3':
@@ -4023,6 +4043,17 @@ snapshots:
 
   '@sindresorhus/merge-streams@4.0.0': {}
 
+  '@stripe-for-web3/sdk@file:../stripe-for-web3-sdk/stripe-for-web3-sdk-0.1.0.tgz(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))':
+    dependencies:
+      '@supabase/supabase-js': 2.111.0
+      '@zerodev/ecdsa-validator': 5.4.9(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      '@zerodev/permissions': 5.6.0(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      '@zerodev/sdk': 5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      permissionless: 0.1.49(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      viem: 2.55.10(typescript@5.9.3)(zod@3.25.76)
+    transitivePeerDependencies:
+      - '@zerodev/webauthn-key'
+
   '@supabase/auth-js@2.111.0':
     dependencies:
       tslib: 2.8.1
@@ -4383,6 +4414,14 @@ snapshots:
   '@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))':
     dependencies:
       '@zerodev/sdk': 5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      viem: 2.55.10(typescript@5.9.3)(zod@3.25.76)
+
+  '@zerodev/permissions@5.6.0(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))':
+    dependencies:
+      '@simplewebauthn/browser': 9.0.1
+      '@zerodev/sdk': 5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      '@zerodev/webauthn-key': 5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))
+      merkletreejs: 0.3.11
       viem: 2.55.10(typescript@5.9.3)(zod@3.25.76)
 
   '@zerodev/permissions@5.6.3(@zerodev/sdk@5.5.10(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.10(typescript@5.9.3)(zod@3.25.76)))(viem@2.55.10(typescript@5.9.3)(zod@3.25.76))':
