@@ -86,7 +86,8 @@ export async function GET(request: NextRequest) {
                 count: "exact",
                 head: true,
             })
-            .eq("plan_id", plan.plan_id);
+            .eq("plan_id", plan.plan_id)
+            .eq("status", "ACTIVE");
 
         return {
             ...plan,

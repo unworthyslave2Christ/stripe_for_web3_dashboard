@@ -2,66 +2,57 @@
 
 import type { Address } from "viem";
 import type { Subscription } from "@/types/dashboard";
+import type {Customer} from "@/types/dashboard";
 
 export interface MirrorSubscriptionParams {
-    subscriptionId: number;
+  subscriptionId: number;
 
-    customerId: string;
+  customerId: string;
 
-    merchantId: number;
+  merchantId: number;
 
-    planId: number;
+  planId: number;
 
-    planBillingIntervalSeconds: number;
+  planBillingIntervalSeconds: number;
 
-    smartAccount: Address;
+  smartAccount: Address;
 
-    transactionHash: `0x${string}`;
+  transactionHash: `0x${string}`;
 
-    permissionId: `0x${string}`
+  permissionId: `0x${string}`;
 }
 
 export interface SubscriptionRecord extends Subscription {
-    transactionHash: `0x${string}`;
+  transactionHash: `0x${string}`;
 }
 
 /* -------------------------------------------------------------------------- */
 /* Mirror Subscription                                                         */
 /* -------------------------------------------------------------------------- */
 
-// 0xA6B0921999d8D862B87eaCb3DDA1eb8805a096cD MockERC20 
+// 0xA6B0921999d8D862B87eaCb3DDA1eb8805a096cD MockERC20
 // 0xb5161Ce568ab94eF2AD55BBd823d5d3F3eEBbdCE MockERC20_2
 
 export async function mirrorSubscription(
-    payload: MirrorSubscriptionParams,
+  payload: MirrorSubscriptionParams,
 ): Promise<SubscriptionRecord> {
+  const response = await fetch("/api/customers/subscriptions", {
+    method: "POST",
 
-    const response = await fetch(
-        "/api/customers/subscriptions",
-        {
-            method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-            headers: {
-                "Content-Type": "application/json",
-            },
+    body: JSON.stringify(payload),
+  });
 
-            body: JSON.stringify(payload),
-        },
-    );
+  if (!response.ok) {
+    const error = await response.json();
 
-    if (!response.ok) {
+    throw new Error(error.error ?? "Unable to mirror subscription.");
+  }
 
-        const error = await response.json();
-
-        throw new Error(
-            error.error ??
-            "Unable to mirror subscription.",
-        );
-
-    }
-
-    return await response.json();
-
+  return await response.json();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -69,26 +60,17 @@ export async function mirrorSubscription(
 /* -------------------------------------------------------------------------- */
 
 export async function getCustomerSubscriptions(
-    customerId: string,
+  customerId: string,
 ): Promise<SubscriptionRecord[]> {
+  const response = await fetch(`/api/customers/${customerId}/subscriptions`, {
+    cache: "no-store",
+  });
 
-    const response = await fetch(
-        `/api/customers/${customerId}/subscriptions`,
-        {
-            cache: "no-store",
-        },
-    );
+  if (!response.ok) {
+    throw new Error("Unable to fetch subscriptions.");
+  }
 
-    if (!response.ok) {
-
-        throw new Error(
-            "Unable to fetch subscriptions.",
-        );
-
-    }
-
-    return await response.json();
-
+  return await response.json();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -96,139 +78,187 @@ export async function getCustomerSubscriptions(
 /* -------------------------------------------------------------------------- */
 
 export async function getSubscription(
-    subscriptionId: number,
+  subscriptionId: number,
 ): Promise<SubscriptionRecord | null> {
+  const response = await fetch(`/api/subscriptions/${subscriptionId}`, {
+    cache: "no-store",
+  });
 
-    const response = await fetch(
-        `/api/subscriptions/${subscriptionId}`,
-        {
-            cache: "no-store",
-        },
-    );
+  if (response.status === 404) {
+    return null;
+  }
 
-    if (response.status === 404) {
+  if (!response.ok) {
+    throw new Error("Unable to load subscription.");
+  }
 
-        return null;
-
-    }
-
-    if (!response.ok) {
-
-        throw new Error(
-            "Unable to load subscription.",
-        );
-
-    }
-
-    return await response.json();
-
+  return await response.json();
 }
 
-/* -------------------------------------------------------------------------- */
-/* Pause                                                                       */
-/* -------------------------------------------------------------------------- */
+import { encodeFunctionData } from "viem";
 
-export async function pauseSubscriptionRecord(
-    subscriptionId: number,
-): Promise<void> {
+import { createKernelAccount, type KernelAccountClient} from "@zerodev/sdk";
 
-    const response = await fetch(
-        `/api/subscriptions/${subscriptionId}/pause`,
-        {
-            method: "PATCH",
-        },
-    );
+import protocolAbi from "@/abi/Web3BillingProtocol.json";
 
-    if (!response.ok) {
+import { CONTRACT_ADDRESS } from "@/constants";
 
-        throw new Error(
-            "Unable to pause subscription.",
-        );
+type KernelSmartAccount = Awaited<
+    ReturnType<typeof createKernelAccount>
+>
 
-    }
 
+
+export interface ModifySubscriptionParams {
+  kernel: KernelSmartAccount;
+
+  kernelClient: KernelAccountClient;
+
+  publicClient: any;
+
+  customer: Customer;
+
+  subscriptionId: bigint;
+
+  operation: "pauseSubscription" | "resumeSubscription" | "cancelSubscription";
+
+  statusValue: number;
+
+  apiSegment: "pause" | "resume" | "cancel";
 }
 
-/* -------------------------------------------------------------------------- */
-/* Resume                                                                      */
-/* -------------------------------------------------------------------------- */
+export async function modifySubscriptionService({
+  kernel,
 
-export async function resumeSubscriptionRecord(
-    subscriptionId: number,
-): Promise<void> {
+  kernelClient,
 
-    const response = await fetch(
-        `/api/subscriptions/${subscriptionId}/resume`,
-        {
-            method: "PATCH",
-        },
-    );
+  publicClient,
 
-    if (!response.ok) {
+  customer,
 
-        throw new Error(
-            "Unable to resume subscription.",
-        );
+  subscriptionId,
 
-    }
+  operation,
 
-}
+  statusValue,
 
-/* -------------------------------------------------------------------------- */
-/* Cancel                                                                      */
-/* -------------------------------------------------------------------------- */
+  apiSegment,
+}: ModifySubscriptionParams) {
+  /*
+    --------------------------------------------------------------------------
+    Encode Contract Call
+    --------------------------------------------------------------------------
+    */
 
-export async function cancelSubscriptionRecord(
-    subscriptionId: number,
-): Promise<void> {
+  const encodedData = encodeFunctionData({
+    abi: protocolAbi,
 
-    const response = await fetch(
-        `/api/subscriptions/${subscriptionId}/cancel`,
-        {
-            method: "PATCH",
-        },
-    );
+    functionName: operation,
 
-    if (!response.ok) {
+    args: [subscriptionId],
+  });
 
-        throw new Error(
-            "Unable to cancel subscription.",
-        );
+  /*
+    --------------------------------------------------------------------------
+    Encode Kernel Call
+    --------------------------------------------------------------------------
+    */
 
-    }
+  const callData = await kernel.encodeCalls([
+    {
+      to: CONTRACT_ADDRESS as Address,
 
-}
+      value: 0n,
 
-/* -------------------------------------------------------------------------- */
-/* Billing Update                                                              */
-/* -------------------------------------------------------------------------- */
+      data: encodedData,
+    },
+  ]);
 
-export async function updateBillingInformation(
-    subscriptionId: number,
-    nextBillingTime: string,
-): Promise<void> {
+  /*
+    --------------------------------------------------------------------------
+    Send UserOperation
+    --------------------------------------------------------------------------
+    */
 
-    const response = await fetch(
-        `/api/subscriptions/${subscriptionId}/billing`,
-        {
-            method: "PATCH",
+  const userOpHash = await kernelClient.sendUserOperation({
+    callData,
+  });
 
-            headers: {
-                "Content-Type": "application/json",
-            },
+  /*
+    --------------------------------------------------------------------------
+    Wait For Receipt
+    --------------------------------------------------------------------------
+    */
 
-            body: JSON.stringify({
-                nextBillingTime,
-            }),
-        },
-    );
+  const userOpReceipt = await kernelClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  });
 
-    if (!response.ok) {
+  const receipt = userOpReceipt.receipt;
 
-        throw new Error(
-            "Unable to update billing.",
-        );
+  /*
+    --------------------------------------------------------------------------
+    Verify On-chain State
+    --------------------------------------------------------------------------
+    */
 
-    }
+  const subscription = await publicClient.readContract({
+    address: CONTRACT_ADDRESS,
 
+    abi: protocolAbi,
+
+    functionName: "getSubscription",
+
+    args: [subscriptionId],
+  });
+
+  if (Number(subscription.status) !== statusValue) {
+    throw new Error("Subscription state verification failed.");
+  }
+
+  /*
+    --------------------------------------------------------------------------
+    Mirror Into Supabase
+    --------------------------------------------------------------------------
+    */
+
+    console.log("apiSegment: ", apiSegment);
+
+  const response = await fetch(
+    `/api/subscriptions/${apiSegment}`,
+
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        subscriptionId: Number(subscriptionId),
+
+        customerId: customer.customer_id,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+
+    throw new Error(error.error ?? `Unable to ${apiSegment} subscription.`);
+  }
+
+  /*
+    --------------------------------------------------------------------------
+    Return
+    --------------------------------------------------------------------------
+    */
+
+  return {
+    userOpHash,
+
+    receipt,
+
+    subscription,
+  };
 }

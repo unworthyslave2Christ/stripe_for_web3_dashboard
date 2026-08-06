@@ -15,8 +15,7 @@ interface ActiveSubscriptionsProps {
     subscriptions: Subscription[];
 
     onBrowseMerchants?: () => void
-
-
+    
 }
 
 export default function ActiveSubscriptions({

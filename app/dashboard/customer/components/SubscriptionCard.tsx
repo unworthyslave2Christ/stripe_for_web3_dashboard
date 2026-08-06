@@ -1,5 +1,6 @@
 "use client";
 
+import { getMerchantById } from "@/services/merchant";
 import type {
 
     BillingPlan,
@@ -9,6 +10,8 @@ import type {
     Subscription,
 
 } from "@/types/dashboard";
+
+import {useRouter} from 'next/navigation';
 
 interface SubscriptionCardProps {
 
@@ -30,10 +33,8 @@ export default function SubscriptionCard({
 
     plan,
 
-    onManage,
-
 }: SubscriptionCardProps) {
-
+    
     const statusColor = {
 
         ACTIVE:
@@ -47,6 +48,12 @@ export default function SubscriptionCard({
 
     };
 
+    const router = useRouter()
+
+    const manageSubscription = (subscriptionId: number) => router.push(
+            `/dashboard/customer/subscriptions/${subscription.subscriptionId}`,
+        )
+
     return (
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:border-cyan-700">
@@ -59,7 +66,7 @@ export default function SubscriptionCard({
 
                         {
 
-                            merchant?.name ??
+                            subscription.merchant.name ??
 
                             `Merchant #${subscription.merchant.merchantId}`
 
@@ -203,11 +210,7 @@ export default function SubscriptionCard({
 
                     onClick={() =>
 
-                        onManage?.(
-
-                            subscription,
-
-                        )
+                        manageSubscription(subscription.subscriptionId)
 
                     }
 

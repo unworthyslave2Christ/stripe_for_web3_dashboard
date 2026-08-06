@@ -25,6 +25,7 @@ import {
   subscribe,
 } from "@/services/customerDashboard";
 import { getCustomerByWallet } from "@/services/customer";
+import { getMerchantById } from "@/services/merchant";
 
 export function useCustomerDashboard() {
   const { address } = useAccount();
@@ -112,10 +113,10 @@ export function useCustomerDashboard() {
       setLoading(true);
 
       /*
-                --------------------------------------------------------------
-                Customer
-                --------------------------------------------------------------
-                */
+      --------------------------------------------------------------
+      Customer
+      --------------------------------------------------------------
+      */
 
       const currentCustomer = await getCustomerByWallet(address);
 
@@ -139,25 +140,26 @@ export function useCustomerDashboard() {
       setCustomer(currentCustomer);
 
       /*
-                --------------------------------------------------------------
-                Merchants
-                --------------------------------------------------------------
-                */
-
+      --------------------------------------------------------------
+      Merchants
+      --------------------------------------------------------------
+      */
      
       const merchantList = await getFeaturedMerchants();
 
       setMerchants(merchantList);
 
       /*
-                --------------------------------------------------------------
-                Customer Subscriptions
-                --------------------------------------------------------------
-                */
+      --------------------------------------------------------------
+      Customer Subscriptions
+      --------------------------------------------------------------
+      */
 
       const activeSubscriptions = await getActiveSubscriptions(
         currentCustomer.customerId,
       );
+
+   
 
       setSubscriptions(activeSubscriptions);
 
@@ -220,10 +222,10 @@ export function useCustomerDashboard() {
   
 
   /*
-    --------------------------------------------------------------------------
-    Subscribe
-    --------------------------------------------------------------------------
-    */
+  --------------------------------------------------------------------------
+  Subscribe
+  --------------------------------------------------------------------------
+  */
 
   async function subscribeToPlan(plan: BillingPlan) {
     if (!walletClient || !publicClient || !customer) {
