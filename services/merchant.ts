@@ -14,6 +14,20 @@ import { arbitrumSepolia } from "viem/chains";
 import { getEntryPoint, KERNEL_V3_3 } from "@zerodev/sdk/constants";
 import { approveBillingOperator } from "./billingProtocol";
 
+import {StripeForWeb3} from "@stripe-for-web3/sdk"
+
+import { MerchantClient } from "@stripe-for-web3/sdk";
+
+import { CustomerClient } from "@stripe-for-web3/sdk";
+
+// import { WalletClient } from "@stripe-for-web3/sdk";
+
+import type {
+  MerchantRecord,
+  PlanRecord,
+  SubscriptionRecord
+} from "@stripe-for-web3/sdk"
+
 /* -------------------------------------------------------------------------- */
 /* Interfaces                                                                   */
 /* -------------------------------------------------------------------------- */
