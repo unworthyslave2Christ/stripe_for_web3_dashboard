@@ -1,6 +1,31 @@
+// src/repositories/MerchantRepository.ts
+
 import { SupabaseClient } from "@supabase/supabase-js";
 
-import { MerchantRecord } from "@/types/Merchant";
+export type MerchantStatus =
+    | "PENDING"
+    | "ACTIVE"
+    | "SUSPENDED";
+
+export interface CanonicalMerchant {
+
+    merchantId: number;
+
+    ownerWallet: `0x${string}`;
+
+    smartAccount: `0x${string}`;
+
+    payoutWallet: `0x${string}`;
+
+    billingOperator: `0x${string}`;
+
+    name: string;
+
+    metadataURI: string;
+
+    status: MerchantStatus;
+
+}
 
 export class MerchantRepository {
 
@@ -8,35 +33,43 @@ export class MerchantRepository {
         private readonly db: SupabaseClient,
     ) {}
 
+    ////////////////////////////////////////////////////////////
+    // CREATE
+    ////////////////////////////////////////////////////////////
+
     async create(
-        merchant: MerchantRecord & {
-            smartAccount: `0x${string}`;
-            payoutWallet: `0x${string}`;
-            billingOperator: `0x${string}`;
-        },
+        merchant: CanonicalMerchant,
     ) {
 
         const { data, error } =
             await this.db
                 .from("merchants")
                 .insert({
-                    merchant_id: merchant.merchantId,
 
-                    owner_wallet: merchant.owner,
+                    merchant_id:
+                        merchant.merchantId,
 
-                    payout_wallet: merchant.payoutWallet,
+                    owner_wallet:
+                        merchant.ownerWallet,
 
-                    smart_account: merchant.smartAccount,
+                    smart_account:
+                        merchant.smartAccount,
+
+                    payout_wallet:
+                        merchant.payoutWallet,
 
                     billing_operator:
                         merchant.billingOperator,
 
-                    name: merchant.businessName,
+                    name:
+                        merchant.name,
 
                     metadata_uri:
                         merchant.metadataURI,
 
-                    status: merchant.status,
+                    status:
+                        merchant.status,
+
                 })
                 .select()
                 .single();
@@ -51,6 +84,10 @@ export class MerchantRepository {
 
     }
 
+    ////////////////////////////////////////////////////////////
+    // LOOKUPS
+    ////////////////////////////////////////////////////////////
+
     async findByMerchantId(
         merchantId: number,
     ) {
@@ -60,11 +97,11 @@ export class MerchantRepository {
                 .from("merchants")
                 .select("*")
                 .eq("merchant_id", merchantId)
-                .single();
+                .maybeSingle();
 
         if (error) {
 
-            return null;
+            throw error;
 
         }
 
@@ -81,11 +118,11 @@ export class MerchantRepository {
                 .from("merchants")
                 .select("*")
                 .eq("owner_wallet", ownerWallet)
-                .single();
+                .maybeSingle();
 
         if (error) {
 
-            return null;
+            throw error;
 
         }
 
@@ -93,19 +130,72 @@ export class MerchantRepository {
 
     }
 
+    async findBySmartAccount(
+        smartAccount: `0x${string}`,
+    ) {
+
+        const { data, error } =
+            await this.db
+                .from("merchants")
+                .select("*")
+                .eq("smart_account", smartAccount)
+                .maybeSingle();
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    // EXISTS
+    ////////////////////////////////////////////////////////////
+
+    async existsByOwnerWallet(
+        ownerWallet: `0x${string}`,
+    ) {
+
+        const merchant =
+            await this.findByOwnerWallet(ownerWallet);
+
+        return merchant !== null;
+
+    }
+
+    async existsBySmartAccount(
+        smartAccount: `0x${string}`,
+    ) {
+
+        const merchant =
+            await this.findBySmartAccount(smartAccount);
+
+        return merchant !== null;
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    // STATUS
+    ////////////////////////////////////////////////////////////
+
     async updateStatus(
         merchantId: number,
-        status: "ACTIVE" | "SUSPENDED",
+        status: MerchantStatus,
     ) {
 
         const { data, error } =
             await this.db
                 .from("merchants")
                 .update({
+
                     status,
 
                     updated_at:
                         new Date().toISOString(),
+
                 })
                 .eq("merchant_id", merchantId)
                 .select()
@@ -121,13 +211,76 @@ export class MerchantRepository {
 
     }
 
-    async all() {
+    ////////////////////////////////////////////////////////////
+    // UPDATE
+    ////////////////////////////////////////////////////////////
+
+    async updateMetadata(
+        merchantId: number,
+        values: {
+
+            name?: string;
+
+            metadataURI?: string;
+
+            payoutWallet?: `0x${string}`;
+
+        },
+    ) {
+
+        const { data, error } =
+            await this.db
+                .from("merchants")
+                .update({
+
+                    ...(values.name && {
+                        name: values.name,
+                    }),
+
+                    ...(values.metadataURI && {
+                        metadata_uri:
+                            values.metadataURI,
+                    }),
+
+                    ...(values.payoutWallet && {
+                        payout_wallet:
+                            values.payoutWallet,
+                    }),
+
+                    updated_at:
+                        new Date().toISOString(),
+
+                })
+                .eq("merchant_id", merchantId)
+                .select()
+                .single();
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return data;
+
+    }
+
+    ////////////////////////////////////////////////////////////
+    // LIST
+    ////////////////////////////////////////////////////////////
+
+    async list() {
 
         const { data, error } =
             await this.db
                 .from("merchants")
                 .select("*")
-                .order("merchant_id");
+                .order(
+                    "merchant_id",
+                    {
+                        ascending: true,
+                    },
+                );
 
         if (error) {
 

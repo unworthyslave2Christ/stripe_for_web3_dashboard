@@ -59,7 +59,6 @@ export function useMerchant() {
 
           // Merchant not yet mirrored into Supabase.
           merchantFromSupabase = null;
-
       }
 
       if (merchantFromSupabase){
