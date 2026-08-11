@@ -1,5 +1,5 @@
 
-[See article:](https://medium.com/@righteousnessbyfaithinjesus/i-wanted-stripe-for-web3-so-i-started-building-it-42445e9ddabc)
+# [See article:](https://medium.com/@righteousnessbyfaithinjesus/i-wanted-stripe-for-web3-so-i-started-building-it-42445e9ddabc)
 
 # Stripe for Web3 Dashboard
 
