@@ -38,6 +38,8 @@ export async function GET(
     error,
   } = await query.maybeSingle();
 
+  console.log("received customer: ", data);
+
   if (error) {
     return NextResponse.json(
       {
@@ -53,7 +55,7 @@ export async function GET(
   if (!data) {
     return NextResponse.json(
       {
-        error: "Merchant not found.",
+        error: "Customer not found.",
       },
 
       {
