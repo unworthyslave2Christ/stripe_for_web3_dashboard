@@ -85,155 +85,113 @@ export async function GET(request: NextRequest) {
 /* -------------------------------------------------------------------------- */
 
 export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
 
-    try {
+    const now = new Date().toISOString();
 
-        const body = await request.json();
-
-        const now = new Date().toISOString();
-
-        /*
+    /*
         -----------------------------------------------------------------------
         Encrypt session private key
         -----------------------------------------------------------------------
         */
 
-    
+    const encryptedSession = encryptPrivateKey(body.sessionPrivateKey);
 
-        const encryptedSession =
-            encryptPrivateKey(body.sessionPrivateKey);
-
-        /*
+    /*
         -----------------------------------------------------------------------
         Create customer
         -----------------------------------------------------------------------
         */
 
-        const {
+    const {
+      data: customer,
 
-            data: customer,
+      error: customerError,
+    } = await supabase
 
-            error: customerError,
+      .from("customers")
 
-        } = await supabase
+      .insert({
+        wallet_address: body.wallet,
 
-            .from("customers")
+        smart_account: body.smartAccount,
 
-            .insert({
+        display_name: body.displayName,
 
-                wallet_address:
-                    body.wallet,
+        email: body.email,
 
-                smart_account:
-                    body.smartAccount,
+        status: "ACTIVE",
 
-                display_name:
-                    body.displayName,
+        created_at: now,
 
-                email:
-                    body.email,
+        updated_at: now,
+      })
 
-                status:
-                    "ACTIVE",
+      .select()
 
-                created_at:
-                    now,
+      .single();
 
-                updated_at:
-                    now,
+    if (customerError) throw customerError;
 
-            })
-
-            .select()
-
-            .single();
-
-        if (customerError)
-            throw customerError;
-
-        /*
+    /*
         -----------------------------------------------------------------------
         Create billing permission
         -----------------------------------------------------------------------
         */
 
-       const expiry = new Date(
-           
-            Date.now() +
+    const expiry = new Date(
+      Date.now() + 365 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
-            365 * 24 * 60 * 60 * 1000,
-            
-        ).toISOString();
+    console.log("returned customer_id: ", customer.customer_id);
 
-        console.log("returned customer_id: ", customer.customer_id);
-            
-        const {
+    const {
+      data: permission,
 
-            data: permission,
-            
-            error: permissionError,
-                
-        } = await supabase
+      error: permissionError,
+    } = await supabase
 
-        .from("billing_permissions")
-        
-            .insert({
-                
-                customer_id:
-                customer.customer_id,
-                
-                session_public_key:
-                privateKeyToAccount(body.sessionPrivateKey),
+      .from("billing_permissions")
 
-                serialized_permission_account:
-                body.serializedPermissionAccount,
+      .insert({
+        customer_id: customer.customer_id,
 
-                encrypted_session:
-                    encryptedSession,
-                    
-                permission_expiry:
-                expiry,
-                    
-                revoked:
-                    false,
-                    
-                created_at:
-                now,
+        session_public_key: privateKeyToAccount(body.sessionPrivateKey),
 
-                updated_at:
-                now,
+        serialized_permission_account: body.serializedPermissionAccount,
 
-            })
+        encrypted_session: encryptedSession,
 
-            .select()
+        permission_expiry: expiry,
 
-            .single();
+        revoked: false,
 
-            if (permissionError)
-            throw permissionError;
-        
-        
-        /*
+        created_at: now,
+
+        updated_at: now,
+      })
+
+      .select()
+
+      .single();
+
+    if (permissionError) throw permissionError;
+
+    /*
         -----------------------------------------------------------------------
         Success
         -----------------------------------------------------------------------
         */
 
-        return NextResponse.json({
+    return NextResponse.json({
+      customer,
 
-            customer,
+      permission,
+    });
+  } catch (error) {
+    console.dir(error, { depth: null });
 
-            permission,
-
-        });
-
-    }
-
-    catch (error) {
-
-        console.dir(error, { depth: null });
-
-        throw error;
-    }
-
+    throw error;
+  }
 }

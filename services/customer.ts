@@ -299,10 +299,6 @@ export async function getCustomerKernel(
     signer,
   );
 
-  console.log("kernel created GRACIOUSLY...")
-
-  console.log("kernel.address.toLowerCase(): ", kernel.address.toLowerCase() );
-  console.log("customer.smartAccount.toLowerCase(): ", customer.smartAccount.toLowerCase());
 
   if ((kernel.address.toLowerCase() !== customer.smart_account.toLowerCase()) ) {
     throw new Error("Kernel verification failed.");

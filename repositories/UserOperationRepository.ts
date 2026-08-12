@@ -1,286 +1,334 @@
+// src/repositories/UserOperationRepository.ts
+
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export type UserOperationType =
-    | "CREATE_MERCHANT"
-    | "UPDATE_MERCHANT"
-    | "CREATE_PLAN"
-    | "UPDATE_PLAN"
-    | "PAUSE_PLAN"
-    | "RESUME_PLAN"
-    | "ARCHIVE_PLAN"
-    | "CREATE_PERMISSION"
-    | "UPDATE_PERMISSION"
-    | "REVOKE_PERMISSION"
-    | "CREATE_SUBSCRIPTION"
-    | "PAUSE_SUBSCRIPTION"
-    | "RESUME_SUBSCRIPTION"
-    | "CANCEL_SUBSCRIPTION"
-    | "BILLING";
+  | "CREATE_MERCHANT"
+  | "UPDATE_MERCHANT"
+  | "CREATE_PLAN"
+  | "UPDATE_PLAN"
+  | "PAUSE_PLAN"
+  | "RESUME_PLAN"
+  | "ARCHIVE_PLAN"
+  | "CREATE_PERMISSION"
+  | "UPDATE_PERMISSION"
+  | "REVOKE_PERMISSION"
+  | "CREATE_SUBSCRIPTION"
+  | "PAUSE_SUBSCRIPTION"
+  | "RESUME_SUBSCRIPTION"
+  | "CANCEL_SUBSCRIPTION"
+  | "BILLING";
 
-export type UserOperationStatus =
-    | "QUEUED"
-    | "PENDING"
-    | "CONFIRMED"
-    | "FAILED";
+export type UserOperationStatus = "QUEUED" | "PENDING" | "CONFIRMED" | "FAILED";
 
-export interface CreateUserOperation {
+export interface CanonicalUserOperation {
+  operation: UserOperationType;
 
-    operation: UserOperationType;
+  resourceType: string;
 
-    resourceType: string;
+  resourceId: string;
 
-    resourceId: string;
+  merchantId?: number;
 
-    merchantId?: number;
+  customerId?: string;
 
-    customerId?: string;
+  walletAddress?: `0x${string}`;
 
-    smartAccount: `0x${string}`;
+  smartAccount?: `0x${string}`;
 
-    userOperationHash?: `0x${string}`;
-
-    transactionHash?: `0x${string}`;
-
-    payload: Record<string, unknown>;
-
+  payload: Record<string, unknown>;
 }
 
 export class UserOperationRepository {
+  constructor(private readonly db: SupabaseClient) {}
 
-    constructor(
-        private readonly db: SupabaseClient,
-    ) {}
+  ////////////////////////////////////////////////////////////
+  // CREATE
+  ////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////
-    // CREATE
-    ////////////////////////////////////////////////////////////
+  async create(operation: CanonicalUserOperation) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .insert({
+        operation: operation.operation,
 
-    async create(
-        operation: CreateUserOperation,
-    ) {
+        resource_type: operation.resourceType,
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .insert({
+        resource_id: operation.resourceId,
 
-                    operation: operation.operation,
+        merchant_id: operation.merchantId ?? null,
 
-                    resource_type:
-                        operation.resourceType,
+        customer_id: operation.customerId ?? null,
 
-                    resource_id:
-                        operation.resourceId,
+        owner_wallet: operation.walletAddress ?? null,
 
-                    merchant_id:
-                        operation.merchantId ?? null,
+        smart_account: operation.smartAccount ?? null,
 
-                    customer_id:
-                        operation.customerId ?? null,
+        payload: operation.payload,
 
-                    smart_account:
-                        operation.smartAccount,
+        status: "QUEUED",
 
-                    user_operation_hash:
-                        operation.userOperationHash ?? null,
+        retry_count: 0,
+      })
+      .select()
+      .single();
 
-                    transaction_hash:
-                        operation.transactionHash ?? null,
-
-                    payload:
-                        operation.payload,
-
-                    status: "QUEUED",
-
-                })
-                .select()
-                .single();
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    ////////////////////////////////////////////////////////////
-    // LOOKUP
-    ////////////////////////////////////////////////////////////
+    return data;
+  }
 
-    async findById(
-        id: string,
-    ) {
+  ////////////////////////////////////////////////////////////
+  // LOOKUPS
+  ////////////////////////////////////////////////////////////
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .select("*")
-                .eq("id", id)
-                .single();
+  async findById(id: string) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
 
-        if (error) {
-
-            return null;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    async findByHash(
-        hash: `0x${string}`,
-    ) {
+    return data;
+  }
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .select("*")
-                .eq("user_operation_hash", hash)
-                .single();
+  async findByOperationHash(hash: `0x${string}`) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("operation_hash", hash)
+      .maybeSingle();
 
-        if (error) {
-
-            return null;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    ////////////////////////////////////////////////////////////
-    // WORKER
-    ////////////////////////////////////////////////////////////
+    return data;
+  }
 
-    async queued() {
+  async findByTransactionHash(hash: `0x${string}`) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("transaction_hash", hash)
+      .maybeSingle();
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .select("*")
-                .in("status", [
-                    "QUEUED",
-                    "PENDING",
-                ])
-                .order(
-                    "created_at",
-                    {
-                        ascending: true,
-                    },
-                );
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    ////////////////////////////////////////////////////////////
-    // STATUS
-    ////////////////////////////////////////////////////////////
+    return data;
+  }
 
-    async markPending(
-        id: string,
-        hash: `0x${string}`,
-    ) {
+  async findByMerchantId(merchantId: number) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("merchant_id", merchantId)
+      .order("created_at", {
+        ascending: false,
+      });
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .update({
-
-                    status: "PENDING",
-
-                    user_operation_hash:
-                        hash,
-
-                })
-                .eq("id", id)
-                .select()
-                .single();
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    async markConfirmed(
-        id: string,
-        transactionHash: `0x${string}`,
-    ) {
+    return data;
+  }
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .update({
+  async findByCustomerId(customerId: string) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("customer_id", customerId)
+      .order("created_at", {
+        ascending: false,
+      });
 
-                    status: "CONFIRMED",
-
-                    transaction_hash:
-                        transactionHash,
-
-                    confirmed_at:
-                        new Date().toISOString(),
-
-                })
-                .eq("id", id)
-                .select()
-                .single();
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
-    async markFailed(
-        id: string,
-        reason: string,
-    ) {
+    return data;
+  }
 
-        const { data, error } =
-            await this.db
-                .from("user_operations")
-                .update({
+  ////////////////////////////////////////////////////////////
+  // WORKER QUEUES
+  ////////////////////////////////////////////////////////////
 
-                    status: "FAILED",
+  async findQueued() {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("status", "QUEUED")
+      .order("created_at", {
+        ascending: true,
+      });
 
-                    failure_reason:
-                        reason,
-
-                    failed_at:
-                        new Date().toISOString(),
-
-                })
-                .eq("id", id)
-                .select()
-                .single();
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        return data;
-
+    if (error) {
+      throw error;
     }
 
+    return data;
+  }
+
+  async findPending() {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("status", "PENDING")
+      .order("created_at", {
+        ascending: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async findFailed() {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("status", "FAILED")
+      .order("failed_at", {
+        ascending: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async findConfirmed() {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .select("*")
+      .eq("status", "CONFIRMED")
+      .order("confirmed_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  ////////////////////////////////////////////////////////////
+  // STATUS
+  ////////////////////////////////////////////////////////////
+
+  async markPending(id: string, operationHash: `0x${string}`) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .update({
+        status: "PENDING",
+
+        operation_hash: operationHash,
+
+        last_attempt_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async markConfirmed(
+    id: string,
+    transactionHash: `0x${string}`,
+    blockNumber?: bigint,
+  ) {
+    const { data, error } = await this.db
+      .from("user_operations")
+      .update({
+        status: "CONFIRMED",
+
+        transaction_hash: transactionHash,
+
+        block_number: blockNumber ? Number(blockNumber) : null,
+
+        confirmed_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async markFailed(id: string, reason: string) {
+    const operation = await this.findById(id);
+
+    const retryCount = (operation?.retry_count ?? 0) + 1;
+
+    const { data, error } = await this.db
+      .from("user_operations")
+      .update({
+        status: "FAILED",
+
+        failure_reason: reason,
+
+        retry_count: retryCount,
+
+        failed_at: new Date().toISOString(),
+
+        last_attempt_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async requeue(id: string) {
+    const operation = await this.findById(id);
+
+    const retryCount = (operation?.retry_count ?? 0) + 1;
+
+    const { data, error } = await this.db
+      .from("user_operations")
+      .update({
+        status: "QUEUED",
+
+        retry_count: retryCount,
+
+        last_attempt_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }
