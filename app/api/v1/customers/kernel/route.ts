@@ -150,7 +150,7 @@ export async function POST(
         ////////////////////////////////////////////////////////
 
         const wallet =
-            body.wallet.toLowerCase();
+            body.wallet;
 
 
         ////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ export async function POST(
                 .select("*")
 
                 .eq(
-                    "wallet_address",
+                    "owner_wallet",
                     wallet,
                 )
 

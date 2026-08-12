@@ -212,5 +212,6 @@ export async function GET(
     );
   }
 
+  console.log("returned data: ", data);
   return NextResponse.json(data ?? []);
 }

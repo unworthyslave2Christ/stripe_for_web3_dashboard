@@ -2,49 +2,241 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-interface RouteContext {
-    params: Promise<{
-        subscriptionId: string;
-    }>;
-}
+import { createClient } from "@supabase/supabase-js";
+
+////////////////////////////////////////////////////////////
+// SUPABASE
+////////////////////////////////////////////////////////////
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+
+////////////////////////////////////////////////////////////
+// POST
+////////////////////////////////////////////////////////////
 
 export async function POST(
-    _request: NextRequest,
-    { params }: RouteContext,
+  request: NextRequest,
+  context: {
+    params: Promise<{
+      subscriptionId: string;
+    }>;
+  },
 ) {
+  try {
+    ////////////////////////////////////////////////////////////
+    // PARAMS
+    ////////////////////////////////////////////////////////////
 
-    const { subscriptionId } = await params;
+    const { subscriptionId: subscriptionIdParam } = await context.params;
+
+    const subscriptionId = Number(subscriptionIdParam);
 
     ////////////////////////////////////////////////////////////
-    // TODO
-    //
-    // Authenticate Customer.
-    // Verify ownership.
-    // Submit ResumeSubscription UserOperation.
-    // Mirror canonical database.
+    // VALIDATE SUBSCRIPTION ID
     ////////////////////////////////////////////////////////////
+
+    if (!Number.isInteger(subscriptionId) || subscriptionId <= 0) {
+      return NextResponse.json(
+        {
+          error: "Invalid subscription ID.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // REQUEST BODY
+    ////////////////////////////////////////////////////////////
+
+    let body: {
+      subscriptionId?: number;
+      customerId?: string;
+      status?: string;
+    } = {};
+
+    try {
+      body = await request.json();
+    } catch {
+      // Body is optional.
+    }
+
+    ////////////////////////////////////////////////////////////
+    // VERIFY BODY ID
+    ////////////////////////////////////////////////////////////
+
+    if (
+      body.subscriptionId !== undefined &&
+      Number(body.subscriptionId) !== subscriptionId
+    ) {
+      return NextResponse.json(
+        {
+          error: "Subscription ID in request body does not match the route.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // GET CURRENT SUBSCRIPTION
+    ////////////////////////////////////////////////////////////
+
+    const { data: subscription, error: subscriptionError } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("subscription_id", subscriptionId)
+      .maybeSingle();
+
+    ////////////////////////////////////////////////////////////
+    // DATABASE ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (subscriptionError) {
+      return NextResponse.json(
+        {
+          error: subscriptionError.message,
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // NOT FOUND
+    ////////////////////////////////////////////////////////////
+
+    if (!subscription) {
+      return NextResponse.json(
+        {
+          error: `Subscription ${subscriptionId} not found.`,
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // VERIFY CUSTOMER
+    ////////////////////////////////////////////////////////////
+
+    if (
+      body.customerId !== undefined &&
+      body.customerId !== subscription.customer_id
+    ) {
+      return NextResponse.json(
+        {
+          error: "Subscription does not belong to the specified customer.",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // CURRENT STATE
+    ////////////////////////////////////////////////////////////
+
+    if (subscription.status === "CANCELLED") {
+      return NextResponse.json(
+        {
+          error: `Subscription ${subscriptionId} is cancelled and cannot be resumed.`,
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ALREADY ACTIVE
+    ////////////////////////////////////////////////////////////
+
+    if (subscription.status === "ACTIVE") {
+      return NextResponse.json(
+        {
+          success: true,
+
+          subscription,
+        },
+        {
+          status: 200,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // REQUIRE PAUSED STATE
+    ////////////////////////////////////////////////////////////
+
+    if (subscription.status !== "PAUSED") {
+      return NextResponse.json(
+        {
+          error: `Subscription ${subscriptionId} cannot be resumed from status ${subscription.status}.`,
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // UPDATE SUBSCRIPTION
+    ////////////////////////////////////////////////////////////
+
+    const { data: updatedSubscription, error: updateError } = await supabase
+      .from("subscriptions")
+      .update({
+        status: "ACTIVE",
+      })
+      .eq("subscription_id", subscriptionId)
+      .select("*")
+      .single();
+
+    ////////////////////////////////////////////////////////////
+    // UPDATE ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (updateError) {
+      console.error("Resume subscription update error:", updateError);
+
+      return NextResponse.json(
+        {
+          error: updateError.message,
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // SUCCESS
+    ////////////////////////////////////////////////////////////
+
+    return NextResponse.json({
+      success: true,
+
+      subscription: updatedSubscription,
+    });
+  } catch (error) {
+    console.error("Resume subscription endpoint error:", error);
 
     return NextResponse.json(
-        {
-            success: true,
-
-            subscription: {
-                subscriptionId,
-
-                status: "ACTIVE",
-
-                resumedAt: new Date().toISOString(),
-            },
-
-            userOperation: {
-                id: "uop_mock",
-
-                status: "PENDING",
-            },
-        },
-        {
-            status: 200,
-        },
+      {
+        error: error instanceof Error ? error.message : "Unknown error.",
+      },
+      {
+        status: 500,
+      },
     );
-
+  }
 }

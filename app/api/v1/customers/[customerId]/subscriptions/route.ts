@@ -12,14 +12,14 @@ const supabase = createClient(
 );
 
 ////////////////////////////////////////////////////////////
-// GET SUBSCRIPTION
+// GET CUSTOMER SUBSCRIPTIONS
 ////////////////////////////////////////////////////////////
 
 export async function GET(
   request: NextRequest,
   context: {
     params: Promise<{
-      subscriptionId: string;
+      customerId: string;
     }>;
   },
 ) {
@@ -28,18 +28,16 @@ export async function GET(
     // PARAMETER
     ////////////////////////////////////////////////////////////
 
-    const { subscriptionId: subscriptionIdParam } = await context.params;
-
-    const subscriptionId = Number(subscriptionIdParam);
+    const { customerId } = await context.params;
 
     ////////////////////////////////////////////////////////////
-    // VALIDATE
+    // VALIDATE CUSTOMER ID
     ////////////////////////////////////////////////////////////
 
-    if (!Number.isInteger(subscriptionId) || subscriptionId <= 0) {
+    if (!customerId || typeof customerId !== "string") {
       return NextResponse.json(
         {
-          error: "Invalid subscription ID.",
+          error: "Invalid customer ID.",
         },
         {
           status: 400,
@@ -48,23 +46,19 @@ export async function GET(
     }
 
     ////////////////////////////////////////////////////////////
-    // QUERY
+    // VERIFY CUSTOMER EXISTS
     ////////////////////////////////////////////////////////////
 
-    const { data, error } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("subscription_id", subscriptionId)
+    const { data: customer, error: customerError } = await supabase
+      .from("customers")
+      .select("customer_id")
+      .eq("customer_id", customerId)
       .maybeSingle();
 
-    ////////////////////////////////////////////////////////////
-    // DATABASE ERROR
-    ////////////////////////////////////////////////////////////
-
-    if (error) {
+    if (customerError) {
       return NextResponse.json(
         {
-          error: error.message,
+          error: customerError.message,
         },
         {
           status: 500,
@@ -72,17 +66,40 @@ export async function GET(
       );
     }
 
-    ////////////////////////////////////////////////////////////
-    // NOT FOUND
-    ////////////////////////////////////////////////////////////
-
-    if (!data) {
+    if (!customer) {
       return NextResponse.json(
         {
-          error: `Subscription ${subscriptionId} not found.`,
+          error: `Customer ${customerId} not found.`,
         },
         {
           status: 404,
+        },
+      );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // GET SUBSCRIPTIONS
+    ////////////////////////////////////////////////////////////
+
+    const { data: subscriptions, error: subscriptionsError } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("customer_id", customerId)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    ////////////////////////////////////////////////////////////
+    // DATABASE ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (subscriptionsError) {
+      return NextResponse.json(
+        {
+          error: subscriptionsError.message,
+        },
+        {
+          status: 500,
         },
       );
     }
@@ -92,7 +109,7 @@ export async function GET(
     ////////////////////////////////////////////////////////////
 
     return NextResponse.json({
-      subscription: {
+      subscriptions: (subscriptions ?? []).map((data) => ({
         subscriptionId: Number(data.subscription_id),
 
         customerId: data.customer_id,
@@ -116,10 +133,10 @@ export async function GET(
         createdAt: data.created_at,
 
         transactionHash: data.transaction_hash,
-      },
+      })),
     });
   } catch (error) {
-    console.error("Get subscription error:", error);
+    console.error("Get customer subscriptions error:", error);
 
     return NextResponse.json(
       {
