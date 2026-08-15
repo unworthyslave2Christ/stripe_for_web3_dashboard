@@ -34,7 +34,11 @@ export interface PlanRecord {
 
     totalSubscribers: number;
 
+    cancelledSubscriptions?: number;
+
     monthlyRevenue: string;
+
+    lifetimeRevenue?: string;
 
     createdAt: string;
 }

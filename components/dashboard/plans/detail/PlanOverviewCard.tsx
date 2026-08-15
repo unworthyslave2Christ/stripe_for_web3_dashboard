@@ -7,46 +7,45 @@ import {
     CardContent,
 } from "@/components/ui/card";
 
-interface PlanKpiCardProps {
-    title: string;
-
-    value: string;
-
-    description: string;
-
-    icon: LucideIcon;
-}
-
-export function PlanKpiCard({
+export function PlanOverviewCard({
     title,
     value,
     description,
     icon: Icon,
-}: PlanKpiCardProps) {
+}: {
+    title: string;
+    value: string;
+    description: string;
+    icon: LucideIcon;
+}) {
     return (
         <Card className="p-5">
 
             <div className="flex items-start justify-between gap-4">
 
-                <div>
+                <div className="min-w-0">
+
                     <p className="text-sm text-muted-foreground">
                         {title}
                     </p>
 
-                    <p className="mt-2 text-2xl font-semibold tracking-tight">
+                    <p className="mt-2 truncate text-2xl font-semibold tracking-tight">
                         {value}
                     </p>
+
                 </div>
 
-                <div className="flex size-9 items-center justify-center rounded-lg border bg-muted/40">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
                     <Icon className="size-4 text-muted-foreground" />
                 </div>
 
             </div>
 
-            <p className="mt-4 text-xs text-muted-foreground">
-                {description}
-            </p>
+            <CardContent className="p-0 pt-4">
+                <p className="text-xs text-muted-foreground">
+                    {description}
+                </p>
+            </CardContent>
 
         </Card>
     );

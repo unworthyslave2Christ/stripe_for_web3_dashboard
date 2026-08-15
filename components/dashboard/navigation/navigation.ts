@@ -30,17 +30,17 @@ export const mainNavigation = [
     },
     {
         label: "Subscriptions",
-        href: "/subscriptions",
+        href: "/dashboard/subscriptions",
         icon: WalletCards,
     },
     {
         label: "Billing",
-        href: "/billing",
+        href: "/dashboard/billing",
         icon: Blocks,
     },
     {
         label: "Activity",
-        href: "/activity",
+        href: "/dashboard/activity",
         icon: Activity,
     },
 ];
@@ -48,17 +48,17 @@ export const mainNavigation = [
 export const developerNavigation = [
     {
         label: "API Keys",
-        href: "/developers/api-keys",
+        href: "/dashboard/developers/api-keys",
         icon: FileKey2,
     },
     {
         label: "Webhooks",
-        href: "/developers/webhooks",
+        href: "/dashboard/developers/webhooks",
         icon: Webhook,
     },
     {
         label: "Notifications",
-        href: "/notifications",
+        href: "/dashboard/notifications",
         icon: Bell,
     },
 ];
@@ -71,7 +71,7 @@ export const secondaryNavigation = [
     },
     {
         label: "Settings",
-        href: "/settings",
+        href: "/dashboard/settings",
         icon: Settings,
     },
 ];
