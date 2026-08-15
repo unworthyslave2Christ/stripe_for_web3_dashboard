@@ -1,72 +1,59 @@
-import type {
-    LucideIcon,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
-////////////////////////////////////////////////////////////
-// PROPS
-////////////////////////////////////////////////////////////
-
-interface CustomerKpiCardProps {
+type CustomerKpiCardProps = {
     title: string;
-
     value: string;
-
     description: string;
-
     icon: LucideIcon;
-}
-
-////////////////////////////////////////////////////////////
-// COMPONENT
-////////////////////////////////////////////////////////////
+    trend?: string;
+    trendPositive?: boolean;
+};
 
 export function CustomerKpiCard({
     title,
     value,
     description,
     icon: Icon,
+    trend,
+    trendPositive,
 }: CustomerKpiCardProps) {
     return (
-        <Card>
+        <Card className="p-5">
+            <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                    <p className="text-sm text-muted-foreground">
+                        {title}
+                    </p>
 
-            <CardHeader>
-
-                <div className="flex items-start justify-between gap-4">
-
-                    <div>
-                        <CardTitle>
-                            {title}
-                        </CardTitle>
-
-                        <CardDescription>
-                            {description}
-                        </CardDescription>
-                    </div>
-
-                    <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
-                        <Icon className="size-4 text-muted-foreground" />
-                    </div>
-
+                    <p className="mt-2 text-2xl font-semibold tracking-tight">
+                        {value}
+                    </p>
                 </div>
 
-            </CardHeader>
-
-            <CardContent>
-
-                <div className="text-3xl font-semibold tracking-tight">
-                    {value}
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+                    <Icon className="size-4 text-muted-foreground" />
                 </div>
+            </div>
 
-            </CardContent>
+            <div className="mt-4 flex items-center gap-2 text-xs">
+                {trend && (
+                    <span
+                        className={
+                            trendPositive
+                                ? "font-medium text-emerald-600 dark:text-emerald-400"
+                                : "font-medium text-destructive"
+                        }
+                    >
+                        {trend}
+                    </span>
+                )}
 
+                <span className="text-muted-foreground">
+                    {description}
+                </span>
+            </div>
         </Card>
     );
 }

@@ -15,7 +15,7 @@ import {
 export const mainNavigation = [
     {
         label: "Overview",
-        href: "/",
+        href: "/dashboard/overview",
         icon: LayoutDashboard,
     },
     {

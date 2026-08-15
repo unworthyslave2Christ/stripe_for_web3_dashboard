@@ -17,6 +17,7 @@ import {
 import {
     EnvironmentBadge,
 } from "./EnvironmentBadge";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 export function DashboardTopbar() {
     return (
@@ -50,6 +51,8 @@ export function DashboardTopbar() {
             <div className="ml-auto flex items-center gap-2">
 
                 <EnvironmentBadge />
+
+                <ThemeToggle />
 
                 <Button
                     variant="ghost"

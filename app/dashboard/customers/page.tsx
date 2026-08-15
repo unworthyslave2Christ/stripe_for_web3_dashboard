@@ -1,111 +1,68 @@
-import {
-    Download,
-    UserPlus,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import {
-    Button,
-} from "@/components/ui/button";
+import { Container } from "@/components/layout/Container";
+import { Divider } from "@/components/layout/Divider";
+import { Inline } from "@/components/layout/Inline";
+import { Page } from "@/components/layout/Page";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
+import { Stack } from "@/components/layout/Stack";
 
-import {
-    Container,
-} from "@/components/layout/Container";
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
-import {
-    Divider,
-} from "@/components/layout/Divider";
-
-import {
-    Inline,
-} from "@/components/layout/Inline";
-
-import {
-    Page,
-} from "@/components/layout/Page";
-
-import {
-    PageHeader,
-} from "@/components/layout/PageHeader";
-
-import {
-    Stack,
-} from "@/components/layout/Stack";
-
-import {
-    CustomersOverview,
-} from "@/components/dashboard/customers/CustomersOverview";
-
-import {
-    CustomersToolbar,
-} from "@/components/dashboard/customers/CustomersToolbar";
-
-import {
-    CustomersTable,
-} from "@/components/dashboard/customers/CustomersTable";
-
-import {
-    CustomersPagination,
-} from "@/components/dashboard/customers/CustomersPagination";
-
-////////////////////////////////////////////////////////////
-// PAGE
-////////////////////////////////////////////////////////////
+import { CustomersOverview } from "@/components/dashboard/customers/CustomersOverview";
+import { CustomersPagination } from "@/components/dashboard/customers/CustomersPagination";
+import { CustomersTable } from "@/components/dashboard/customers/CustomersTable";
+import { CustomersToolbar } from "@/components/dashboard/customers/CustomersToolbar";
 
 export default function CustomersPage() {
     return (
-        <Page>
+            <Page>
+                <Container className="py-8 lg:py-10">
+                    <Stack gap={8}>
 
-            <Container className="py-8 lg:py-10">
+                        {/* PAGE HEADER */}
 
-                <Stack gap={8}>
+                        <PageHeader
+                            eyebrow="Customers"
+                            title="Customers"
+                            description="Manage the customers connected to your merchant account, their wallets, Smart Accounts, and billing activity."
+                            actions={
+                                <Inline gap={2}>
+                                    <Button variant="outline">
+                                        Export
+                                    </Button>
 
-                    {/* PAGE HEADER */}
+                                    <Button>
+                                        Add customer
+                                    </Button>
+                                </Inline>
+                            }
+                        />
 
-                    <PageHeader
-                        eyebrow="Customers"
-                        title="Customers"
-                        description="View and manage the customers using your Stripe for Web3 billing infrastructure."
-                        actions={
-                            <Inline gap={2}>
+                        <Divider />
 
-                                <Button
-                                    variant="outline"
-                                >
-                                    <Download />
-                                    Export
-                                </Button>
+                        {/* OVERVIEW */}
 
-                                <Button>
-                                    <UserPlus />
-                                    Add customer
-                                </Button>
+                        <CustomersOverview />
 
-                            </Inline>
-                        }
-                    />
+                        {/* CUSTOMER MANAGEMENT */}
 
-                    <Divider />
+                        <Section
+                            title="Customer management"
+                            description="Search, filter, and manage customers associated with your merchant."
+                        >
+                            <Stack gap={4}>
+                                <CustomersToolbar />
 
-                    {/* OVERVIEW */}
+                                <CustomersTable />
 
-                    <CustomersOverview />
+                                <CustomersPagination />
+                            </Stack>
+                        </Section>
 
-                    {/* DIRECTORY */}
-
-                    <div className="space-y-4">
-
-                        <CustomersToolbar />
-
-                        <CustomersTable />
-
-                        <CustomersPagination />
-
-                    </div>
-
-                </Stack>
-
-            </Container>
-
-        </Page>
+                    </Stack>
+                </Container>
+            </Page>
     );
 }
