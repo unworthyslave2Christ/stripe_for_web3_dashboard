@@ -20,12 +20,12 @@ export const mainNavigation = [
     },
     {
         label: "Customers",
-        href: "/customers",
+        href: "/dashboard/customers",
         icon: Users,
     },
     {
         label: "Plans",
-        href: "/plans",
+        href: "/dashboard/plans",
         icon: CreditCard,
     },
     {
