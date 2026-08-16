@@ -108,7 +108,7 @@ interface GetCustomerKernelRequest {
 export async function POST(
     request: NextRequest,
 ) {
-
+    
     try {
 
         ////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ export async function POST(
         const wallet =
             body.wallet;
 
-
+           
         ////////////////////////////////////////////////////////
         // CUSTOMER
         ////////////////////////////////////////////////////////
@@ -205,6 +205,7 @@ export async function POST(
 
         }
 
+        console.log("customer: ", customer);
 
         ////////////////////////////////////////////////////////
         // CUSTOMER NOT FOUND
@@ -231,7 +232,7 @@ export async function POST(
 
         }
 
-
+        
         ////////////////////////////////////////////////////////
         // BILLING PERMISSION
         ////////////////////////////////////////////////////////
@@ -276,6 +277,9 @@ export async function POST(
         ////////////////////////////////////////////////////////
         // PERMISSION DATABASE ERROR
         ////////////////////////////////////////////////////////
+
+        
+
 
         if (permissionError) {
 
