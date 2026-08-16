@@ -10,39 +10,47 @@ import {
     Users,
     Webhook,
     WalletCards,
+    Computer,
+    LockOpen
 } from "lucide-react";
 
 export const mainNavigation = [
     {
         label: "Overview",
-        href: "/dashboard/overview",
+        href: "/dashboard/platform/overview",
         icon: LayoutDashboard,
     },
     {
         label: "Customers",
-        href: "/dashboard/customers",
+        href: "/dashboard/platform/customers",
         icon: Users,
     },
     {
         label: "Plans",
-        href: "/dashboard/plans",
+        href: "/dashboard/platform/plans",
         icon: CreditCard,
     },
     {
         label: "Subscriptions",
-        href: "/dashboard/subscriptions",
+        href: "/dashboard/platform/subscriptions",
         icon: WalletCards,
     },
     {
         label: "Billing",
-        href: "/dashboard/billing",
+        href: "/dashboard/platform/billing",
         icon: Blocks,
     },
     {
-        label: "Activity",
-        href: "/dashboard/activity",
-        icon: Activity,
+        label: "Billing Operators",
+        href: "/dashboard/platform/billing-operators",
+        icon: Computer,
     },
+    {
+        label: "Permissions",
+        href: "/dashboard/platform/permissions",
+        icon: LockOpen,
+    },
+    
 ];
 
 export const developerNavigation = [
@@ -58,20 +66,26 @@ export const developerNavigation = [
     },
     {
         label: "Notifications",
-        href: "/dashboard/notifications",
+        href: "/dashboard/developers/notifications",
         icon: Bell,
     },
 ];
 
-export const secondaryNavigation = [
+export const secondaryNavigation = [ 
+    {
+        label: "Activity",
+        href: "/dashboard/account/activity",
+        icon: Activity,
+    },
+    {
+        label: "Settings",
+        href: "/dashboard/account/settings",
+        icon: Settings,
+    },
     {
         label: "Documentation",
         href: "#",
         icon: BookOpen,
     },
-    {
-        label: "Settings",
-        href: "/dashboard/settings",
-        icon: Settings,
-    },
+
 ];
