@@ -1,3 +1,5 @@
+import {Providers} from "@/providers/privy-provider";
+
 import type { Metadata } from "next";
 
 import {
@@ -7,10 +9,6 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
-
-import {
-    ThemeProvider,
-} from "@/components/theme/ThemeProvider";
 
 const geistSans = Geist({
     variable: "--font-sans",
@@ -42,15 +40,10 @@ export default function RootLayout({
         >
             <body
                 className={`${geistSans.className} ${geistMono.className}`}
-            >
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="system"
-                    enableSystem
-                    disableTransitionOnChange
-                >
+            >     
+                   <Providers>
                     {children}
-                </ThemeProvider>
+                   </Providers>
             </body>
         </html>
     );
