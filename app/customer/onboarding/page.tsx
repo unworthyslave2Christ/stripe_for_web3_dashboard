@@ -5,6 +5,10 @@ import {
 } from "react";
 
 import {
+    useRouter,
+} from "next/navigation";
+
+import {
     Container,
 } from "@/components/layout/Container";
 
@@ -22,6 +26,10 @@ import {
 } from "@/components/onboarding/CustomerOnboardingForm";
 
 import {
+    CustomerOnboardingState,
+} from "@/components/onboarding/CustomerOnboardingState";
+
+import {
     OnboardingHeader,
 } from "@/components/onboarding/OnboardingHeader";
 
@@ -30,31 +38,41 @@ import {
 } from "@/components/onboarding/OnboardingShell";
 
 import {
+    CustomerOnboardingStatus,
     useCustomerOnboardingPage,
 } from "@/hooks/onboarding/useCustomerOnboardingPage";
 
 export default function CustomerOnboardingPage() {
 
+    const router =
+        useRouter();
+
     const onboarding =
         useCustomerOnboardingPage();
+
+    ////////////////////////////////////////////////////////////
+    // COMPLETE REGISTRATION
+    ////////////////////////////////////////////////////////////
 
     useEffect(() => {
 
         if (
-            onboarding.customer &&
-            onboarding.customerStatus ===
-                "ready"
+            onboarding.status ===
+            "existing"
         ) {
-            // Placeholder navigation.
-            //
-            // Later:
-            // router.push("/portal");
+            router.replace(
+                "/portal",
+            );
         }
 
     }, [
-        onboarding.customer,
-        onboarding.customerStatus,
+        onboarding.status,
+        router,
     ]);
+
+    ////////////////////////////////////////////////////////////
+    // RENDER
+    ////////////////////////////////////////////////////////////
 
     return (
         <OnboardingShell>
@@ -71,33 +89,57 @@ export default function CustomerOnboardingPage() {
                             description="Connect your wallet and create your Stripe for Web3 customer account so you can manage subscriptions and billing."
                         />
 
-                        <Card className="mt-8">
+                        <div className="mt-8 space-y-4">
 
-                            <CardContent className="pt-6">
+                            <CustomerOnboardingState
+                                status={
+                                    onboarding.status
+                                }
 
-                                <CustomerOnboardingForm
-                                    onSubmit={
-                                        onboarding.register
-                                    }
+                                smartAccount={
+                                    onboarding.customer
+                                        ?.smartAccount
+                                }
+                            />
 
-                                    loading={
-                                        onboarding.registrationLoading
-                                    }
+                            {(
+                                onboarding.status ===
+                                    "not-created" ||
+                                onboarding.status ===
+                                    "disconnected"
+                            ) && (
 
-                                    disabled={
-                                        !onboarding.authenticated
-                                    }
+                                <Card>
 
-                                    error={
-                                        onboarding.registrationError
-                                        ??
-                                        onboarding.customerError
-                                    }
-                                />
+                                    <CardContent className="pt-6">
 
-                            </CardContent>
+                                        <CustomerOnboardingForm
+                                            onSubmit={
+                                                onboarding.register
+                                            }
 
-                        </Card>
+                                            loading={
+                                                onboarding.registrationLoading
+                                            }
+
+                                            disabled={
+                                                !onboarding.authenticated
+                                            }
+
+                                            error={
+                                                onboarding.registrationError
+                                                ??
+                                                onboarding.customerError
+                                            }
+                                        />
+
+                                    </CardContent>
+
+                                </Card>
+
+                            )}
+
+                        </div>
 
                     </div>
 

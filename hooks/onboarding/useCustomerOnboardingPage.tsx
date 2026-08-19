@@ -5,10 +5,6 @@ import {
     useState,
 } from "react";
 
-import type {
-    Address,
-} from "viem";
-
 import {
     useConnectedWallet,
 } from "@/hooks/wallet/useConnectedWallet";
@@ -18,20 +14,22 @@ import {
 } from "@/hooks/customer/useCustomerClient";
 
 import {
-    useCustomerByWallet,
-} from "@/hooks/customer/useCustomerByWallet";
+    useCustomer,
+} from "@/hooks/customer/useCustomer";
 
 ////////////////////////////////////////////////////////////
-// TYPES
+// STATUS
 ////////////////////////////////////////////////////////////
 
-type OnboardingStatus =
-    | "idle"
+export type CustomerOnboardingStatus =
+    | "disconnected"
     | "checking"
-    | "ready"
+    | "not-created"
+    | "existing"
     | "registering"
     | "complete"
     | "error";
+    
 
 ////////////////////////////////////////////////////////////
 // HOOK
@@ -70,10 +68,13 @@ export function useCustomerOnboardingPage() {
     ////////////////////////////////////////////////////////////
 
     const {
+        customer,
+
         status:
             customerStatus,
 
-        customer,
+        loading:
+            customerLoading,
 
         error:
             customerError,
@@ -81,17 +82,10 @@ export function useCustomerOnboardingPage() {
         refresh:
             refreshCustomer,
     } =
-        useCustomerByWallet({
-            client,
-
-            address:
-                address as
-                    | Address
-                    | undefined,
-        });
+        useCustomer();
 
     ////////////////////////////////////////////////////////////
-    // REGISTRATION STATE
+    // REGISTRATION
     ////////////////////////////////////////////////////////////
 
     const [
@@ -124,15 +118,29 @@ export function useCustomerOnboardingPage() {
             }) => {
 
                 if (!client) {
-                    throw new Error(
-                        "Customer client is not ready.",
+                    const error =
+                        new Error(
+                            "Customer client is not ready.",
+                        );
+
+                    setRegistrationError(
+                        error,
                     );
+
+                    throw error;
                 }
 
                 if (!address) {
-                    throw new Error(
-                        "Connect your wallet first.",
+                    const error =
+                        new Error(
+                            "Connect your wallet first.",
+                        );
+
+                    setRegistrationError(
+                        error,
                     );
+
+                    throw error;
                 }
 
                 setRegistrationLoading(
@@ -155,18 +163,17 @@ export function useCustomerOnboardingPage() {
                         });
 
                     ////////////////////////////////////////////////////
-                    // REFRESH THE RESOURCE
+                    // IMPORTANT
+                    // Re-read canonical customer state from the API.
                     ////////////////////////////////////////////////////
 
                     await refreshCustomer();
 
                     return result;
 
-                } catch (
-                    cause
-                ) {
+                } catch (cause) {
 
-                    const normalized =
+                    const error =
                         cause instanceof Error
                             ? cause
                             : new Error(
@@ -174,17 +181,16 @@ export function useCustomerOnboardingPage() {
                             );
 
                     setRegistrationError(
-                        normalized,
+                        error,
                     );
 
-                    throw normalized;
+                    throw error;
 
                 } finally {
 
                     setRegistrationLoading(
                         false,
                     );
-
                 }
             },
             [
@@ -200,23 +206,61 @@ export function useCustomerOnboardingPage() {
     // DERIVED STATUS
     ////////////////////////////////////////////////////////////
 
-    const status: OnboardingStatus =
+    let status:
+        CustomerOnboardingStatus;
+
+    if (
         !walletReady ||
         !authenticated
-            ? "idle"
-            : !clientReady
-                ? "checking"
-                : customerStatus === "loading"
-                    ? "checking"
-                    : registrationLoading
-                        ? "registering"
-                        : customerStatus === "ready"
-                            ? "ready"
-                            : customerStatus === "not-created"
-                                ? "idle"
-                                : customerStatus === "error"
-                                    ? "error"
-                                    : "idle";
+    ) {
+
+        status =
+            "disconnected";
+
+    } else if (
+        !clientReady ||
+        customerLoading
+    ) {
+
+        status =
+            "checking";
+
+    } else if (
+        registrationLoading
+    ) {
+
+        status =
+            "registering";
+
+    } else if (
+        customerStatus ===
+        "ready"
+    ) {
+
+        status =
+            "existing";
+
+    } else if (
+        customerStatus ===
+        "not-created"
+    ) {
+
+        status =
+            "not-created";
+
+    } else if (
+        customerStatus ===
+        "error"
+    ) {
+
+        status =
+            "error";
+
+    } else {
+
+        status =
+            "checking";
+    }
 
     return {
         status,
@@ -232,6 +276,8 @@ export function useCustomerOnboardingPage() {
         customer,
 
         customerStatus,
+
+        customerLoading,
 
         customerError,
 

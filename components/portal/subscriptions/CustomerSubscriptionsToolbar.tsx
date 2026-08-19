@@ -16,7 +16,36 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function CustomerSubscriptionsToolbar() {
+export function CustomerSubscriptionsToolbar({
+    search,
+    onSearchChange,
+    status,
+    onStatusChange,
+}: {
+    search: string;
+
+    onSearchChange:
+        (
+            value: string,
+        ) => void;
+
+    status:
+        | "all"
+        | "active"
+        | "paused"
+        | "pending"
+        | "cancelled";
+
+    onStatusChange:
+        (
+            value:
+                | "all"
+                | "active"
+                | "paused"
+                | "pending"
+                | "cancelled",
+        ) => void;
+}) {
     return (
         <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
 
@@ -25,13 +54,39 @@ export function CustomerSubscriptionsToolbar() {
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
                 <Input
+                    value={
+                        search
+                    }
+                    onChange={(
+                        event,
+                    ) =>
+                        onSearchChange(
+                            event.target.value,
+                        )
+                    }
                     placeholder="Search subscriptions..."
                     className="pl-9"
                 />
 
             </div>
 
-            <Select defaultValue="all">
+            <Select
+                value={
+                    status
+                }
+                onValueChange={(
+                    value,
+                ) =>
+                    onStatusChange(
+                        value as
+                            | "all"
+                            | "active"
+                            | "paused"
+                            | "pending"
+                            | "cancelled",
+                    )
+                }
+            >
 
                 <SelectTrigger className="w-full sm:w-[160px]">
                     <SelectValue />

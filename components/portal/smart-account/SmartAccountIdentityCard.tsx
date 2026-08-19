@@ -1,15 +1,15 @@
 "use client";
 
 import {
+    useState,
+} from "react";
+
+import {
     Check,
     Copy,
     ExternalLink,
     WalletCards,
 } from "lucide-react";
-
-import {
-    useState,
-} from "react";
 
 import {
     Button,
@@ -26,9 +26,19 @@ import {
 export function SmartAccountIdentityCard({
     address,
     network,
+    explorerUrl,
 }: {
-    address: string;
-    network: string;
+    address:
+        | string
+        | undefined;
+
+    network:
+        | string
+        | undefined;
+
+    explorerUrl:
+        | string
+        | undefined;
 }) {
     const [
         copied,
@@ -36,15 +46,23 @@ export function SmartAccountIdentityCard({
     ] = useState(false);
 
     async function copyAddress() {
+
+        if (!address) {
+            return;
+        }
+
         await navigator.clipboard.writeText(
             address,
         );
 
         setCopied(true);
 
-        window.setTimeout(() => {
-            setCopied(false);
-        }, 1500);
+        window.setTimeout(
+            () => {
+                setCopied(false);
+            },
+            1500,
+        );
     }
 
     return (
@@ -55,7 +73,9 @@ export function SmartAccountIdentityCard({
                 <div className="flex items-center gap-3">
 
                     <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+
                         <WalletCards className="size-4" />
+
                     </div>
 
                     <div>
@@ -65,7 +85,10 @@ export function SmartAccountIdentityCard({
                         </CardTitle>
 
                         <CardDescription>
-                            Your Account Abstraction account on {network}.
+                            Your Account Abstraction account
+                            {network
+                                ? ` on ${network}`
+                                : "."}
                         </CardDescription>
 
                     </div>
@@ -79,36 +102,54 @@ export function SmartAccountIdentityCard({
                 <div className="rounded-lg border bg-muted/30 p-4">
 
                     <code className="break-all font-mono text-xs leading-6">
-                        {address}
+                        {address ??
+                            "Smart Account has not been created."}
                     </code>
 
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
+                {address && (
+                    <div className="mt-4 flex flex-wrap gap-2">
 
-                    <Button
-                        variant="outline"
-                        onClick={copyAddress}
-                    >
-                        {copied ? (
-                            <>
-                                <Check />
-                                Copied
-                            </>
-                        ) : (
-                            <>
-                                <Copy />
-                                Copy address
-                            </>
+                        <Button
+                            variant="outline"
+                            onClick={
+                                copyAddress
+                            }
+                        >
+                            {copied ? (
+                                <>
+                                    <Check />
+                                    Copied
+                                </>
+                            ) : (
+                                <>
+                                    <Copy />
+                                    Copy address
+                                </>
+                            )}
+                        </Button>
+
+                        {explorerUrl && (
+                            <Button
+                                render={
+                                    <a
+                                        href={
+                                            explorerUrl
+                                        }
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        <ExternalLink />
+                                        View on explorer
+                                    </a>
+                                }
+                                variant="outline"
+                            />
                         )}
-                    </Button>
 
-                    <Button variant="outline">
-                        <ExternalLink />
-                        View on explorer
-                    </Button>
-
-                </div>
+                    </div>
+                )}
 
             </CardContent>
 

@@ -4,6 +4,7 @@ import type {
 
 import {
     Card,
+    CardContent,
 } from "@/components/ui/card";
 
 export function CustomerOverviewKpiCard({
@@ -13,36 +14,45 @@ export function CustomerOverviewKpiCard({
     icon: Icon,
 }: {
     title: string;
+
     value: string;
+
     description: string;
+
     icon: LucideIcon;
 }) {
     return (
-        <Card className="p-5">
+        <Card>
 
-            <div className="flex items-start justify-between gap-4">
+            <CardContent className="p-5">
 
-                <div>
+                <div className="flex items-start justify-between gap-4">
 
-                    <p className="text-sm text-muted-foreground">
-                        {title}
-                    </p>
+                    <div className="min-w-0">
 
-                    <p className="mt-2 text-2xl font-semibold tracking-tight">
-                        {value}
-                    </p>
+                        <p className="text-sm text-muted-foreground">
+                            {title}
+                        </p>
+
+                        <p className="mt-2 text-2xl font-semibold tracking-tight">
+                            {value}
+                        </p>
+
+                        <p className="mt-2 text-xs text-muted-foreground">
+                            {description}
+                        </p>
+
+                    </div>
+
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+
+                        <Icon className="size-4 text-muted-foreground" />
+
+                    </div>
 
                 </div>
 
-                <div className="flex size-9 items-center justify-center rounded-lg border bg-muted/40">
-                    <Icon className="size-4 text-muted-foreground" />
-                </div>
-
-            </div>
-
-            <p className="mt-4 text-xs text-muted-foreground">
-                {description}
-            </p>
+            </CardContent>
 
         </Card>
     );

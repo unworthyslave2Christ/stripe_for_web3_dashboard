@@ -19,16 +19,23 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
+import type {
+    PermissionStatus,
+} from "@/types/smart-account";
+
 export function SmartAccountPermissionCard({
     permissionStatus,
+    demo,
 }: {
     permissionStatus:
-        | "ACTIVE"
-        | "PAUSED"
-        | "REVOKED";
+        | PermissionStatus
+        | "UNKNOWN";
+
+    demo: boolean;
 }) {
     const active =
-        permissionStatus === "ACTIVE";
+        permissionStatus ===
+        "ACTIVE";
 
     return (
         <Card>
@@ -40,7 +47,9 @@ export function SmartAccountPermissionCard({
                     <div className="flex items-center gap-3">
 
                         <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+
                             <KeyRound className="size-4" />
+
                         </div>
 
                         <div>
@@ -50,7 +59,7 @@ export function SmartAccountPermissionCard({
                             </CardTitle>
 
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Authorization used by your active subscriptions.
+                                Authorization associated with recurring billing.
                             </p>
 
                         </div>
@@ -61,6 +70,10 @@ export function SmartAccountPermissionCard({
                         <Badge variant="secondary">
                             <CheckCircle2 />
                             Active
+                        </Badge>
+                    ) : permissionStatus === "UNKNOWN" ? (
+                        <Badge variant="outline">
+                            Unavailable
                         </Badge>
                     ) : (
                         <Badge variant="destructive">
@@ -87,9 +100,11 @@ export function SmartAccountPermissionCard({
                             </p>
 
                             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Stripe for Web3 can use this authorization
-                                for the recurring billing operations associated
-                                with your active subscriptions.
+
+                                {demo
+                                    ? "This authorization status is currently represented using test-mode account data."
+                                    : "Permission data will appear here when the customer permission resource is connected."}
+
                             </p>
 
                         </div>
@@ -101,6 +116,7 @@ export function SmartAccountPermissionCard({
                 <Button
                     variant="outline"
                     className="mt-4"
+                    disabled
                 >
                     Manage permissions
                 </Button>

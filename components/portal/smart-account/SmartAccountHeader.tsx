@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 
 import {
     ArrowLeft,
+    Copy,
     ExternalLink,
     WalletCards,
 } from "lucide-react";
@@ -23,14 +26,41 @@ import {
 } from "./SmartAccountStatusBadge";
 
 export function SmartAccountHeader({
-    account,
+    address,
+    status,
+    network,
+    explorerUrl,
 }: {
-    account: {
-        address: string;
-        status: "ACTIVE" | "PENDING" | "SUSPENDED";
-        network: string;
-    };
+    address:
+        | string
+        | undefined;
+
+    status:
+        | "ACTIVE"
+        | "PENDING"
+        | "SUSPENDED"
+        | "NOT_CREATED";
+
+    network:
+        | string
+        | undefined;
+
+    explorerUrl:
+        | string
+        | undefined;
 }) {
+
+    async function copyAddress() {
+
+        if (!address) {
+            return;
+        }
+
+        await navigator.clipboard.writeText(
+            address,
+        );
+    }
+
     return (
         <div className="space-y-5">
 
@@ -51,7 +81,9 @@ export function SmartAccountHeader({
                 <div className="flex items-start gap-4">
 
                     <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-muted/40">
+
                         <WalletCards className="size-5 text-muted-foreground" />
+
                     </div>
 
                     <div className="min-w-0">
@@ -64,20 +96,21 @@ export function SmartAccountHeader({
 
                             <SmartAccountStatusBadge
                                 status={
-                                    account.status
+                                    status
                                 }
                             />
 
                             <SmartAccountNetworkBadge
                                 network={
-                                    account.network
+                                    network
                                 }
                             />
 
                         </div>
 
                         <p className="mt-2 max-w-2xl break-all font-mono text-xs text-muted-foreground">
-                            {account.address}
+                            {address ??
+                                "Smart Account has not been created."}
                         </p>
 
                     </div>
@@ -86,14 +119,35 @@ export function SmartAccountHeader({
 
                 <Inline gap={2}>
 
-                    <Button variant="outline">
-                        Copy address
-                    </Button>
+                    {address && (
+                        <Button
+                            variant="outline"
+                            onClick={
+                                copyAddress
+                            }
+                        >
+                            <Copy />
+                            Copy address
+                        </Button>
+                    )}
 
-                    <Button variant="outline">
-                        <ExternalLink />
-                        Explorer
-                    </Button>
+                    {explorerUrl && (
+                        <Button
+                            render={
+                                <a
+                                    href={
+                                        explorerUrl
+                                    }
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <ExternalLink />
+                                    Explorer
+                                </a>
+                            }
+                            variant="outline"
+                        />
+                    )}
 
                 </Inline>
 

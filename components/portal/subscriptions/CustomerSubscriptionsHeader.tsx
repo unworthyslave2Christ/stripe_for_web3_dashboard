@@ -1,3 +1,10 @@
+import Link from "next/link";
+
+import {
+    CreditCard,
+    Plus,
+} from "lucide-react";
+
 import {
     Badge,
 } from "@/components/ui/badge";
@@ -6,12 +13,11 @@ import {
     Button,
 } from "@/components/ui/button";
 
-import {
-    CreditCard,
-    Plus,
-} from "lucide-react";
-
-export function CustomerSubscriptionsHeader() {
+export function CustomerSubscriptionsHeader({
+    hasCustomer,
+}: {
+    hasCustomer: boolean;
+}) {
     return (
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
 
@@ -24,6 +30,7 @@ export function CustomerSubscriptionsHeader() {
                     </p>
 
                     <Badge variant="secondary">
+                        <CreditCard />
                         Smart Account
                     </Badge>
 
@@ -39,10 +46,15 @@ export function CustomerSubscriptionsHeader() {
 
             </div>
 
-            <Button>
-                <Plus />
-                Browse plans
-            </Button>
+            <Button
+                render={
+                    <Link href="/portal">
+                        <Plus />
+                        Browse plans
+                    </Link>
+                }
+                disabled={!hasCustomer}
+            />
 
         </div>
     );

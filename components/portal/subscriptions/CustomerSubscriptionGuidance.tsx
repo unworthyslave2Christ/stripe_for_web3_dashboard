@@ -15,9 +15,11 @@ export function CustomerSubscriptionGuidance() {
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     About your subscriptions
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent>
@@ -25,13 +27,17 @@ export function CustomerSubscriptionGuidance() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
                     <GuidanceItem
-                        icon={ShieldCheck}
+                        icon={
+                            ShieldCheck
+                        }
                         title="Billing is authorized"
                         description="Active subscriptions use your Smart Account's billing authorization."
                     />
 
                     <GuidanceItem
-                        icon={CalendarClock}
+                        icon={
+                            CalendarClock
+                        }
                         title="Upcoming charges"
                         description="Your next billing date and amount are shown on each subscription."
                     />
@@ -50,14 +56,18 @@ function GuidanceItem({
     description,
 }: {
     icon: typeof ShieldCheck;
+
     title: string;
+
     description: string;
 }) {
     return (
         <div className="flex gap-3 rounded-lg border bg-muted/20 p-4">
 
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+
                 <Icon className="size-4 text-muted-foreground" />
+
             </div>
 
             <div>

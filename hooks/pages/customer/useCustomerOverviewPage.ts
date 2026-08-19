@@ -1,78 +1,152 @@
 "use client";
 
 import {
-    useQuery,
-} from "@tanstack/react-query";
+    useMemo,
+} from "react";
 
 import {
-    useCustomerClient,
-} from "@/hooks/customer/useCustomerClient";
+    useCustomer,
+} from "@/hooks/customer/useCustomer";
 
 import {
-    queryKeys,
-} from "@/lib/query/queryKeys";
+    useSubscriptions,
+} from "@/hooks/customer/useSubscriptions";
 
-export function usePlan(
-    planId:
-        | number
-        | null,
-) {
-    const {
-        client,
-    } =
-        useCustomerClient();
+import {
+    appConfig,
+} from "@/app/config";
 
-    const query =
-        useQuery({
-            queryKey:
-                planId !== null
-                    ? queryKeys.customer.plan(
-                        planId,
-                    )
-                    : [
-                        "plan",
-                        "none",
-                    ],
+import {
+    customerOverviewDemo,
+} from "@/lib/demo/customerOverviewDemo";
 
-            queryFn:
-                async () => {
+////////////////////////////////////////////////////////////
+// HOOK
+////////////////////////////////////////////////////////////
 
-                    if (
-                        !client ||
-                        planId === null
-                    ) {
-                        return null;
-                    }
+export function useCustomerOverviewPage() {
 
-                    return client.getPlan(
-                        planId,
-                    );
-                },
+    ////////////////////////////////////////////////////////////
+    // REAL CUSTOMER RESOURCE
+    ////////////////////////////////////////////////////////////
 
-            enabled:
-                Boolean(
-                    client &&
-                    planId !== null,
-                ),
-        });
+    const customer =
+        useCustomer();
+
+    ////////////////////////////////////////////////////////////
+    // REAL SUBSCRIPTION RESOURCE
+    ////////////////////////////////////////////////////////////
+
+    const subscriptions =
+        useSubscriptions();
+
+    ////////////////////////////////////////////////////////////
+    // DERIVED SUBSCRIPTION SUMMARY
+    ////////////////////////////////////////////////////////////
+
+    const subscriptionSummary =
+        useMemo(() => {
+
+            const items =
+                subscriptions.subscriptions;
+
+            const active =
+                items.filter(
+                    (item: any) =>
+                        item.status ===
+                        "ACTIVE",
+                );
+
+            const paused =
+                items.filter(
+                    (item: any) =>
+                        item.status ===
+                        "PAUSED",
+                );
+
+            const cancelled =
+                items.filter(
+                    (item: any) =>
+                        item.status ===
+                        "CANCELLED",
+                );
+
+            return {
+                total:
+                    items.length,
+
+                active:
+                    active.length,
+
+                paused:
+                    paused.length,
+
+                cancelled:
+                    cancelled.length,
+            };
+
+        }, [
+            subscriptions.subscriptions,
+        ]);
+
+    ////////////////////////////////////////////////////////////
+    // DEMO DATA
+    ////////////////////////////////////////////////////////////
+
+    const demo =
+        appConfig.demoMode
+            ? customerOverviewDemo
+            : null;
+
+    ////////////////////////////////////////////////////////////
+    // PAGE VIEW MODEL
+    ////////////////////////////////////////////////////////////
 
     return {
-        plan:
-            query.data ?? null,
+        mode:
+            appConfig.demoMode
+                ? "demo"
+                : "live",
 
-        loading:
-            query.isLoading,
+        customer: {
+            data:
+                customer.customer,
 
-        error:
-            query.error
-                ? query.error instanceof Error
-                    ? query.error
-                    : new Error(
-                        "Unable to load plan.",
-                    )
-                : null,
+            status:
+                customer.status,
 
-        refresh:
-            query.refetch,
+            loading:
+                customer.loading,
+
+            refreshing:
+                customer.refreshing,
+
+            error:
+                customer.error,
+
+            refresh:
+                customer.refresh,
+        },
+
+        subscriptions: {
+            data:
+                subscriptions.subscriptions,
+
+            loading:
+                subscriptions.loading,
+
+            refreshing:
+                subscriptions.refreshing,
+
+            error:
+                subscriptions.error,
+
+            refresh:
+                subscriptions.refresh,
+        },
+
+        subscriptionSummary,
+
+        demo,
     };
 }

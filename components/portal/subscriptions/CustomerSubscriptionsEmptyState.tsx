@@ -1,12 +1,13 @@
 import Link from "next/link";
 
 import {
-    Button,
-} from "@/components/ui/button";
+    CreditCard,
+    Plus,
+} from "lucide-react";
 
 import {
-    CreditCard,
-} from "lucide-react";
+    Button,
+} from "@/components/ui/button";
 
 export function CustomerSubscriptionsEmptyState() {
     return (
@@ -18,18 +19,19 @@ export function CustomerSubscriptionsEmptyState() {
 
             </div>
 
-            <h3 className="mt-4 text-base font-semibold">
+            <h2 className="mt-4 text-lg font-semibold">
                 No subscriptions yet
-            </h3>
+            </h2>
 
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                When you subscribe to a merchant plan, your subscription will appear here.
+            <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                Browse the plans available to your Smart Account and choose the subscriptions you want to manage here.
             </p>
 
             <Button
                 render={
                     <Link href="/portal">
-                        Return to overview
+                        <Plus />
+                        Browse plans
                     </Link>
                 }
                 className="mt-5"

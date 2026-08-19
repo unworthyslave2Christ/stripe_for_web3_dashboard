@@ -9,49 +9,63 @@ import {
     SmartAccountActivityItem,
 } from "./SmartAccountActivityItem";
 
-const activity = [
-    {
-        title: "Billing authorization verified",
-        description:
-            "The active subscription permission was verified.",
-        time: "2 hours ago",
-    },
-    {
-        title: "Billing completed",
-        description:
-            "A recurring subscription charge completed successfully.",
-        time: "2 hours ago",
-    },
-    {
-        title: "Smart Account created",
-        description:
-            "Your Stripe for Web3 Smart Account was created.",
-        time: "12 days ago",
-    },
-];
+export function SmartAccountActivity({
+    activity,
+    demo,
+}: {
+    activity: {
+        title: string;
 
-export function SmartAccountActivity() {
+        description: string;
+
+        time: string;
+    }[];
+
+    demo: boolean;
+}) {
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     Smart Account activity
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent>
 
-                <div className="space-y-0">
+                {activity.length ===
+                0 ? (
+                    <p className="text-sm text-muted-foreground">
+                        No activity is currently available.
+                    </p>
+                ) : (
+                    <>
+                        <div className="space-y-0">
 
-                    {activity.map((event) => (
-                        <SmartAccountActivityItem
-                            key={event.title}
-                            {...event}
-                        />
-                    ))}
+                            {activity.map(
+                                (
+                                    event,
+                                    index,
+                                ) => (
+                                    <SmartAccountActivityItem
+                                        key={`${event.title}-${index}`}
+                                        {...event}
+                                    />
+                                ),
+                            )}
 
-                </div>
+                        </div>
+
+                        {demo && (
+                            <p className="mt-4 text-xs text-muted-foreground">
+                                Activity is currently represented using test-mode data.
+                            </p>
+                        )}
+                    </>
+                )}
 
             </CardContent>
 

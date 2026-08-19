@@ -16,44 +16,92 @@ import {
 import {
     CustomerSubscriptionOverviewCard,
 } from "./CustomerSubscriptionOverviewCard";
+import { CustomerSubscriptionView } from "@/types/customer-subscription";
 
-export function CustomerSubscriptionsOverview() {
+export function CustomerSubscriptionsOverview({
+    active,
+    recurringTotal,
+    nextBilling,
+    pausedOrCancelled,
+    currency,
+}: {
+    active: number;
+
+    recurringTotal: number;
+
+    nextBilling:
+        | CustomerSubscriptionView
+        | null;
+
+    pausedOrCancelled: number;
+
+    currency: string;
+}) {
     return (
         <Section
             title="Overview"
             description="A summary of your current subscription commitments."
         >
+
             <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
                 <CustomerSubscriptionOverviewCard
                     title="Active subscriptions"
-                    value="2"
+                    value={
+                        String(
+                            active,
+                        )
+                    }
                     description="Currently active"
-                    icon={CreditCard}
+                    icon={
+                        CreditCard
+                    }
                 />
 
                 <CustomerSubscriptionOverviewCard
                     title="Recurring total"
-                    value="$28"
-                    description="Per month"
-                    icon={CircleDollarSign}
+                    value={
+                        `${currency} ${recurringTotal.toFixed(2)}`
+                    }
+                    description="Current active commitments"
+                    icon={
+                        CircleDollarSign
+                    }
                 />
 
                 <CustomerSubscriptionOverviewCard
                     title="Next billing"
-                    value="$19"
-                    description="Next scheduled charge"
-                    icon={CalendarClock}
+                    value={
+                        nextBilling
+                            ?.amount ??
+                        "—"
+                    }
+                    description={
+                        nextBilling
+                            ?.nextBilling
+                                ? `Scheduled ${nextBilling.nextBilling}`
+                                : "No scheduled charge"
+                    }
+                    icon={
+                        CalendarClock
+                    }
                 />
 
                 <CustomerSubscriptionOverviewCard
                     title="Paused / cancelled"
-                    value="1"
+                    value={
+                        String(
+                            pausedOrCancelled,
+                        )
+                    }
                     description="Not currently active"
-                    icon={PauseCircle}
+                    icon={
+                        PauseCircle
+                    }
                 />
 
             </Grid>
+
         </Section>
     );
 }

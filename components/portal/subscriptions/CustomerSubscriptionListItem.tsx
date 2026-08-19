@@ -8,9 +8,17 @@ import {
 } from "lucide-react";
 
 import {
+    Button,
+} from "@/components/ui/button";
+
+import {
     Card,
     CardContent,
 } from "@/components/ui/card";
+
+import type {
+    CustomerSubscriptionView,
+} from "@/types/customer-subscription";
 
 import {
     CustomerSubscriptionActions,
@@ -24,14 +32,32 @@ import {
     CustomerSubscriptionStatusBadge,
 } from "./CustomerSubscriptionStatusBadge";
 
-import type {
-    CustomerSubscriptionRecord,
-} from "./customer-subscription.types";
-
 export function CustomerSubscriptionListItem({
     subscription,
+    onPause,
+    onResume,
+    onCancel,
+    actionLoading,
 }: {
-    subscription: CustomerSubscriptionRecord;
+    subscription:
+        CustomerSubscriptionView;
+
+    onPause:
+        (
+            subscriptionId: number,
+        ) => Promise<unknown>;
+
+    onResume:
+        (
+            subscriptionId: number,
+        ) => Promise<unknown>;
+
+    onCancel:
+        (
+            subscriptionId: number,
+        ) => Promise<unknown>;
+
+    actionLoading: boolean;
 }) {
     return (
         <Card className="transition-colors hover:border-foreground/20">
@@ -70,7 +96,9 @@ export function CustomerSubscriptionListItem({
                             </div>
 
                             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                                {subscription.planDescription}
+                                {
+                                    subscription.planDescription
+                                }
                             </p>
 
                         </div>
@@ -80,6 +108,7 @@ export function CustomerSubscriptionListItem({
                     {/* PRICE */}
 
                     <div className="shrink-0">
+
                         <CustomerSubscriptionAmount
                             amount={
                                 subscription.amount
@@ -91,11 +120,12 @@ export function CustomerSubscriptionListItem({
                                 subscription.interval
                             }
                         />
+
                     </div>
 
                     {/* NEXT BILLING */}
 
-                    <div className="min-w-[150px]">
+                    <div className="min-w-[170px]">
 
                         <p className="text-xs text-muted-foreground">
                             Next billing
@@ -114,7 +144,7 @@ export function CustomerSubscriptionListItem({
 
                     {/* PERMISSION */}
 
-                    <div className="min-w-[130px]">
+                    <div className="min-w-[150px]">
 
                         <p className="text-xs text-muted-foreground">
                             Billing authorization
@@ -122,33 +152,57 @@ export function CustomerSubscriptionListItem({
 
                         <p className="mt-1 flex items-center gap-1.5 text-sm">
 
-                            <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <ShieldCheck
+                                className={
+                                    subscription.billingPermissionActive
+                                        ? "size-3.5 text-emerald-600 dark:text-emerald-400"
+                                        : "size-3.5 text-muted-foreground"
+                                }
+                            />
 
-                            Active
+                            {subscription.billingPermissionActive
+                                ? "Active"
+                                : "Unavailable"}
 
                         </p>
 
                     </div>
 
-                    {/* ACTION */}
+                    {/* ACTIONS */}
 
-                    <div className="flex shrink-0 flex-wrap gap-2">
+                    <CustomerSubscriptionActions
+                        subscriptionId={
+                            subscription.subscriptionId
+                        }
+                        status={
+                            subscription.status
+                        }
+                        onPause={
+                            onPause
+                        }
+                        onResume={
+                            onResume
+                        }
+                        onCancel={
+                            onCancel
+                        }
+                        loading={
+                            actionLoading
+                        }
+                    />
 
-                        <CustomerSubscriptionActions
-                            subscriptionId={
-                                subscription.subscriptionId
-                            }
-                        />
-
-                        <Link
-                            href={`/portal/subscriptions/${subscription.id}`}
-                            className="flex h-9 items-center gap-1.5 rounded-md border px-3 text-sm font-medium transition-colors hover:bg-muted"
-                        >
-                            View
-                            <ArrowRight className="size-3.5" />
-                        </Link>
-
-                    </div>
+                    <Button
+                        render={
+                            <Link
+                                href={`/portal/subscriptions/${subscription.id}`}
+                            >
+                                View
+                                <ArrowRight />
+                            </Link>
+                        }
+                        variant="outline"
+                        size="sm"
+                    />
 
                 </div>
 

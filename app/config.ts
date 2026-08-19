@@ -8,14 +8,14 @@ export const appConfig = {
     name:
         "Stripe for Web3",
 
-    // description:
-    //     "Intelligent workflow automation for modern teams.",
-
     apiUrl:
         process.env.NEXT_PUBLIC_API_URL as string,
 
     billingContractAddress:
-        process.env.NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS as Address
+        process.env.NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as Address,
+
+    demoMode:
+        process.env .NEXT_PUBLIC_DEMO_MODE === "true",
 };
 
 ////////////////////////////////////////////////////////////

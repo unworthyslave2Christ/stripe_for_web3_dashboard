@@ -5,12 +5,12 @@ import {
 } from "@tanstack/react-query";
 
 import {
-    useCustomerClient,
-} from "./useCustomerClient";
-
-import {
     queryKeys,
 } from "@/lib/query/queryKeys";
+
+import {
+    useCustomerClient,
+} from "./useCustomerClient";
 
 export function usePlan(
     planId:
@@ -30,6 +30,7 @@ export function usePlan(
                         planId,
                     )
                     : [
+                        "customer",
                         "plan",
                         "none",
                     ],
@@ -64,12 +65,8 @@ export function usePlan(
             query.isLoading,
 
         error:
-            query.error
-                ? query.error instanceof Error
-                    ? query.error
-                    : new Error(
-                        "Unable to load plan.",
-                    )
+            query.error instanceof Error
+                ? query.error
                 : null,
 
         refresh:

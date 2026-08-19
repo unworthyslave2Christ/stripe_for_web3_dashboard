@@ -1,15 +1,17 @@
-import type {
-    CustomerSubscriptionInterval,
-} from "./customer-subscription.types";
-
 export function CustomerSubscriptionAmount({
     amount,
     currency,
     interval,
 }: {
     amount: string;
+
     currency: string;
-    interval: CustomerSubscriptionInterval;
+
+    interval:
+        | "DAY"
+        | "WEEK"
+        | "MONTH"
+        | "YEAR";
 }) {
     return (
         <div>
@@ -19,7 +21,9 @@ export function CustomerSubscriptionAmount({
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-                {formatInterval(interval)}
+                {formatInterval(
+                    interval,
+                )}
             </p>
 
         </div>
@@ -27,9 +31,14 @@ export function CustomerSubscriptionAmount({
 }
 
 function formatInterval(
-    interval: CustomerSubscriptionInterval,
+    interval:
+        | "DAY"
+        | "WEEK"
+        | "MONTH"
+        | "YEAR",
 ) {
     switch (interval) {
+
         case "DAY":
             return "per day";
 

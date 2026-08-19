@@ -1,13 +1,14 @@
 "use client";
 
 import {
+    useState,
+} from "react";
+
+import {
+    Check,
     Copy,
     Wallet,
 } from "lucide-react";
-
-import {
-    useState,
-} from "react";
 
 import {
     Button,
@@ -23,7 +24,9 @@ import {
 export function SmartAccountOwnerCard({
     ownerWallet,
 }: {
-    ownerWallet: string;
+    ownerWallet:
+        | string
+        | undefined;
 }) {
     const [
         copied,
@@ -31,25 +34,38 @@ export function SmartAccountOwnerCard({
     ] = useState(false);
 
     async function copyWallet() {
+
+        if (!ownerWallet) {
+            return;
+        }
+
         await navigator.clipboard.writeText(
             ownerWallet,
         );
 
         setCopied(true);
 
-        window.setTimeout(() => {
-            setCopied(false);
-        }, 1500);
+        window.setTimeout(
+            () => {
+                setCopied(false);
+            },
+            1500,
+        );
     }
 
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle className="flex items-center gap-2">
+
                     <Wallet className="size-4" />
+
                     Owner wallet
+
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent>
@@ -61,20 +77,36 @@ export function SmartAccountOwnerCard({
                 <div className="mt-4 rounded-lg border bg-muted/30 p-4">
 
                     <code className="break-all font-mono text-xs leading-6">
-                        {ownerWallet}
+                        {ownerWallet ??
+                            "Connected owner wallet unavailable."}
                     </code>
 
                 </div>
 
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    onClick={copyWallet}
-                >
-                    {copied ? "Copied" : "Copy owner address"}
-                    <Copy />
-                </Button>
+                {ownerWallet && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-4"
+                        onClick={
+                            copyWallet
+                        }
+                    >
+                        {copied
+                            ? (
+                                <>
+                                    <Check />
+                                    Copied
+                                </>
+                            )
+                            : (
+                                <>
+                                    <Copy />
+                                    Copy owner address
+                                </>
+                            )}
+                    </Button>
+                )}
 
             </CardContent>
 

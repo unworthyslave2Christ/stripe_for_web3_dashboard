@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -58,36 +60,158 @@ import {
     SmartAccountSecurity,
 } from "@/components/portal/smart-account/SmartAccountSecurity";
 
+import {
+    useCustomerSmartAccountPage,
+} from "@/hooks/pages/customer/useCustomerSmartAccountPage";
+
 export default function SmartAccountPage() {
-    const account = {
-        address:
-            "0xf1cc103c9b156eE9c2C496f582075a3086eC2347",
 
-        ownerWallet:
-            "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    const page =
+        useCustomerSmartAccountPage();
 
-        status:
-            "ACTIVE" as const,
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
 
-        network:
-            "Arbitrum Sepolia",
+    if (
+        page.customer.loading &&
+        !page.smartAccount.address
+    ) {
+        return (
+            <Page>
 
-        networkId:
-            421614,
+                <Container className="py-8 lg:py-10">
 
-        createdAt:
-            "June 04, 2025",
+                    <div className="space-y-6">
 
-        activePermissions:
-            1,
+                        <div className="h-8 w-48 animate-pulse rounded-md bg-muted" />
 
-        billingAuthorization:
-            "ACTIVE" as const,
+                        <div className="h-4 w-80 max-w-full animate-pulse rounded-md bg-muted" />
 
-        supportedAssets: [
-            "USDC",
-        ],
-    };
+                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                            {Array.from({
+                                length: 4,
+                            }).map(
+                                (
+                                    _,
+                                    index,
+                                ) => (
+                                    <div
+                                        key={index}
+                                        className="h-32 animate-pulse rounded-xl border bg-card"
+                                    />
+                                ),
+                            )}
+
+                        </div>
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.customer.error &&
+        !page.customer.data
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+
+                        <div>
+
+                            <h1 className="text-lg font-semibold">
+                                Unable to load Smart Account
+                            </h1>
+
+                            <p className="mt-2 text-sm text-muted-foreground">
+                                {
+                                    page.customer.error.message
+                                }
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // NO SMART ACCOUNT
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.smartAccount.status ===
+        "NOT_CREATED"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <Stack gap={8}>
+
+                        <SmartAccountHeader
+                            address={
+                                undefined
+                            }
+
+                            status={
+                                "NOT_CREATED"
+                            }
+
+                            network={
+                                page.smartAccount.network
+                            }
+
+                            explorerUrl={
+                                undefined
+                            }
+                        />
+
+                        <Divider />
+
+                        <div className="rounded-xl border border-dashed bg-card p-8">
+
+                            <h2 className="text-lg font-semibold">
+                                Smart Account not created
+                            </h2>
+
+                            <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+                                Complete customer onboarding to create your Smart Account and access Smart Account management.
+                            </p>
+
+                        </div>
+
+                    </Stack>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // REAL DATA
+    ////////////////////////////////////////////////////////////
+
+    const account =
+        page.smartAccount;
 
     return (
         <Page>
@@ -99,8 +223,20 @@ export default function SmartAccountPage() {
                     {/* HEADER */}
 
                     <SmartAccountHeader
-                        account={
-                            account
+                        address={
+                            account.address
+                        }
+
+                        status={
+                            account.status
+                        }
+
+                        network={
+                            account.network
+                        }
+
+                        explorerUrl={
+                            account.explorerUrl
                         }
                     />
 
@@ -127,8 +263,13 @@ export default function SmartAccountPage() {
                                 address={
                                     account.address
                                 }
+
                                 network={
                                     account.network
+                                }
+
+                                explorerUrl={
+                                    account.explorerUrl
                                 }
                             />
 
@@ -155,9 +296,29 @@ export default function SmartAccountPage() {
                                 permissionStatus={
                                     account.billingAuthorization
                                 }
+
+                                demo={
+                                    page.mode ===
+                                    "demo"
+                                }
                             />
 
-                            <SmartAccountCapabilities />
+                            <SmartAccountCapabilities
+                                hasSmartAccount={
+                                    Boolean(
+                                        account.address,
+                                    )
+                                }
+
+                                billingAuthorization={
+                                    account.billingAuthorization
+                                }
+
+                                demo={
+                                    page.mode ===
+                                    "demo"
+                                }
+                            />
 
                         </Grid>
 
@@ -170,7 +331,16 @@ export default function SmartAccountPage() {
                         description="Recent events involving your Smart Account."
                     >
 
-                        <SmartAccountActivity />
+                        <SmartAccountActivity
+                            activity={
+                                page.activity
+                            }
+
+                            demo={
+                                page.mode ===
+                                "demo"
+                            }
+                        />
 
                     </Section>
 
@@ -195,6 +365,10 @@ export default function SmartAccountPage() {
                         <SmartAccountActions
                             address={
                                 account.address
+                            }
+
+                            explorerUrl={
+                                account.explorerUrl
                             }
                         />
 

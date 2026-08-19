@@ -25,7 +25,7 @@ const inter = Inter({subsets: ["latin"]})
 export const metadata: Metadata = {
     title: "Stripe for Web3",
     description:
-        "Stripe for Web3 merchant dashboard",
+        "Stripe for Web3 merchant and customer platform"
 };
 
 export default function RootLayout({

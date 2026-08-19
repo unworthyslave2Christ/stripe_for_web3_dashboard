@@ -19,15 +19,20 @@ export function createCustomerClient({
     walletClient,
     publicClient,
 }: {
-    walletClient: WalletClient;
+    walletClient:
+        WalletClient;
 
-    publicClient: PublicClient;
+    publicClient:
+        PublicClient;
 }): CustomerClient {
     return new CustomerClient({
         walletClient,
+
         publicClient,
+
         contractAddress:
             appConfig.billingContractAddress,
+
         apiUrl:
             appConfig.apiUrl,
     });

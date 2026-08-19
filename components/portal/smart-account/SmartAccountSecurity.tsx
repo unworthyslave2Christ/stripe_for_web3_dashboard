@@ -18,8 +18,11 @@ export function SmartAccountSecurity() {
             <CardHeader>
 
                 <CardTitle className="flex items-center gap-2">
+
                     <ShieldCheck className="size-4" />
+
                     Security
+
                 </CardTitle>
 
             </CardHeader>
@@ -27,13 +30,17 @@ export function SmartAccountSecurity() {
             <CardContent className="space-y-4">
 
                 <SecurityItem
-                    icon={LockKeyhole}
+                    icon={
+                        LockKeyhole
+                    }
                     title="Owner wallet controls the account"
                     description="Your connected wallet remains the owner of the Smart Account."
                 />
 
                 <SecurityItem
-                    icon={ShieldCheck}
+                    icon={
+                        ShieldCheck
+                    }
                     title="Billing uses explicit authorization"
                     description="Recurring billing operates through the configured Smart Account permission."
                 />
@@ -49,8 +56,7 @@ export function SmartAccountSecurity() {
                         </p>
 
                         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Anyone controlling the owner wallet may be able
-                            to control the Smart Account. Never share wallet credentials.
+                            Anyone controlling the owner wallet may be able to control the Smart Account. Never share wallet credentials.
                         </p>
 
                     </div>
@@ -69,7 +75,9 @@ function SecurityItem({
     description,
 }: {
     icon: typeof ShieldCheck;
+
     title: string;
+
     description: string;
 }) {
     return (

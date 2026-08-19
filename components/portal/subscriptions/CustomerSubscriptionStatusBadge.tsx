@@ -1,20 +1,29 @@
 import {
+    CheckCircle2,
+    Clock3,
+    PauseCircle,
+} from "lucide-react";
+
+import {
     Badge,
 } from "@/components/ui/badge";
 
 import type {
     CustomerSubscriptionStatus,
-} from "./customer-subscription.types";
+} from "@/types/customer-subscription";
 
 export function CustomerSubscriptionStatusBadge({
     status,
 }: {
-    status: CustomerSubscriptionStatus;
+    status:
+        CustomerSubscriptionStatus;
 }) {
     switch (status) {
+
         case "ACTIVE":
             return (
                 <Badge variant="secondary">
+                    <CheckCircle2 />
                     Active
                 </Badge>
             );
@@ -22,6 +31,7 @@ export function CustomerSubscriptionStatusBadge({
         case "PAUSED":
             return (
                 <Badge variant="outline">
+                    <PauseCircle />
                     Paused
                 </Badge>
             );
@@ -29,6 +39,7 @@ export function CustomerSubscriptionStatusBadge({
         case "PENDING":
             return (
                 <Badge>
+                    <Clock3 />
                     Pending
                 </Badge>
             );

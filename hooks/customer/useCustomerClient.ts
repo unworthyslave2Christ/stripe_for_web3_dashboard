@@ -13,39 +13,39 @@ import {
     createCustomerClient,
 } from "@/lib/sdk/createCustomerClient";
 
-////////////////////////////////////////////////////////////
-// HOOK
-////////////////////////////////////////////////////////////
-
 export function useCustomerClient() {
     const {
-        data: walletClient,
-    } = useWalletClient();
+        data:
+            walletClient,
+    } =
+        useWalletClient();
 
     const publicClient =
         usePublicClient();
 
     const client =
-        useMemo(() => {
+        useMemo(
+            () => {
 
-            if (
-                !walletClient ||
-                !publicClient
-            ) {
-                return null;
-            }
+                if (
+                    !walletClient ||
+                    !publicClient
+                ) {
+                    return null;
+                }
 
-            return createCustomerClient({
+                return createCustomerClient({
+                    walletClient,
+
+                    publicClient,
+                });
+            },
+            [
                 walletClient,
 
                 publicClient,
-            });
-
-        }, [
-            walletClient,
-
-            publicClient,
-        ]);
+            ],
+        );
 
     return {
         client,

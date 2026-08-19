@@ -3,37 +3,83 @@ import {
 } from "@/components/ui/badge";
 
 import {
-    CustomerAddress,
-} from "../shared/CustomerAddress";
+    ShieldCheck,
+} from "lucide-react";
 
-export function CustomerOverviewHeader() {
+export function CustomerOverviewHeader({
+    customerName,
+    smartAccount,
+    mode,
+}: {
+    customerName:
+        | string
+        | undefined;
+
+    smartAccount:
+        | string
+        | undefined;
+
+    mode:
+        | "demo"
+        | "live";
+}) {
     return (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
 
             <div>
 
-                <p className="text-sm font-medium text-muted-foreground">
-                    Customer portal
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
 
-                <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-                    Welcome back, Alex.
+                    <p className="text-sm font-medium text-muted-foreground">
+                        Customer portal
+                    </p>
+
+                    {mode === "demo" && (
+                        <Badge variant="outline">
+                            Test mode
+                        </Badge>
+                    )}
+
+                </div>
+
+                <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+                    Welcome back
+                    {customerName
+                        ? `, ${customerName}`
+                        : ""}
+                    .
                 </h1>
 
-                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                     Manage your Smart Account, subscriptions, billing,
-                    permissions, and notifications from one place.
+                    transactions, permissions, and account activity.
                 </p>
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
+            </div>
 
-                    <Badge variant="secondary">
-                        Smart Account active
-                    </Badge>
+            <div className="rounded-xl border bg-card px-4 py-3">
 
-                    <CustomerAddress
-                        address="0xf1cc103c9b156eE9c2C496f582075a3086eC2347"
-                    />
+                <div className="flex items-center gap-3">
+
+                    <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+
+                        <ShieldCheck className="size-4 text-primary" />
+
+                    </div>
+
+                    <div>
+
+                        <p className="text-xs text-muted-foreground">
+                            Smart Account
+                        </p>
+
+                        <p className="mt-1 font-mono text-xs">
+                            {smartAccount
+                                ? `${smartAccount.slice(0, 8)}...${smartAccount.slice(-6)}`
+                                : "Not created"}
+                        </p>
+
+                    </div>
 
                 </div>
 

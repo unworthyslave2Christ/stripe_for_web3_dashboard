@@ -5,8 +5,18 @@ import {
 export function SmartAccountNetworkBadge({
     network,
 }: {
-    network: string;
+    network:
+        | string
+        | undefined;
 }) {
+    if (!network) {
+        return (
+            <Badge variant="outline">
+                Unknown network
+            </Badge>
+        );
+    }
+
     return (
         <Badge variant="outline">
             {network}

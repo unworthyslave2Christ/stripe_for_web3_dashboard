@@ -1,5 +1,5 @@
 import {
-    CircleCheck,
+    CheckCircle2,
 } from "lucide-react";
 
 export function SmartAccountActivityItem({
@@ -8,14 +8,18 @@ export function SmartAccountActivityItem({
     time,
 }: {
     title: string;
+
     description: string;
+
     time: string;
 }) {
     return (
         <div className="flex gap-3 border-b py-4 first:pt-0 last:border-0 last:pb-0">
 
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                <CircleCheck className="size-4 text-muted-foreground" />
+
+                <CheckCircle2 className="size-4 text-muted-foreground" />
+
             </div>
 
             <div className="min-w-0 flex-1">

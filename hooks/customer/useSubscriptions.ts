@@ -5,16 +5,16 @@ import {
 } from "@tanstack/react-query";
 
 import {
+    queryKeys,
+} from "@/lib/query/queryKeys";
+
+import {
     useCustomerClient,
 } from "./useCustomerClient";
 
 import {
     useCustomer,
 } from "./useCustomer";
-
-import {
-    queryKeys,
-} from "@/lib/query/queryKeys";
 
 export function useSubscriptions() {
     const {
@@ -85,12 +85,8 @@ export function useSubscriptions() {
             !query.isLoading,
 
         error:
-            query.error
-                ? query.error instanceof Error
-                    ? query.error
-                    : new Error(
-                        "Unable to load subscriptions.",
-                    )
+            query.error instanceof Error
+                ? query.error
                 : null,
 
         refresh:

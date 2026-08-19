@@ -10,8 +10,8 @@ const PROJECT_ROOT = __dirname;
 const SOURCE_DIR = path.join(
     PROJECT_ROOT,
     "app",
-    "customer",
-    "onboarding"
+    "portal",
+    "subscriptions"
 );
 
 const ENTRY_FILE = path.join(
@@ -22,8 +22,8 @@ const ENTRY_FILE = path.join(
 const OUTPUT_DIR = path.join(
     PROJECT_ROOT,
     "app",
-    "customer",
-    "onboarding-flattened"
+    "portal",
+    "subscriptions-flattened"
 );
 
 const OUTPUT_FILE = path.join(

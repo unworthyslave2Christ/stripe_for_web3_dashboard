@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -23,12 +25,20 @@ import {
 } from "@/components/portal/subscriptions/CustomerSubscriptionGuidance";
 
 import {
+    CustomerSubscriptionsEmptyState,
+} from "@/components/portal/subscriptions/CustomerSubscriptionsEmptyState";
+
+import {
     CustomerSubscriptionsHeader,
 } from "@/components/portal/subscriptions/CustomerSubscriptionsHeader";
 
 import {
     CustomerSubscriptionsList,
 } from "@/components/portal/subscriptions/CustomerSubscriptionsList";
+
+import {
+    CustomerSubscriptionsLoadingState,
+} from "@/components/portal/subscriptions/CustomerSubscriptionsLoadingState";
 
 import {
     CustomerSubscriptionsOverview,
@@ -42,7 +52,78 @@ import {
     CustomerSubscriptionsToolbar,
 } from "@/components/portal/subscriptions/CustomerSubscriptionsToolbar";
 
+import {
+    useCustomerSubscriptionsPage,
+} from "@/hooks/pages/customer/useCustomerSubscriptionsPage";
+
 export default function CustomerSubscriptionsPage() {
+
+    const page =
+        useCustomerSubscriptionsPage();
+
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.loading &&
+        page.subscriptions.subscriptions.length ===
+            0
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerSubscriptionsLoadingState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.error &&
+        page.subscriptions.subscriptions.length ===
+            0
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8">
+
+                        <h1 className="text-lg font-semibold">
+                            Unable to load subscriptions
+                        </h1>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            {page.error.message}
+                        </p>
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // MAIN CONTENT
+    ////////////////////////////////////////////////////////////
+
+    const currency =
+        page.list.items[0]
+            ?.currency ??
+        "USD";
+
     return (
         <Page>
 
@@ -52,13 +133,39 @@ export default function CustomerSubscriptionsPage() {
 
                     {/* HEADER */}
 
-                    <CustomerSubscriptionsHeader />
+                    <CustomerSubscriptionsHeader
+                        hasCustomer={
+                            Boolean(
+                                page.customer.customer,
+                            )
+                        }
+                    />
 
                     <Divider />
 
                     {/* OVERVIEW */}
 
-                    <CustomerSubscriptionsOverview />
+                    <CustomerSubscriptionsOverview
+                        active={
+                            page.summary.active
+                        }
+
+                        recurringTotal={
+                            page.summary.recurringTotal
+                        }
+
+                        nextBilling={
+                            page.summary.nextBilling
+                        }
+
+                        pausedOrCancelled={
+                            page.summary.pausedOrCancelled
+                        }
+
+                        currency={
+                            currency
+                        }
+                    />
 
                     {/* SUBSCRIPTIONS */}
 
@@ -69,11 +176,72 @@ export default function CustomerSubscriptionsPage() {
 
                         <Stack gap={4}>
 
-                            <CustomerSubscriptionsToolbar />
+                            <CustomerSubscriptionsToolbar
+                                search={
+                                    page.list.search
+                                }
 
-                            <CustomerSubscriptionsList />
+                                onSearchChange={
+                                    page.list.setSearch
+                                }
 
-                            <CustomerSubscriptionsPagination />
+                                status={
+                                    page.list.statusFilter
+                                }
+
+                                onStatusChange={
+                                    page.list.setStatusFilter
+                                }
+                            />
+
+                            <CustomerSubscriptionsList
+                                subscriptions={
+                                    page.list.items
+                                }
+
+                                onPause={
+                                    page.actions.pause
+                                }
+
+                                onResume={
+                                    page.actions.resume
+                                }
+
+                                onCancel={
+                                    page.actions.cancel
+                                }
+
+                                loading={
+                                    page.actions.pauseLoading ||
+                                    page.actions.resumeLoading ||
+                                    page.actions.cancelLoading
+                                }
+                            />
+
+                            {page.list.totalCount >
+                                0 && (
+                                <CustomerSubscriptionsPagination
+                                    page={
+                                        page.list.page
+                                    }
+
+                                    totalPages={
+                                        page.list.totalPages
+                                    }
+
+                                    totalCount={
+                                        page.list.filteredCount
+                                    }
+
+                                    pageSize={
+                                        page.list.pageSize
+                                    }
+
+                                    onPageChange={
+                                        page.list.setPage
+                                    }
+                                />
+                            )}
 
                         </Stack>
 
@@ -89,6 +257,14 @@ export default function CustomerSubscriptionsPage() {
                         <CustomerSubscriptionGuidance />
 
                     </Section>
+
+                    {/* REFRESHING */}
+
+                    {page.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing subscription data...
+                        </p>
+                    )}
 
                 </Stack>
 

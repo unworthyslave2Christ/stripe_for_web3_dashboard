@@ -1,12 +1,15 @@
 import Link from "next/link";
 
 import {
-    Bell,
+    ArrowRight,
     CreditCard,
-    History,
-    LockKeyhole,
+    ShieldCheck,
     WalletCards,
 } from "lucide-react";
+
+import {
+    Button,
+} from "@/components/ui/button";
 
 import {
     Card,
@@ -14,34 +17,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-
-const actions = [
-    {
-        label: "Manage Smart Account",
-        href: "/portal/smart-account",
-        icon: WalletCards,
-    },
-    {
-        label: "Manage subscriptions",
-        href: "/portal/subscriptions",
-        icon: CreditCard,
-    },
-    {
-        label: "View transactions",
-        href: "/portal/transactions",
-        icon: History,
-    },
-    {
-        label: "Manage permissions",
-        href: "/portal/permissions",
-        icon: LockKeyhole,
-    },
-    {
-        label: "Notifications",
-        href: "/portal/notifications",
-        icon: Bell,
-    },
-];
 
 export function CustomerQuickActions() {
     return (
@@ -53,35 +28,62 @@ export function CustomerQuickActions() {
                 </CardTitle>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="space-y-2">
 
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <Action
+                    href="/portal/subscriptions"
+                    icon={CreditCard}
+                    label="Manage subscriptions"
+                />
 
-                    {actions.map((action) => {
-                        const Icon =
-                            action.icon;
+                <Action
+                    href="/portal/smart-account"
+                    icon={WalletCards}
+                    label="View Smart Account"
+                />
 
-                        return (
-                            <Link
-                                key={action.href}
-                                href={action.href}
-                                className="flex items-center gap-3 rounded-lg border p-3 text-sm transition-colors hover:bg-muted/30"
-                            >
-                                <div className="flex size-8 items-center justify-center rounded-md bg-muted">
-                                    <Icon className="size-4" />
-                                </div>
-
-                                <span className="font-medium">
-                                    {action.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
-
-                </div>
+                <Action
+                    href="/portal/permissions"
+                    icon={ShieldCheck}
+                    label="Review permissions"
+                />
 
             </CardContent>
 
         </Card>
+    );
+}
+
+function Action({
+    href,
+    icon: Icon,
+    label,
+}: {
+    href: string;
+
+    icon: typeof CreditCard;
+
+    label: string;
+}) {
+    return (
+        <Button
+            render={
+                <Link href={href}>
+
+                    <span className="flex items-center gap-2">
+
+                        <Icon className="size-4" />
+
+                        {label}
+
+                    </span>
+
+                    <ArrowRight />
+
+                </Link>
+            }
+            variant="outline"
+            className="h-auto w-full justify-between px-3 py-3"
+        />
     );
 }

@@ -25,6 +25,10 @@ import {
     WalletButton,
 } from "@/components/wallet/WalletButton";
 
+////////////////////////////////////////////////////////////
+// PROPS
+////////////////////////////////////////////////////////////
+
 interface CustomerOnboardingFormProps {
     onSubmit: (
         input: {
@@ -42,6 +46,10 @@ interface CustomerOnboardingFormProps {
         | Error
         | null;
 }
+
+////////////////////////////////////////////////////////////
+// COMPONENT
+////////////////////////////////////////////////////////////
 
 export function CustomerOnboardingForm({
     onSubmit,
@@ -78,6 +86,7 @@ export function CustomerOnboardingForm({
         );
 
         if (!displayName.trim()) {
+
             setValidationError(
                 "Please enter your name.",
             );
@@ -86,6 +95,7 @@ export function CustomerOnboardingForm({
         }
 
         if (!email.trim()) {
+
             setValidationError(
                 "Please enter your email address.",
             );
@@ -93,11 +103,18 @@ export function CustomerOnboardingForm({
             return;
         }
 
-        await onSubmit({
-            displayName,
+        try {
 
-            email,
-        });
+            await onSubmit({
+                displayName,
+
+                email,
+            });
+
+        } catch {
+            // Error is rendered from the
+            // composition hook.
+        }
     }
 
     return (
@@ -193,6 +210,7 @@ export function CustomerOnboardingForm({
                 {!loading && (
                     <ArrowRight />
                 )}
+
             </Button>
 
         </form>

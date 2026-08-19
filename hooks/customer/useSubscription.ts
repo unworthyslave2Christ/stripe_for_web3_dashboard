@@ -5,12 +5,12 @@ import {
 } from "@tanstack/react-query";
 
 import {
-    useCustomerClient,
-} from "./useCustomerClient";
-
-import {
     queryKeys,
 } from "@/lib/query/queryKeys";
+
+import {
+    useCustomerClient,
+} from "./useCustomerClient";
 
 export function useSubscription(
     subscriptionId:
@@ -25,11 +25,12 @@ export function useSubscription(
     const query =
         useQuery({
             queryKey:
-                subscriptionId
+                subscriptionId !== null
                     ? queryKeys.customer.subscription(
                         subscriptionId,
                     )
                     : [
+                        "customer",
                         "subscription",
                         "none",
                     ],
@@ -63,17 +64,9 @@ export function useSubscription(
         loading:
             query.isLoading,
 
-        refreshing:
-            query.isFetching &&
-            !query.isLoading,
-
         error:
-            query.error
-                ? query.error instanceof Error
-                    ? query.error
-                    : new Error(
-                        "Unable to load subscription.",
-                    )
+            query.error instanceof Error
+                ? query.error
                 : null,
 
         refresh:

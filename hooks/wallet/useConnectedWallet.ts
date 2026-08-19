@@ -27,7 +27,8 @@ export function useConnectedWallet(): ConnectedWalletState {
         ready,
         authenticated,
         user,
-    } = usePrivy();
+    } =
+        usePrivy();
 
     return {
         ready,

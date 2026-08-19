@@ -1,7 +1,10 @@
+import Link from "next/link";
+
 import {
-    ExternalLink,
+    ArrowRight,
+    CheckCircle2,
+    Copy,
     ShieldCheck,
-    WalletCards,
 } from "lucide-react";
 
 import {
@@ -15,75 +18,106 @@ import {
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 
-export function CustomerSmartAccountCard() {
+export function CustomerSmartAccountCard({
+    smartAccount,
+}: {
+    smartAccount:
+        | string
+        | undefined;
+}) {
+    const ready =
+        Boolean(
+            smartAccount,
+        );
+
     return (
-        <Card className="overflow-hidden">
+        <Card>
 
             <CardHeader>
 
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-center justify-between gap-3">
 
-                    <div>
+                    <CardTitle>
+                        Smart Account
+                    </CardTitle>
 
-                        <div className="flex items-center gap-2">
-
-                            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-                                <WalletCards className="size-4 text-primary" />
-                            </div>
-
-                            <CardTitle>
-                                Your Smart Account
-                            </CardTitle>
-
-                        </div>
-
-                        <CardDescription className="mt-2">
-                            Your Stripe for Web3 Smart Account is the account
-                            used to manage your decentralized subscriptions.
-                        </CardDescription>
-
-                    </div>
-
-                    <Badge variant="secondary">
-                        <ShieldCheck />
-                        Active
-                    </Badge>
+                    {ready ? (
+                        <Badge variant="secondary">
+                            <CheckCircle2 />
+                            Ready
+                        </Badge>
+                    ) : (
+                        <Badge variant="outline">
+                            Not created
+                        </Badge>
+                    )}
 
                 </div>
 
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="space-y-5">
 
-                <div className="rounded-xl border bg-muted/30 p-4">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
 
-                    <p className="text-xs text-muted-foreground">
-                        Smart Account address
-                    </p>
-
-                    <p className="mt-2 break-all font-mono text-sm">
-                        0xf1cc103c9b156eE9c2C496f582075a3086eC2347
-                    </p>
+                    <ShieldCheck className="size-5 text-primary" />
 
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-2">
+                {ready ? (
+                    <>
+                        <div>
 
-                    <Button>
-                        Manage Smart Account
-                    </Button>
+                            <p className="text-sm text-muted-foreground">
+                                Your account
+                            </p>
 
-                    <Button variant="outline">
-                        <ExternalLink />
-                        View on explorer
-                    </Button>
+                            <code className="mt-2 block break-all rounded-lg border bg-muted/20 p-3 font-mono text-xs leading-5">
+                                {smartAccount}
+                            </code>
 
-                </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                            >
+                                <Copy />
+                                Copy
+                            </Button>
+
+                            <Button
+                                render={
+                                    <Link href="/portal/smart-account">
+                                        Manage
+                                        <ArrowRight />
+                                    </Link>
+                                }
+                                size="sm"
+                                variant="outline"
+                            />
+
+                        </div>
+                    </>
+                ) : (
+                    <div>
+
+                        <p className="text-sm font-medium">
+                            Your Smart Account is not available yet.
+                        </p>
+
+                        <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                            Complete customer onboarding to create your Smart Account.
+                        </p>
+
+                    </div>
+                )}
 
             </CardContent>
 

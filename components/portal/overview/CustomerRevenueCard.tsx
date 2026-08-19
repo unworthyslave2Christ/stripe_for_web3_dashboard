@@ -1,16 +1,8 @@
 "use client";
 
 import {
-    merchantOverviewDemo,
-} from "@/lib/demo/merchantOverviewDemo";
-
-import {
     useAnimatedNumber,
 } from "@/hooks/ui/useAnimatedNumber";
-
-import {
-    appConfig,
-} from "@/app/config";
 
 import {
     Badge,
@@ -23,60 +15,89 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function RevenueChart() {
+export function CustomerRevenueCard({
+    monthlyUsd,
+    previousMonthlyUsd,
+    series,
+    demo,
+}: {
+    monthlyUsd: number;
 
-    const animatedRevenue =
+    previousMonthlyUsd: number;
+
+    series: {
+        label: string;
+
+        value: number;
+    }[];
+
+    demo: boolean;
+}) {
+    const animatedValue =
         useAnimatedNumber(
-            appConfig.demoMode
-                ? merchantOverviewDemo.monthlyRevenue
-                : 0,
+            monthlyUsd,
         );
 
-    const points =
-        merchantOverviewDemo.revenueSeries;
+    const change =
+        previousMonthlyUsd ===
+        0
+            ? 0
+            : (
+                (
+                    monthlyUsd -
+                    previousMonthlyUsd
+                ) /
+                previousMonthlyUsd
+            ) *
+                100;
 
     const width =
         700;
 
     const height =
-        240;
+        220;
 
     const padding =
         24;
 
-    const maxValue =
-        Math.max(
-            ...points.map(
-                (point) =>
-                    point.value,
-            ),
+    const values =
+        series.map(
+            (item) =>
+                item.value,
         );
 
-    const minValue =
+    const max =
+        Math.max(
+            ...values,
+            1,
+        );
+
+    const min =
         Math.min(
-            ...points.map(
-                (point) =>
-                    point.value,
-            ),
+            ...values,
+            0,
         );
 
     const range =
         Math.max(
-            maxValue -
-                minValue,
+            max -
+                min,
             1,
         );
 
     const coordinates =
-        points.map(
-            (point, index) => {
+        series.map(
+            (
+                item,
+                index,
+            ) => {
 
                 const x =
                     padding +
                     (
                         index /
                         Math.max(
-                            points.length -
+                            series.length -
                                 1,
                             1,
                         )
@@ -91,8 +112,8 @@ export function RevenueChart() {
                     padding -
                     (
                         (
-                            point.value -
-                            minValue
+                            item.value -
+                            min
                         ) /
                         range
                     ) *
@@ -115,34 +136,30 @@ export function RevenueChart() {
                     point,
                     index,
                 ) =>
-                    `${
-                        index === 0
-                            ? "M"
-                            : "L"
-                    } ${point.x} ${point.y}`,
+                    `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`,
             )
             .join(" ");
 
     return (
-        <Card className="xl:col-span-2">
+        <Card>
 
             <CardHeader>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-start justify-between gap-4">
 
                     <div>
 
                         <CardTitle>
-                            Revenue
+                            Billing value
                         </CardTitle>
 
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Monthly recurring revenue.
+                            Estimated recurring value.
                         </p>
 
                     </div>
 
-                    {appConfig.demoMode && (
+                    {demo && (
                         <Badge variant="outline">
                             Test mode
                         </Badge>
@@ -150,28 +167,40 @@ export function RevenueChart() {
 
                 </div>
 
-                <div className="pt-3">
-
-                    <p className="text-3xl font-semibold tracking-tight">
-                        $
-                        {Math.round(
-                            animatedRevenue,
-                        ).toLocaleString()}
-                    </p>
-
-                </div>
-
             </CardHeader>
 
             <CardContent>
 
-                <div className="overflow-hidden rounded-xl border bg-muted/20 p-3">
+                <div className="flex items-end justify-between gap-4">
+
+                    <div>
+
+                        <p className="text-3xl font-semibold tracking-tight">
+                            $
+                            {animatedValue.toFixed(
+                                2,
+                            )}
+                        </p>
+
+                        <p className="mt-2 text-xs text-muted-foreground">
+                            {change >= 0
+                                ? "+"
+                                : ""}
+                            {change.toFixed(
+                                1,
+                            )}
+                            % from previous period
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div className="mt-6 overflow-hidden rounded-xl border bg-muted/20 p-3">
 
                     <svg
                         viewBox={`0 0 ${width} ${height}`}
-                        className="h-[240px] w-full"
-                        role="img"
-                        aria-label="Revenue trend"
+                        className="h-[220px] w-full"
                     >
 
                         <path
@@ -197,7 +226,7 @@ export function RevenueChart() {
                                     cy={
                                         point.y
                                     }
-                                    r="4"
+                                    r="3.5"
                                     className="fill-primary"
                                 />
                             ),
@@ -205,20 +234,20 @@ export function RevenueChart() {
 
                     </svg>
 
-                    <div className="grid grid-cols-6 gap-2 px-2 pb-1">
+                    <div className="grid grid-cols-6 gap-2">
 
-                        {points.map(
+                        {series.map(
                             (
-                                point,
+                                item,
                             ) => (
                                 <p
                                     key={
-                                        point.label
+                                        item.label
                                     }
                                     className="text-center text-[10px] text-muted-foreground"
                                 >
                                     {
-                                        point.label
+                                        item.label
                                     }
                                 </p>
                             ),
