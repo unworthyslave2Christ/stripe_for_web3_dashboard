@@ -16,7 +16,44 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function CustomerNotificationsToolbar() {
+import type {
+    NotificationStatusFilter,
+    NotificationTypeFilter,
+} from "@/hooks/notifications/useCustomerNotifications";
+
+export function CustomerNotificationsToolbar({
+    search,
+    onSearchChange,
+    type,
+    onTypeChange,
+    status,
+    onStatusChange,
+}: {
+    search: string;
+
+    onSearchChange:
+        (
+            value: string,
+        ) => void;
+
+    type:
+        NotificationTypeFilter;
+
+    onTypeChange:
+        (
+            value:
+                NotificationTypeFilter,
+        ) => void;
+
+    status:
+        NotificationStatusFilter;
+
+    onStatusChange:
+        (
+            value:
+                NotificationStatusFilter,
+        ) => void;
+}) {
     return (
         <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
 
@@ -26,6 +63,16 @@ export function CustomerNotificationsToolbar() {
 
                 <Input
                     placeholder="Search notifications..."
+                    value={
+                        search
+                    }
+                    onChange={(
+                        event,
+                    ) =>
+                        onSearchChange(
+                            event.target.value,
+                        )
+                    }
                     className="pl-9"
                 />
 
@@ -33,7 +80,18 @@ export function CustomerNotificationsToolbar() {
 
             <div className="flex flex-col gap-2 sm:flex-row">
 
-                <Select defaultValue="all">
+                <Select
+                    value={
+                        type
+                    }
+                    onValueChange={(
+                        value,
+                    ) =>
+                        onTypeChange(
+                            value as NotificationTypeFilter,
+                        )
+                    }
+                >
 
                     <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue />
@@ -61,7 +119,18 @@ export function CustomerNotificationsToolbar() {
 
                 </Select>
 
-                <Select defaultValue="all">
+                <Select
+                    value={
+                        status
+                    }
+                    onValueChange={(
+                        value,
+                    ) =>
+                        onStatusChange(
+                            value as NotificationStatusFilter,
+                        )
+                    }
+                >
 
                     <SelectTrigger className="w-full sm:w-[145px]">
                         <SelectValue />
@@ -79,6 +148,10 @@ export function CustomerNotificationsToolbar() {
 
                         <SelectItem value="delivered">
                             Delivered
+                        </SelectItem>
+
+                        <SelectItem value="pending">
+                            Pending
                         </SelectItem>
 
                         <SelectItem value="failed">

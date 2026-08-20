@@ -30,8 +30,8 @@ importers:
         specifier: 0.2.43
         version: 0.2.43(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@stripe-for-web3/merchant':
-        specifier: 0.2.43
-        version: 0.2.43(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))
+        specifier: 0.2.44
+        version: 0.2.44(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@supabase/ssr':
         specifier: ^0.12.4
         version: 0.12.4(@supabase/supabase-js@2.111.0)
@@ -1715,8 +1715,8 @@ packages:
       permissionless: ^0.1.49
       viem: 2.55.11
 
-  '@stripe-for-web3/merchant@0.2.43':
-    resolution: {integrity: sha512-PAxKuxbEt6TLAMC4yOsy+AIfCPXO/8swUBWE5Ef7rEdxMj1O5A4kDSjwZsQ28Vf0zsWyPVK1o6xhABHeOu5VCA==}
+  '@stripe-for-web3/merchant@0.2.44':
+    resolution: {integrity: sha512-myyPmglcJh7Cz3qk+SClYIXsiFo6MMAd9yhnCeS5cSJ0cG/ROo0DCO6pTbVj4vDU56SouDd9tq3AKSzGcEQSvg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@zerodev/ecdsa-validator': ^5.4.9
@@ -8192,7 +8192,7 @@ snapshots:
     transitivePeerDependencies:
       - '@zerodev/webauthn-key'
 
-  '@stripe-for-web3/merchant@0.2.43(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))':
+  '@stripe-for-web3/merchant@0.2.44(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))':
     dependencies:
       '@stripe-for-web3/core': 0.2.42(@zerodev/ecdsa-validator@5.4.9(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/sdk@5.5.10(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(@zerodev/webauthn-key@5.5.0(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(permissionless@0.1.49(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)))(viem@2.55.11(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@supabase/supabase-js': 2.111.0

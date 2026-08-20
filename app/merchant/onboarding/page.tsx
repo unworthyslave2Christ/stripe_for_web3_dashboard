@@ -9,6 +9,15 @@ import {
 } from "next/navigation";
 
 import {
+    Badge,
+} from "@/components/ui/badge";
+
+import {
+    Card,
+    CardContent,
+} from "@/components/ui/card";
+
+import {
     Container,
 } from "@/components/layout/Container";
 
@@ -17,13 +26,12 @@ import {
 } from "@/components/layout/Page";
 
 import {
-    Card,
-    CardContent,
-} from "@/components/ui/card";
-
-import {
     MerchantOnboardingForm,
 } from "@/components/onboarding/MerchantOnboardingForm";
+
+import {
+    MerchantOnboardingState,
+} from "@/components/onboarding/MerchantOnboardingState";
 
 import {
     OnboardingHeader,
@@ -35,31 +43,31 @@ import {
 
 import {
     useMerchantOnboardingPage,
-} from "@/hooks/onboarding/useMerchantOnboardingPage";
+} from "@/hooks/pages/merchant/useMerchantOnboardingPage";
 
 export default function MerchantOnboardingPage() {
-
     const router =
         useRouter();
 
     const onboarding =
         useMerchantOnboardingPage();
 
-    useEffect(() => {
-
-        if (
-            onboarding.status ===
-            "complete"
-        ) {
-            router.replace(
-                "/dashboard",
-            );
-        }
-
-    }, [
-        onboarding.status,
-        router,
-    ]);
+    useEffect(
+        () => {
+            if (
+                onboarding.status ===
+                "complete"
+            ) {
+                router.replace(
+                    "/dashboard",
+                );
+            }
+        },
+        [
+            onboarding.status,
+            router,
+        ],
+    );
 
     return (
         <OnboardingShell>
@@ -70,41 +78,77 @@ export default function MerchantOnboardingPage() {
 
                     <div className="mx-auto max-w-2xl">
 
+                        <div className="flex items-center gap-2">
+
+                            <Badge variant="secondary">
+                                Merchant onboarding
+                            </Badge>
+
+                            <Badge variant="outline">
+                                Secure setup
+                            </Badge>
+
+                        </div>
+
                         <OnboardingHeader
                             eyebrow="Merchant onboarding"
                             title="Create your merchant account"
                             description="Set up your merchant identity, payout wallet, and metadata before entering the merchant dashboard."
                         />
 
-                        <Card className="mt-8">
+                        <div className="mt-8 space-y-4">
 
-                            <CardContent className="pt-6">
+                            <MerchantOnboardingState
+                                status={
+                                    onboarding.status
+                                }
+                                merchant={
+                                    onboarding.merchant
+                                }
+                            />
 
-                                <MerchantOnboardingForm
-                                    address={
-                                        onboarding.address
-                                    }
+                            {(
+                                onboarding.status ===
+                                    "not-created" ||
+                                onboarding.status ===
+                                    "disconnected"
+                            ) && (
 
-                                    authenticated={
-                                        onboarding.authenticated
-                                    }
+                                <Card>
 
-                                    onSubmit={
-                                        onboarding.createMerchant
-                                    }
+                                    <CardContent className="pt-6">
 
-                                    loading={
-                                        onboarding.creationLoading
-                                    }
+                                        <MerchantOnboardingForm
+                                            address={
+                                                onboarding.ownerWallet
+                                            }
 
-                                    error={
-                                        onboarding.creationError
-                                    }
-                                />
+                                            authenticated={
+                                                Boolean(
+                                                    onboarding.ownerWallet,
+                                                )
+                                            }
 
-                            </CardContent>
+                                            onSubmit={
+                                                onboarding.createMerchant
+                                            }
 
-                        </Card>
+                                            loading={
+                                                onboarding.creationLoading
+                                            }
+
+                                            error={
+                                                onboarding.creationError ??
+                                                onboarding.customerError
+                                            }
+                                        />
+
+                                    </CardContent>
+
+                                </Card>
+                            )}
+
+                        </div>
 
                     </div>
 

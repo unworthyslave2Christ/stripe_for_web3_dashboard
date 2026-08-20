@@ -4,34 +4,69 @@ import {
 
 export function CustomerBillingLoadingState() {
     return (
-        <div className="space-y-3">
+        <div className="space-y-8">
+
+            <div className="space-y-3">
+
+                <Skeleton className="h-4 w-28" />
+
+                <Skeleton className="h-9 w-40" />
+
+                <Skeleton className="h-4 w-[560px] max-w-full" />
+
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                {Array.from({
+                    length: 4,
+                }).map(
+                    (
+                        _,
+                        index,
+                    ) => (
+                        <div
+                            key={
+                                index
+                            }
+                            className="rounded-xl border bg-card p-5"
+                        >
+                            <Skeleton className="h-4 w-28" />
+
+                            <Skeleton className="mt-4 h-8 w-24" />
+
+                            <Skeleton className="mt-4 h-3 w-32" />
+                        </div>
+                    ),
+                )}
+
+            </div>
+
+            <div className="rounded-xl border bg-card p-5">
+
+                <Skeleton className="h-5 w-40" />
+
+                <Skeleton className="mt-6 h-28 w-full" />
+
+            </div>
 
             {Array.from({
-                length: 4,
-            }).map((_, index) => (
-                <div
-                    key={index}
-                    className="rounded-xl border bg-card p-5"
-                >
-
-                    <div className="flex items-center gap-4">
-
-                        <Skeleton className="size-10 rounded-lg" />
-
-                        <div className="flex-1 space-y-2">
-
-                            <Skeleton className="h-4 w-40" />
-
-                            <Skeleton className="h-3 w-28" />
-
-                        </div>
-
-                        <Skeleton className="h-7 w-20" />
-
+                length: 3,
+            }).map(
+                (
+                    _,
+                    index,
+                ) => (
+                    <div
+                        key={
+                            index
+                        }
+                        className="rounded-xl border bg-card p-5"
+                    >
+                        <Skeleton className="h-16 w-full" />
                     </div>
-
-                </div>
-            ))}
+                ),
+            )}
 
         </div>
     );

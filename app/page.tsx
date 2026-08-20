@@ -67,3 +67,7 @@ export default function HomePage() {
         </>
     );
 }
+
+
+
+// here is the next flattened page, provide the realistic version(s), ensuring to maintain consistency

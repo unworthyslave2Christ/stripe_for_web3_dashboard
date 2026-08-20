@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 import {
+    ArrowUpDown,
     Bell,
     CreditCard,
     LayoutDashboard,
@@ -6,10 +9,7 @@ import {
     Receipt,
     Settings,
     WalletCards,
-    ArrowUpDown
 } from "lucide-react";
-
-import Link from "next/link";
 
 const navigation = [
     {
@@ -57,7 +57,6 @@ const navigation = [
 export function CustomerPortalNavigation() {
     return (
         <nav className="space-y-1">
-
             {navigation.map((item) => {
                 const Icon = item.icon;
 
@@ -65,9 +64,16 @@ export function CustomerPortalNavigation() {
                     <Link
                         key={item.href}
                         href={item.href}
-                        className="flex h-9 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className={[
+                            "flex h-9 items-center gap-3 rounded-md px-3",
+                            "text-sm text-muted-foreground",
+                            "transition-colors",
+                            "hover:bg-muted hover:text-foreground",
+                            "focus-visible:bg-muted focus-visible:text-foreground",
+                            "focus-visible:outline-none",
+                        ].join(" ")}
                     >
-                        <Icon className="size-4" />
+                        <Icon className="size-4 shrink-0" />
 
                         <span>
                             {item.label}
@@ -75,7 +81,6 @@ export function CustomerPortalNavigation() {
                     </Link>
                 );
             })}
-
         </nav>
     );
 }

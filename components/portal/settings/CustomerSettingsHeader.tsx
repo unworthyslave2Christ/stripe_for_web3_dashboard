@@ -1,12 +1,16 @@
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     Settings,
 } from "lucide-react";
 
-export function CustomerSettingsHeader() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function CustomerSettingsHeader({
+    demo,
+}: {
+    demo: boolean;
+}) {
     return (
         <div>
 
@@ -19,6 +23,12 @@ export function CustomerSettingsHeader() {
                 <Badge variant="secondary">
                     Smart Account
                 </Badge>
+
+                {demo && (
+                    <Badge variant="outline">
+                        Test mode
+                    </Badge>
+                )}
 
             </div>
 
@@ -33,7 +43,8 @@ export function CustomerSettingsHeader() {
             </div>
 
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                Manage your customer profile, Smart Account preferences, notifications, and portal experience.
+                Manage your customer profile, Smart Account preferences,
+                notifications, and portal experience.
             </p>
 
         </div>

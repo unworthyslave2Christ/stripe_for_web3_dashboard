@@ -1,31 +1,32 @@
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
-    CardDescription,
 } from "@/components/ui/card";
 
-const values = [
-    1020,
-    1110,
-    1190,
-    1280,
-    1350,
-    1420,
-    1510,
-    1610,
-    1700,
-    1780,
-    1840,
-    1892,
-];
+export function SubscriptionChart({
+    values,
+    demo,
+}: {
+    values:
+        number[];
 
-export function SubscriptionChart() {
+    demo:
+        boolean;
+}) {
+    const max =
+        Math.max(
+            ...values,
+            1,
+        );
+
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     Subscriptions
                 </CardTitle>
@@ -33,6 +34,7 @@ export function SubscriptionChart() {
                 <CardDescription>
                     Active subscriptions over time.
                 </CardDescription>
+
             </CardHeader>
 
             <CardContent>
@@ -40,28 +42,40 @@ export function SubscriptionChart() {
                 <div className="flex h-48 items-end gap-1.5">
 
                     {values.map(
-                        (value, index) => {
-
-                            const height =
-                                `${(value / 1892) * 100}%`;
-
-                            return (
+                        (
+                            value,
+                            index,
+                        ) => (
+                            <div
+                                key={
+                                    index
+                                }
+                                className="flex h-full flex-1 items-end"
+                            >
                                 <div
-                                    key={index}
-                                    className="flex h-full flex-1 items-end"
-                                >
-                                    <div
-                                        className="w-full rounded-t-sm bg-secondary-foreground/70"
-                                        style={{
-                                            height,
-                                        }}
-                                    />
-                                </div>
-                            );
-                        },
+                                    className="w-full rounded-t-sm bg-secondary-foreground/70 transition-[height] duration-700"
+                                    style={{
+                                        height:
+                                            `${(
+                                                value /
+                                                max
+                                            ) * 100}%`,
+                                    }}
+                                    title={
+                                        value.toLocaleString()
+                                    }
+                                />
+                            </div>
+                        ),
                     )}
 
                 </div>
+
+                {demo && (
+                    <p className="mt-3 text-[11px] text-muted-foreground">
+                        Test-mode historical series.
+                    </p>
+                )}
 
             </CardContent>
 

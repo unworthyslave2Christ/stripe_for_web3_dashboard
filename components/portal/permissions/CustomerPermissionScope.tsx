@@ -3,35 +3,49 @@ import {
 } from "@/components/ui/badge";
 
 import type {
-    CustomerPermissionScope as Scope,
-} from "./customer-permission.types";
+    CustomerPermissionScope as PermissionScope,
+} from "@/types/customer-permission";
 
 export function CustomerPermissionScope({
     scopes,
 }: {
-    scopes: Scope[];
+    scopes:
+        PermissionScope[];
 }) {
     return (
         <div className="flex flex-wrap gap-1">
 
-            {scopes.map((scope) => (
-                <Badge
-                    key={scope}
-                    variant="secondary"
-                    className="text-[10px]"
-                >
-                    {formatScope(scope)}
-                </Badge>
-            ))}
+            {scopes.map(
+                (
+                    scope,
+                ) => (
+                    <Badge
+                        key={
+                            scope
+                        }
+                        variant="secondary"
+                        className="text-[10px]"
+                    >
+                        {
+                            formatScope(
+                                scope,
+                            )
+                        }
+                    </Badge>
+                ),
+            )}
 
         </div>
     );
 }
 
 function formatScope(
-    scope: Scope,
+    scope:
+        PermissionScope,
 ) {
-    switch (scope) {
+    switch (
+        scope
+    ) {
         case "SUBSCRIPTION_BILLING":
             return "Subscription billing";
 

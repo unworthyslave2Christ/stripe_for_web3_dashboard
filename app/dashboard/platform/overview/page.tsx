@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Activity,
     CircleDollarSign,
@@ -46,16 +48,16 @@ import {
 } from "@/components/layout/Stack";
 
 import {
-    DashboardShell,
-} from "@/components/dashboard/DashboardShell";
-
-import {
     OverviewKpiCard,
 } from "@/components/dashboard/platform/overview/OverviewKpiCard";
 
 import {
     RevenueChart,
 } from "@/components/dashboard/platform/overview/RevenueChart";
+
+import {
+    RevenueSummary,
+} from "@/components/dashboard/platform/overview/RevenueSummary";
 
 import {
     SubscriptionChart,
@@ -77,229 +79,556 @@ import {
     QuickActions,
 } from "@/components/dashboard/platform/overview/QuickActions";
 
-export default function Home() {
-    return (
+import {
+    useMerchantOverviewPage,
+} from "@/hooks/pages/merchant/useMerchantOverviewPage";
 
+export default function MerchantOverviewPage() {
+    const page =
+        useMerchantOverviewPage();
+
+    if (
+        page.merchant.loading &&
+        !page.merchant.data
+    ) {
+        return (
             <Page>
 
                 <Container className="py-8 lg:py-10">
 
-                    <Stack gap={8}>
-
-                        {/* PAGE HEADER */}
-
-                        <PageHeader
-                            eyebrow="Merchant overview"
-                            title="Good morning, ACMEFLOW."
-                            description="Monitor your billing infrastructure, customers, subscriptions, and revenue from one place."
-                            actions={
-                                <Inline gap={2}>
-                                    <Button variant="outline">
-                                        Documentation
-                                    </Button>
-
-                                    <Button>
-                                        Create plan
-                                    </Button>
-                                </Inline>
-                            }
-                        />
-
-                        <Divider />
-
-                        {/* KPI */}
-
-                        <Section
-                            title="Overview"
-                            description="A real-time summary of your merchant account."
-                        >
-
-                            <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-                                <OverviewKpiCard
-                                    title="Customers"
-                                    value="2,431"
-                                    description="from last month"
-                                    trend="+12.4%"
-                                    trendPositive
-                                    icon={Users}
-                                />
-
-                                <OverviewKpiCard
-                                    title="Active subscriptions"
-                                    value="1,892"
-                                    description="from last month"
-                                    trend="+8.2%"
-                                    trendPositive
-                                    icon={CreditCard}
-                                />
-
-                                <OverviewKpiCard
-                                    title="Monthly revenue"
-                                    value="$45,231"
-                                    description="from last month"
-                                    trend="+14.8%"
-                                    trendPositive
-                                    icon={CircleDollarSign}
-                                />
-
-                                <OverviewKpiCard
-                                    title="Billing success"
-                                    value="99.4%"
-                                    description="last 30 days"
-                                    trend="+0.7%"
-                                    trendPositive
-                                    icon={Activity}
-                                />
-
-                            </Grid>
-
-                        </Section>
-
-                        {/* REVENUE */}
-
-                        <Section
-                            title="Revenue"
-                            description="Track recurring billing performance."
-                        >
-
-                            <Grid className="grid-cols-1 xl:grid-cols-3">
-
-                                <RevenueChart />
-
-                                <CardPlaceholderSummary />
-
-                            </Grid>
-
-                        </Section>
-
-                        {/* OPERATIONS */}
-
-                        <Section
-                            title="Operations"
-                            description="Understand customer and subscription activity."
-                        >
-
-                            <Grid className="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-
-                                <SubscriptionChart />
-
-                                <CustomerChart />
-
-                                <InfrastructureHealth />
-
-                            </Grid>
-
-                        </Section>
-
-                        {/* ACTIVITY */}
-
-                        <Section
-                            title="Activity"
-                            description="Recent events across your merchant infrastructure."
-                        >
-
-                            <Grid className="grid-cols-1 lg:grid-cols-2">
-
-                                <ActivityFeed />
-
-                                <QuickActions />
-
-                            </Grid>
-
-                        </Section>
-
-                        {/* FOOTER STATUS */}
-
-                        <div className="flex flex-col gap-3 rounded-lg border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-
-                            <div>
-                                <p className="text-sm font-medium">
-                                    Billing infrastructure operational
-                                </p>
-
-                                <p className="text-xs text-muted-foreground">
-                                    All monitored services are currently healthy.
-                                </p>
-                            </div>
-
-                            <Badge
-                                variant="secondary"
-                                className="w-fit"
-                            >
-                                Operational
-                            </Badge>
-
-                        </div>
-
-                    </Stack>
+                    <OverviewLoading />
 
                 </Container>
 
             </Page>
+        );
+    }
+
+    if (
+        page.merchant.error &&
+        !page.merchant.data
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
+
+                        <p className="text-sm font-medium">
+                            Unable to load merchant account
+                        </p>
+
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {
+                                page.merchant.error.message
+                            }
+                        </p>
+
+                        <Button
+                            variant="outline"
+                            className="mt-4"
+                            onClick={() =>
+                                page.merchant.refresh()
+                            }
+                        >
+                            Try again
+                        </Button>
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    if (
+        !page.merchant.data
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="rounded-xl border border-dashed bg-card p-8 text-center">
+
+                        <p className="text-lg font-semibold">
+                            Merchant account required
+                        </p>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Complete merchant onboarding before accessing the dashboard.
+                        </p>
+
+                        <Button
+                            className="mt-5"
+                            render={
+                                <a href="/merchant/onboarding">
+                                    Complete onboarding
+                                </a>
+                            }
+                        />
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    const merchant =
+        page.merchant.data;
+
+    const demo =
+        page.demo;
+
+    const customers =
+        demo?.customers ??
+        null;
+
+    const subscriptions =
+        demo?.activeSubscriptions ??
+        null;
+
+    const revenue =
+        demo?.monthlyRevenue ??
+        null;
+
+    const billingSuccess =
+        demo?.billingSuccessRate ??
+        null;
+
+    const customerTrend =
+        demo
+            ? percentageChange(
+                demo.customers,
+                demo.customersPrevious,
+            )
+            : null;
+
+    const subscriptionTrend =
+        demo
+            ? percentageChange(
+                demo.activeSubscriptions,
+                demo.activeSubscriptionsPrevious,
+            )
+            : null;
+
+    const revenueTrend =
+        demo
+            ? percentageChange(
+                demo.monthlyRevenue,
+                demo.monthlyRevenuePrevious,
+            )
+            : null;
+
+    return (
+        <Page>
+
+            <Container className="py-8 lg:py-10">
+
+                <Stack gap={8}>
+
+                    <PageHeader
+                        eyebrow={
+                            demo
+                                ? "Merchant overview · Test mode"
+                                : "Merchant overview"
+                        }
+                        title={
+                            `Good morning, ${
+                                merchant.name ??
+                                "Merchant"
+                            }.`
+                        }
+                        description="Monitor your billing infrastructure, customers, subscriptions, and revenue from one place."
+                        actions={
+                            <Inline gap={2}>
+
+                                <Button
+                                    variant="outline"
+                                    render={
+                                        <a href="/dashboard/account/documentation">
+                                            Documentation
+                                        </a>
+                                    }
+                                />
+
+                                <Button
+                                    render={
+                                        <a href="/dashboard/platform/plans">
+                                            Create plan
+                                        </a>
+                                    }
+                                />
+
+                            </Inline>
+                        }
+                    />
+
+                    <Divider />
+
+                    <Section
+                        title="Overview"
+                        description="A summary of your merchant account."
+                    >
+
+                        <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                            <OverviewKpiCard
+                                title="Customers"
+                                value={
+                                    customers ===
+                                    null
+                                        ? "—"
+                                        : customers.toLocaleString()
+                                }
+                                description={
+                                    demo
+                                        ? "from last month"
+                                        : "Metric API pending"
+                                }
+                                trend={
+                                    customerTrend as string
+                                }
+                                trendPositive={
+                                    customerTrend !==
+                                    null &&
+                                    customerTrend as unknown as number >=
+                                        0
+                                }
+                                icon={
+                                    Users
+                                }
+                            />
+
+                            <OverviewKpiCard
+                                title="Active subscriptions"
+                                value={
+                                    subscriptions ===
+                                    null
+                                        ? "—"
+                                        : subscriptions.toLocaleString()
+                                }
+                                description={
+                                    demo
+                                        ? "from last month"
+                                        : "Metric API pending"
+                                }
+                                trend={
+                                    subscriptionTrend as string
+                                }
+                                trendPositive={
+                                    subscriptionTrend !==
+                                    null &&
+                                    subscriptionTrend as unknown as number >=
+                                        0
+                                }
+                                icon={
+                                    CreditCard
+                                }
+                            />
+
+                            <OverviewKpiCard
+                                title="Monthly revenue"
+                                value={
+                                    revenue ===
+                                    null
+                                        ? "—"
+                                        : `$${revenue.toLocaleString()}`
+                                }
+                                description={
+                                    demo
+                                        ? "from last month"
+                                        : "Billing API pending"
+                                }
+                                trend={
+                                    revenueTrend as string
+                                }
+                                trendPositive={
+                                    revenueTrend !==
+                                    null &&
+                                    Number(revenueTrend) >=
+                                        0
+                                }
+                                icon={
+                                    CircleDollarSign
+                                }
+                            />
+
+                            <OverviewKpiCard
+                                title="Billing success"
+                                value={
+                                    billingSuccess ===
+                                    null
+                                        ? "—"
+                                        : `${billingSuccess.toFixed(1)}%`
+                                }
+                                description={
+                                    demo
+                                        ? "last 30 days"
+                                        : "Billing API pending"
+                                }
+                                icon={
+                                    Activity
+                                }
+                            />
+
+                        </Grid>
+
+                    </Section>
+
+                    <Section
+                        title="Revenue"
+                        description="Track recurring billing performance."
+                    >
+
+                        <Grid className="grid-cols-1 xl:grid-cols-3">
+
+                            {demo ? (
+                                <RevenueChart
+                                    monthlyRevenue={
+                                        demo.monthlyRevenue
+                                    }
+                                    series={
+                                        demo.revenueSeries
+                                    }
+                                    demo
+                                />
+                            ) : (
+                                <div className="rounded-xl border bg-card p-6 xl:col-span-2">
+
+                                    <p className="text-sm font-medium">
+                                        Revenue data
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        Live revenue history will appear when the billing-history
+                                        operation is exposed by the merchant SDK/API.
+                                    </p>
+
+                                </div>
+                            )}
+
+                            <RevenueSummary
+                                recurringRevenue={
+                                    demo?.monthlyRevenue ??
+                                    0
+                                }
+                                oneTimeRevenue={
+                                    demo
+                                        ? 2451
+                                        : 0
+                                }
+                                refunds={
+                                    demo
+                                        ? 312
+                                        : 0
+                                }
+                                demo={
+                                    Boolean(
+                                        demo,
+                                    )
+                                }
+                            />
+
+                        </Grid>
+
+                    </Section>
+
+                    <Section
+                        title="Operations"
+                        description="Understand customer and subscription activity."
+                    >
+
+                        <Grid className="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+
+                            <SubscriptionChart
+                                values={
+                                    demo?.subscriptionSeries ??
+                                    []
+                                }
+                                demo={
+                                    Boolean(
+                                        demo,
+                                    )
+                                }
+                            />
+
+                            <CustomerChart
+                                values={
+                                    demo?.customerSeries ??
+                                    []
+                                }
+                                demo={
+                                    Boolean(
+                                        demo,
+                                    )
+                                }
+                            />
+
+                            <InfrastructureHealth
+                                demo={
+                                    Boolean(
+                                        demo,
+                                    )
+                                }
+                            />
+
+                        </Grid>
+
+                    </Section>
+
+                    <Section
+                        title="Activity"
+                        description="Recent events across your merchant infrastructure."
+                    >
+
+                        <Grid className="grid-cols-1 lg:grid-cols-2">
+
+                            <ActivityFeed
+                                items={
+                                    demo?.activity ??
+                                    []
+                                }
+                                demo={
+                                    Boolean(
+                                        demo,
+                                    )
+                                }
+                            />
+
+                            <QuickActions />
+
+                        </Grid>
+
+                    </Section>
+
+                    <div className="flex flex-col gap-3 rounded-lg border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div>
+
+                            <p className="text-sm font-medium">
+                                Billing infrastructure operational
+                            </p>
+
+                            <p className="text-xs text-muted-foreground">
+                                {demo
+                                    ? "Infrastructure indicators are currently shown from test-mode facade data."
+                                    : "Live infrastructure monitoring will be connected through the platform API."}
+                            </p>
+
+                        </div>
+
+                        <Badge
+                            variant="secondary"
+                            className="w-fit"
+                        >
+                            Operational
+                        </Badge>
+
+                    </div>
+
+                    {(
+                        page.merchant.refreshing ||
+                        page.plans.refreshing
+                    ) && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing merchant data...
+                        </p>
+                    )}
+
+                    <div className="text-[11px] text-muted-foreground">
+                        {merchant.merchantId
+                            ? `Merchant ID ${merchant.merchantId}`
+                            : "Merchant identity loaded"}
+                        {" · "}
+                        {page.planSummary.total} plans currently loaded.
+                    </div>
+
+                </Stack>
+
+            </Container>
+
+        </Page>
     );
 }
 
-function CardPlaceholderSummary() {
-    return (
-        <div className="flex flex-col justify-between rounded-xl border bg-card p-6 xl:col-span-1">
+function percentageChange(
+    current: number,
+    previous: number,
+) {
+    if (
+        previous ===
+        0
+    ) {
+        return undefined;
+    }
 
-            <div>
+    const result =
+        (
+            (
+                current -
+                previous
+            ) /
+            previous
+        ) *
+        100;
 
-                <p className="text-sm font-medium text-muted-foreground">
-                    Revenue this month
-                </p>
-
-                <p className="mt-2 text-3xl font-semibold tracking-tight">
-                    $45,231.00
-                </p>
-
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Your recurring revenue has increased steadily over the last several months.
-                </p>
-
-            </div>
-
-            <div className="mt-8 space-y-4">
-
-                <MetricRow
-                    label="Recurring revenue"
-                    value="$42,780"
-                />
-
-                <MetricRow
-                    label="One-time revenue"
-                    value="$2,451"
-                />
-
-                <MetricRow
-                    label="Refunds"
-                    value="$312"
-                />
-
-            </div>
-
-        </div>
-    );
+    return `${
+        result >= 0
+            ? "+"
+            : ""
+    }${result.toFixed(1)}%`;
 }
 
-function MetricRow({
-    label,
-    value,
-}: {
-    label: string;
-    value: string;
-}) {
+function OverviewLoading() {
     return (
-        <div className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+        <div className="space-y-6">
 
-            <span className="text-sm text-muted-foreground">
-                {label}
-            </span>
+            <div className="space-y-3">
 
-            <span className="text-sm font-medium">
-                {value}
-            </span>
+                <div className="h-3 w-32 animate-pulse rounded bg-muted" />
+
+                <div className="h-9 w-72 animate-pulse rounded bg-muted" />
+
+                <div className="h-4 w-[540px] max-w-full animate-pulse rounded bg-muted" />
+
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                {Array.from(
+                    {
+                        length: 4,
+                    },
+                ).map(
+                    (
+                        _,
+                        index,
+                    ) => (
+                        <div
+                            key={
+                                index
+                            }
+                            className="rounded-xl border bg-card p-5"
+                        >
+
+                            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+
+                            <div className="mt-4 h-8 w-28 animate-pulse rounded bg-muted" />
+
+                            <div className="mt-4 h-3 w-36 animate-pulse rounded bg-muted" />
+
+                        </div>
+                    ),
+                )}
+
+            </div>
+
+            <div className="h-64 animate-pulse rounded-xl border bg-muted" />
 
         </div>
     );

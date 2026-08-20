@@ -6,18 +6,23 @@ import {
 } from "lucide-react";
 
 import {
-    Button,
-} from "@/components/ui/button";
-
-import {
     Badge,
 } from "@/components/ui/badge";
+
+import {
+    Button,
+} from "@/components/ui/button";
 
 import {
     CustomerPortalWalletButton,
 } from "./CustomerPortalWalletButton";
 
-export function CustomerPortalTopbar() {
+export function CustomerPortalTopbar({
+    onOpenMobileNav,
+}: {
+    onOpenMobileNav:
+        () => void;
+}) {
     return (
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/95 px-4 backdrop-blur lg:px-6">
 
@@ -28,6 +33,9 @@ export function CustomerPortalTopbar() {
                     size="icon"
                     className="lg:hidden"
                     aria-label="Open navigation"
+                    onClick={
+                        onOpenMobileNav
+                    }
                 >
                     <Menu />
                 </Button>

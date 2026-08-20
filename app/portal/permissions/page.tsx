@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -27,12 +29,20 @@ import {
 } from "@/components/portal/permissions/CustomerPermissionGuidance";
 
 import {
+    CustomerPermissionsErrorState,
+} from "@/components/portal/permissions/CustomerPermissionsErrorState";
+
+import {
     CustomerPermissionsHeader,
 } from "@/components/portal/permissions/CustomerPermissionsHeader";
 
 import {
     CustomerPermissionsList,
 } from "@/components/portal/permissions/CustomerPermissionsList";
+
+import {
+    CustomerPermissionsLoadingState,
+} from "@/components/portal/permissions/CustomerPermissionsLoadingState";
 
 import {
     CustomerPermissionsOverview,
@@ -46,7 +56,71 @@ import {
     CustomerPermissionsToolbar,
 } from "@/components/portal/permissions/CustomerPermissionsToolbar";
 
+import {
+    useCustomerPermissionsPage,
+} from "@/hooks/pages/customer/useCustomerPermissionsPage";
+
 export default function CustomerPermissionsPage() {
+
+    const page =
+        useCustomerPermissionsPage();
+
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.loading &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerPermissionsLoadingState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.error &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerPermissionsErrorState
+                        error={
+                            page.error
+                        }
+                        onRetry={
+                            page.customer.refresh
+                        }
+                    />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // RENDER
+    ////////////////////////////////////////////////////////////
+
+    const permissionSummary =
+        page.permissions.summary;
+
     return (
         <Page>
 
@@ -56,13 +130,34 @@ export default function CustomerPermissionsPage() {
 
                     {/* HEADER */}
 
-                    <CustomerPermissionsHeader />
+                    <CustomerPermissionsHeader
+                        demo={
+                            page.mode ===
+                            "demo"
+                        }
+                    />
 
                     <Divider />
 
                     {/* OVERVIEW */}
 
-                    <CustomerPermissionsOverview />
+                    <CustomerPermissionsOverview
+                        activePermissions={
+                            permissionSummary.active
+                        }
+
+                        authorizedSubscriptions={
+                            permissionSummary.authorizedSubscriptionCount
+                        }
+
+                        capabilities={
+                            permissionSummary.capabilityCount
+                        }
+
+                        needsAttention={
+                            permissionSummary.needsAttention
+                        }
+                    />
 
                     {/* BILLING AUTHORIZATION */}
 
@@ -71,7 +166,31 @@ export default function CustomerPermissionsPage() {
                         description="The authorization most directly associated with your active recurring subscriptions."
                     >
 
-                        <CustomerBillingPermissionCard />
+                        <CustomerBillingPermissionCard
+                            permission={
+                                page.billingPermission
+                            }
+
+                            smartAccount={
+                                page.customer.customer
+                                    ?.smartAccount
+                            }
+
+                            activeSubscriptions={
+                                page.subscriptions.subscriptions.filter(
+                                    (
+                                        subscription: any,
+                                    ) =>
+                                        subscription.status ===
+                                        "ACTIVE",
+                                ).length
+                            }
+
+                            demo={
+                                page.mode ===
+                                "demo"
+                            }
+                        />
 
                     </Section>
 
@@ -84,11 +203,51 @@ export default function CustomerPermissionsPage() {
 
                         <Stack gap={4}>
 
-                            <CustomerPermissionsToolbar />
+                            <CustomerPermissionsToolbar
+                                search={
+                                    page.permissions.search
+                                }
 
-                            <CustomerPermissionsList />
+                                onSearchChange={
+                                    page.permissions.setSearch
+                                }
 
-                            <CustomerPermissionsPagination />
+                                status={
+                                    page.permissions.status
+                                }
+
+                                onStatusChange={
+                                    page.permissions.setStatusFilter
+                                }
+                            />
+
+                            <CustomerPermissionsList
+                                permissions={
+                                    page.permissions.items
+                                }
+                            />
+
+                            <CustomerPermissionsPagination
+                                page={
+                                    page.permissions.page
+                                }
+
+                                totalPages={
+                                    page.permissions.totalPages
+                                }
+
+                                totalCount={
+                                    page.permissions.totalCount
+                                }
+
+                                pageSize={
+                                    page.permissions.pageSize
+                                }
+
+                                onPageChange={
+                                    page.permissions.setPage
+                                }
+                            />
 
                         </Stack>
 
@@ -104,6 +263,12 @@ export default function CustomerPermissionsPage() {
                         <CustomerPermissionGuidance />
 
                     </Section>
+
+                    {page.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing permission-related data...
+                        </p>
+                    )}
 
                 </Stack>
 

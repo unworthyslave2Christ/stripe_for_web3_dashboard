@@ -1,6 +1,6 @@
 import type {
     CustomerBillingInterval,
-} from "./customer-billing.types";
+} from "@/types/customer-billing";
 
 export function CustomerBillingAmount({
     amount,
@@ -8,8 +8,11 @@ export function CustomerBillingAmount({
     interval,
 }: {
     amount: string;
+
     currency: string;
-    interval: CustomerBillingInterval;
+
+    interval:
+        CustomerBillingInterval;
 }) {
     return (
         <div>
@@ -19,7 +22,9 @@ export function CustomerBillingAmount({
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-                {formatInterval(interval)}
+                {formatInterval(
+                    interval,
+                )}
             </p>
 
         </div>
@@ -27,9 +32,12 @@ export function CustomerBillingAmount({
 }
 
 function formatInterval(
-    interval: CustomerBillingInterval,
+    interval:
+        CustomerBillingInterval,
 ) {
-    switch (interval) {
+    switch (
+        interval
+    ) {
         case "DAY":
             return "Daily";
 

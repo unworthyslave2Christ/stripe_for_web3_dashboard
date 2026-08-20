@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
     CheckCircle2,
     CreditCard,
+    KeyRound,
     ShieldCheck,
     WalletCards,
 } from "lucide-react";
@@ -22,7 +23,33 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function CustomerBillingPermissionCard() {
+import type {
+    CustomerPermissionRecord,
+} from "@/types/customer-permission";
+
+export function CustomerBillingPermissionCard({
+    permission,
+    smartAccount,
+    activeSubscriptions,
+    demo,
+}: {
+    permission:
+        | CustomerPermissionRecord
+        | null;
+
+    smartAccount:
+        | string
+        | undefined;
+
+    activeSubscriptions:
+        number;
+
+    demo: boolean;
+}) {
+    const active =
+        permission?.status ===
+        "ACTIVE";
+
     return (
         <Card className="overflow-hidden border-primary/20">
 
@@ -33,7 +60,9 @@ export function CustomerBillingPermissionCard() {
                     <div className="flex items-start gap-3">
 
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+
                             <ShieldCheck className="size-5 text-primary" />
+
                         </div>
 
                         <div>
@@ -43,17 +72,24 @@ export function CustomerBillingPermissionCard() {
                             </CardTitle>
 
                             <p className="mt-1 text-sm text-muted-foreground">
-                                The active permission that allows recurring billing for your subscriptions.
+                                The permission that allows recurring billing for your subscriptions.
                             </p>
 
                         </div>
 
                     </div>
 
-                    <Badge variant="secondary">
-                        <CheckCircle2 />
-                        Active
-                    </Badge>
+                    {active ? (
+                        <Badge variant="secondary">
+                            <CheckCircle2 />
+                            Active
+                        </Badge>
+                    ) : (
+                        <Badge variant="outline">
+                            {permission?.status ??
+                                "Unavailable"}
+                        </Badge>
+                    )}
 
                 </div>
 
@@ -64,21 +100,36 @@ export function CustomerBillingPermissionCard() {
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
 
                     <PermissionFact
-                        icon={WalletCards}
+                        icon={
+                            WalletCards
+                        }
                         label="Smart Account"
-                        value="0xf1cc...2347"
+                        value={
+                            smartAccount
+                                ? `${smartAccount.slice(0, 8)}...${smartAccount.slice(-6)}`
+                                : "Unavailable"
+                        }
                     />
 
                     <PermissionFact
-                        icon={CreditCard}
+                        icon={
+                            CreditCard
+                        }
                         label="Subscriptions"
-                        value="2 active"
+                        value={
+                            `${activeSubscriptions} active`
+                        }
                     />
 
                     <PermissionFact
-                        icon={ShieldCheck}
+                        icon={
+                            KeyRound
+                        }
                         label="Authorization"
-                        value="Active"
+                        value={
+                            permission?.status ??
+                            "Unavailable"
+                        }
                     />
 
                 </div>
@@ -88,13 +139,24 @@ export function CustomerBillingPermissionCard() {
                     <div>
 
                         <p className="text-sm font-medium">
-                            This permission supports your active subscriptions.
+                            {active
+                                ? "This permission supports your active subscriptions."
+                                : "This billing authorization requires attention."}
                         </p>
 
                         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Revoking this authorization may prevent recurring
-                            subscription billing from completing.
+
+                            {active
+                                ? "Revoking or pausing this authorization may prevent future recurring subscription billing from completing."
+                                : "Permission data is currently unavailable for direct management."}
+
                         </p>
+
+                        {demo && (
+                            <p className="mt-2 text-xs text-muted-foreground">
+                                Authorization is currently represented using test-mode permission data.
+                            </p>
+                        )}
 
                     </div>
 
@@ -122,7 +184,9 @@ function PermissionFact({
     value,
 }: {
     icon: typeof ShieldCheck;
+
     label: string;
+
     value: string;
 }) {
     return (
@@ -134,7 +198,7 @@ function PermissionFact({
                 {label}
             </p>
 
-            <p className="mt-1 text-sm font-medium">
+            <p className="mt-1 break-all text-sm font-medium">
                 {value}
             </p>
 

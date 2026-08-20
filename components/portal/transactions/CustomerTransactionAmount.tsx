@@ -2,10 +2,18 @@ export function CustomerTransactionAmount({
     amount,
     currency,
 }: {
-    amount: string | null;
-    currency: string | null;
+    amount:
+        | string
+        | null;
+
+    currency:
+        | string
+        | null;
 }) {
-    if (!amount || !currency) {
+    if (
+        !amount ||
+        !currency
+    ) {
         return (
             <span className="text-sm text-muted-foreground">
                 No asset amount

@@ -1,3 +1,5 @@
+"use client";
+
 import {
     ChevronLeft,
     ChevronRight,
@@ -7,12 +9,49 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function CustomerPermissionsPagination() {
+export function CustomerPermissionsPagination({
+    page,
+    totalPages,
+    totalCount,
+    pageSize,
+    onPageChange,
+}: {
+    page: number;
+
+    totalPages: number;
+
+    totalCount: number;
+
+    pageSize: number;
+
+    onPageChange:
+        (
+            page: number,
+        ) => void;
+}) {
+    const start =
+        totalCount === 0
+            ? 0
+            : (
+                (
+                    page -
+                    1
+                ) *
+                pageSize
+            ) + 1;
+
+    const end =
+        Math.min(
+            page *
+                pageSize,
+            totalCount,
+        );
+
     return (
-        <div className="flex items-center justify-between border-t pt-4">
+        <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
 
             <p className="text-sm text-muted-foreground">
-                Showing 1 permission
+                Showing {start} to {end} of {totalCount} permissions
             </p>
 
             <div className="flex items-center gap-1">
@@ -21,7 +60,15 @@ export function CustomerPermissionsPagination() {
                     variant="outline"
                     size="icon"
                     className="size-8"
-                    disabled
+                    disabled={
+                        page <= 1
+                    }
+                    onClick={() =>
+                        onPageChange(
+                            page -
+                                1,
+                        )
+                    }
                 >
                     <ChevronLeft />
                 </Button>
@@ -31,14 +78,23 @@ export function CustomerPermissionsPagination() {
                     size="sm"
                     className="size-8"
                 >
-                    1
+                    {page}
                 </Button>
 
                 <Button
                     variant="outline"
                     size="icon"
                     className="size-8"
-                    disabled
+                    disabled={
+                        page >=
+                        totalPages
+                    }
+                    onClick={() =>
+                        onPageChange(
+                            page +
+                                1,
+                        )
+                    }
                 >
                     <ChevronRight />
                 </Button>

@@ -1,14 +1,15 @@
 "use client";
 
 import {
+    useState,
+} from "react";
+
+import {
+    Check,
     Copy,
     ShieldCheck,
     WalletCards,
 } from "lucide-react";
-
-import {
-    useState,
-} from "react";
 
 import {
     Button,
@@ -21,34 +22,55 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function CustomerBillingInformation() {
+export function CustomerBillingInformation({
+    smartAccount,
+    billingAuthorizationActive,
+    demo,
+}: {
+    smartAccount:
+        | string
+        | undefined;
+
+    billingAuthorizationActive:
+        boolean;
+
+    demo:
+        boolean;
+}) {
     const [
         copied,
         setCopied,
     ] = useState(false);
 
-    const smartAccount =
-        "0xf1cc103c9b156eE9c2C496f582075a3086eC2347";
-
     async function copyAddress() {
+
+        if (!smartAccount) {
+            return;
+        }
+
         await navigator.clipboard.writeText(
             smartAccount,
         );
 
         setCopied(true);
 
-        window.setTimeout(() => {
-            setCopied(false);
-        }, 1500);
+        window.setTimeout(
+            () => {
+                setCopied(false);
+            },
+            1500,
+        );
     }
 
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     Billing information
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent className="space-y-4">
@@ -66,37 +88,57 @@ export function CustomerBillingInformation() {
                     </div>
 
                     <p className="mt-2 break-all font-mono text-xs leading-6 text-muted-foreground">
-                        {smartAccount}
+                        {smartAccount ??
+                            "Smart Account unavailable"}
                     </p>
 
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3"
-                        onClick={copyAddress}
-                    >
-                        <Copy />
-
-                        {copied
-                            ? "Copied"
-                            : "Copy address"}
-                    </Button>
+                    {smartAccount && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-3"
+                            onClick={
+                                copyAddress
+                            }
+                        >
+                            {copied ? (
+                                <>
+                                    <Check />
+                                    Copied
+                                </>
+                            ) : (
+                                <>
+                                    <Copy />
+                                    Copy address
+                                </>
+                            )}
+                        </Button>
+                    )}
 
                 </div>
 
                 <div className="flex gap-3 rounded-lg border bg-muted/20 p-4">
 
-                    <ShieldCheck className="mt-0.5 size-4 text-emerald-600 dark:text-emerald-400" />
+                    <ShieldCheck
+                        className={
+                            billingAuthorizationActive
+                                ? "mt-0.5 size-4 text-emerald-600 dark:text-emerald-400"
+                                : "mt-0.5 size-4 text-muted-foreground"
+                        }
+                    />
 
                     <div>
 
                         <p className="text-sm font-medium">
-                            Billing authorization active
+                            {billingAuthorizationActive
+                                ? "Billing authorization active"
+                                : "Billing authorization status unavailable"}
                         </p>
 
                         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Your active subscriptions are authorized through
-                            the permission associated with your Smart Account.
+                            {demo
+                                ? "Authorization state is currently represented using test-mode data."
+                                : "Authorization details will appear here when the permission resource is connected."}
                         </p>
 
                     </div>

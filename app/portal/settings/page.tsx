@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -50,7 +52,73 @@ import {
     CustomerWalletSettings,
 } from "@/components/portal/settings/CustomerWalletSettings";
 
+import {
+    useCustomerSettingsPage,
+} from "@/hooks/pages/customer/useCustomerSettingsPage";
+
 export default function CustomerSettingsPage() {
+
+    const page =
+        useCustomerSettingsPage();
+
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.loading &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="space-y-6">
+
+                        <div className="h-20 animate-pulse rounded-xl bg-muted" />
+
+                        <div className="h-[500px] animate-pulse rounded-xl bg-muted" />
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.error &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8">
+
+                        <h1 className="text-lg font-semibold">
+                            Unable to load settings
+                        </h1>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            {page.error.message}
+                        </p>
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
     return (
         <Page>
 
@@ -60,7 +128,11 @@ export default function CustomerSettingsPage() {
 
                     {/* HEADER */}
 
-                    <CustomerSettingsHeader />
+                    <CustomerSettingsHeader
+                        demo={
+                            true
+                        }
+                    />
 
                     <Divider />
 
@@ -79,8 +151,17 @@ export default function CustomerSettingsPage() {
                                 <div id="profile">
 
                                     <CustomerProfileSettings
-                                        initialDisplayName="Alex Johnson"
-                                        initialEmail="alex@example.com"
+                                        initialDisplayName={
+                                            page.profile.displayName
+                                        }
+
+                                        initialEmail={
+                                            page.profile.email
+                                        }
+
+                                        onSave={
+                                            page.profile.saveProfile
+                                        }
                                     />
 
                                 </div>
@@ -90,9 +171,17 @@ export default function CustomerSettingsPage() {
                                 <div id="wallet">
 
                                     <CustomerWalletSettings
-                                        ownerWallet="0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
-                                        smartAccount="0xf1cc103c9b156eE9c2C496f582075a3086eC2347"
-                                        network="Arbitrum Sepolia"
+                                        ownerWallet={
+                                            page.walletInfo.ownerWallet
+                                        }
+
+                                        smartAccount={
+                                            page.walletInfo.smartAccount
+                                        }
+
+                                        network={
+                                            page.walletInfo.network
+                                        }
                                     />
 
                                 </div>
@@ -101,7 +190,35 @@ export default function CustomerSettingsPage() {
 
                                 <div id="notifications">
 
-                                    <CustomerNotificationSettings />
+                                    <CustomerNotificationSettings
+                                        emailEnabled={
+                                            page.notifications.email
+                                        }
+
+                                        inAppEnabled={
+                                            page.notifications.inApp
+                                        }
+
+                                        securityEnabled={
+                                            page.notifications.security
+                                        }
+
+                                        onEmailChange={
+                                            page.notifications.setEmail
+                                        }
+
+                                        onInAppChange={
+                                            page.notifications.setInApp
+                                        }
+
+                                        onSecurityChange={
+                                            page.notifications.setSecurity
+                                        }
+
+                                        demo={
+                                            true
+                                        }
+                                    />
 
                                 </div>
 
@@ -117,7 +234,23 @@ export default function CustomerSettingsPage() {
 
                                 <div id="security">
 
-                                    <CustomerSecuritySettings />
+                                    <CustomerSecuritySettings
+                                        ownerWallet={
+                                            page.walletInfo.ownerWallet
+                                        }
+
+                                        confirmSensitiveActions={
+                                            page.security.confirmSensitiveActions
+                                        }
+
+                                        onConfirmSensitiveActionsChange={
+                                            page.security.setConfirmSensitiveActions
+                                        }
+
+                                        demo={
+                                            true
+                                        }
+                                    />
 
                                 </div>
 
@@ -125,7 +258,13 @@ export default function CustomerSettingsPage() {
 
                                 <div id="account">
 
-                                    <CustomerAccountSettings />
+                                    <CustomerAccountSettings
+                                        customerExists={
+                                            Boolean(
+                                                page.customer.customer,
+                                            )
+                                        }
+                                    />
 
                                 </div>
 
@@ -134,6 +273,12 @@ export default function CustomerSettingsPage() {
                         </div>
 
                     </Grid>
+
+                    {page.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing customer settings data...
+                        </p>
+                    )}
 
                 </Stack>
 

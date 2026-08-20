@@ -15,6 +15,10 @@ import {
     CardContent,
 } from "@/components/ui/card";
 
+import type {
+    CustomerBillingRecord,
+} from "@/types/customer-billing";
+
 import {
     CustomerBillingAmount,
 } from "./CustomerBillingAmount";
@@ -23,14 +27,11 @@ import {
     CustomerBillingStatusBadge,
 } from "./CustomerBillingStatusBadge";
 
-import type {
-    CustomerBillingRecord,
-} from "./customer-billing.types";
-
 export function CustomerBillingListItem({
     billing,
 }: {
-    billing: CustomerBillingRecord;
+    billing:
+        CustomerBillingRecord;
 }) {
     return (
         <Card className="transition-colors hover:border-foreground/20">
@@ -38,8 +39,6 @@ export function CustomerBillingListItem({
             <CardContent className="p-5">
 
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
-
-                    {/* BILLING IDENTITY */}
 
                     <div className="flex min-w-0 flex-1 items-start gap-3">
 
@@ -66,8 +65,6 @@ export function CustomerBillingListItem({
 
                     </div>
 
-                    {/* AMOUNT */}
-
                     <div className="shrink-0">
 
                         <CustomerBillingAmount
@@ -84,8 +81,6 @@ export function CustomerBillingListItem({
 
                     </div>
 
-                    {/* STATUS */}
-
                     <div className="shrink-0">
 
                         <CustomerBillingStatusBadge
@@ -96,9 +91,7 @@ export function CustomerBillingListItem({
 
                     </div>
 
-                    {/* DATE */}
-
-                    <div className="min-w-[150px]">
+                    <div className="min-w-[170px]">
 
                         <p className="text-xs text-muted-foreground">
                             Processed
@@ -114,17 +107,20 @@ export function CustomerBillingListItem({
 
                     </div>
 
-                    {/* ACTION */}
-
                     <div className="shrink-0">
 
                         <Button
+                            render={
+                                <Link
+                                    href={`/portal/subscriptions/${billing.subscriptionId}`}
+                                >
+                                    Details
+                                    <ExternalLink />
+                                </Link>
+                            }
                             variant="outline"
                             size="sm"
-                        >
-                            Details
-                            <ExternalLink />
-                        </Button>
+                        />
 
                     </div>
 

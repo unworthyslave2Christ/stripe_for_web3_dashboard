@@ -1,14 +1,16 @@
+"use client";
+
 import type {
     LucideIcon,
 } from "lucide-react";
 
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     Button,
 } from "@/components/ui/button";
+
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import {
     Card,
@@ -24,11 +26,22 @@ export function CustomerNotificationChannelCard({
     action,
 }: {
     icon: LucideIcon;
+
     title: string;
+
     description: string;
+
     destination: string;
-    status: "ACTIVE" | "INACTIVE";
+
+    status:
+        | "ACTIVE"
+        | "INACTIVE";
+
     action: string;
+
+    onAction?: () => void;
+
+    disabled?: boolean;
 }) {
     return (
         <Card>
@@ -38,7 +51,9 @@ export function CustomerNotificationChannelCard({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
 
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+
                         <Icon className="size-4 text-muted-foreground" />
+
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -49,7 +64,8 @@ export function CustomerNotificationChannelCard({
                                 {title}
                             </p>
 
-                            {status === "ACTIVE" ? (
+                            {status ===
+                            "ACTIVE" ? (
                                 <Badge variant="secondary">
                                     Active
                                 </Badge>
@@ -74,6 +90,7 @@ export function CustomerNotificationChannelCard({
                     <Button
                         variant="outline"
                         size="sm"
+                        disabled
                     >
                         {action}
                     </Button>

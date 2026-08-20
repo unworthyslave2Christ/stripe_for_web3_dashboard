@@ -16,9 +16,11 @@ export function CustomerPermissionGuidance() {
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     About Smart Account permissions
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent>
@@ -26,19 +28,25 @@ export function CustomerPermissionGuidance() {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 
                     <GuidanceItem
-                        icon={ShieldCheck}
+                        icon={
+                            ShieldCheck
+                        }
                         title="Explicit authorization"
                         description="Permissions define what a Smart Account authorization may be used for."
                     />
 
                     <GuidanceItem
-                        icon={CheckCircle2}
+                        icon={
+                            CheckCircle2
+                        }
                         title="Active subscriptions"
                         description="Your active subscriptions may depend on an active billing authorization."
                     />
 
                     <GuidanceItem
-                        icon={AlertTriangle}
+                        icon={
+                            AlertTriangle
+                        }
                         title="Revocation has consequences"
                         description="Revoking billing authorization may prevent future recurring charges from completing."
                     />
@@ -57,7 +65,9 @@ function GuidanceItem({
     description,
 }: {
     icon: typeof ShieldCheck;
+
     title: string;
+
     description: string;
 }) {
     return (
@@ -65,7 +75,7 @@ function GuidanceItem({
 
             <div className="flex size-8 items-center justify-center rounded-lg bg-muted">
 
-                <Icon className="size-4 text-muted-foreground" />
+                <Icon className="size-4" />
 
             </div>
 

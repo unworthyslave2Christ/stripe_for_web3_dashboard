@@ -9,7 +9,9 @@ import {
 export function CustomerTransactionAction({
     explorerUrl,
 }: {
-    explorerUrl: string | null;
+    explorerUrl:
+        | string
+        | null;
 }) {
     if (!explorerUrl) {
         return (
@@ -27,7 +29,9 @@ export function CustomerTransactionAction({
         <Button
             render={
                 <a
-                    href={explorerUrl}
+                    href={
+                        explorerUrl
+                    }
                     target="_blank"
                     rel="noreferrer"
                 >

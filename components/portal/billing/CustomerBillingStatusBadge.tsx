@@ -4,14 +4,17 @@ import {
 
 import type {
     CustomerBillingStatus,
-} from "./customer-billing.types";
+} from "@/types/customer-billing";
 
 export function CustomerBillingStatusBadge({
     status,
 }: {
-    status: CustomerBillingStatus;
+    status:
+        CustomerBillingStatus;
 }) {
-    switch (status) {
+    switch (
+        status
+    ) {
         case "SUCCEEDED":
             return (
                 <Badge variant="secondary">

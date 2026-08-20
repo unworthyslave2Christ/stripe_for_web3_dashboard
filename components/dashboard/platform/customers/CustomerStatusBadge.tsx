@@ -1,33 +1,29 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
-import type { CustomerStatus } from "./customer.types";
-
-type CustomerStatusBadgeProps = {
-    status: CustomerStatus;
-};
+import type {
+    CustomerStatus,
+} from "./customer.types";
 
 export function CustomerStatusBadge({
     status,
-}: CustomerStatusBadgeProps) {
-    if (status === "ACTIVE") {
-        return (
-            <Badge variant="secondary">
-                Active
-            </Badge>
-        );
-    }
+}: {
+    status: CustomerStatus;
+}) {
+    switch (status) {
+        case "ACTIVE":
+            return (
+                <Badge variant="secondary">
+                    Active
+                </Badge>
+            );
 
-    if (status === "SUSPENDED") {
-        return (
-            <Badge variant="destructive">
-                Suspended
-            </Badge>
-        );
+        case "SUSPENDED":
+            return (
+                <Badge variant="destructive">
+                    Suspended
+                </Badge>
+            );
     }
-
-    return (
-        <Badge variant="outline">
-            Inactive
-        </Badge>
-    );
 }

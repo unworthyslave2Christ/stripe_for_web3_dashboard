@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { Address } from "viem";
 
 export type CustomerStatus =
     | "ACTIVE"
@@ -10,11 +11,15 @@ export type CustomerRecord = {
 
     name: string;
 
+    displayName?: string;
+
+    email?: string;
+
     customerId: string;
 
-    walletAddress: string;
+    walletAddress: Address;
 
-    smartAccount: string;
+    smartAccount: Address;
 
     status: CustomerStatus;
 
@@ -26,5 +31,10 @@ export type CustomerRecord = {
 
     createdAt: string;
 
+    ownerWallet?: Address;
+    
+    updatedAt?: Date;
+
     lastActivity: string;
+
 };

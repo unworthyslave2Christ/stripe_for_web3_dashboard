@@ -1,12 +1,16 @@
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     KeyRound,
 } from "lucide-react";
 
-export function CustomerPermissionsHeader() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function CustomerPermissionsHeader({
+    demo,
+}: {
+    demo: boolean;
+}) {
     return (
         <div>
 
@@ -19,6 +23,12 @@ export function CustomerPermissionsHeader() {
                 <Badge variant="secondary">
                     Smart Account
                 </Badge>
+
+                {demo && (
+                    <Badge variant="outline">
+                        Test mode
+                    </Badge>
+                )}
 
             </div>
 
@@ -33,7 +43,8 @@ export function CustomerPermissionsHeader() {
             </div>
 
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                Review the permissions associated with your Smart Account and understand what each authorization allows.
+                Review the permissions associated with your Smart Account
+                and understand what each authorization allows.
             </p>
 
         </div>

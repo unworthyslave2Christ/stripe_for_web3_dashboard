@@ -4,27 +4,35 @@ import {
 
 import type {
     CustomerNotificationType,
-} from "./customer-notification.types";
+} from "@/types/customer-notification";
 
 export function CustomerNotificationTypeBadge({
     type,
 }: {
-    type: CustomerNotificationType;
+    type:
+        CustomerNotificationType;
 }) {
     return (
         <Badge
             variant="outline"
             className="text-[10px]"
         >
-            {formatType(type)}
+            {
+                formatType(
+                    type,
+                )
+            }
         </Badge>
     );
 }
 
 function formatType(
-    type: CustomerNotificationType,
+    type:
+        CustomerNotificationType,
 ) {
-    switch (type) {
+    switch (
+        type
+    ) {
         case "BILLING_UPCOMING":
             return "Upcoming billing";
 

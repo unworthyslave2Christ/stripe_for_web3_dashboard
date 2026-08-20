@@ -1,24 +1,29 @@
-import { ShieldCheck } from "lucide-react";
+import {
+    ShieldCheck,
+} from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
-type CustomerSmartAccountProps = {
-    address: string;
-};
+import type {
+    Address,
+} from "viem";
 
-function shortenAddress(address: string) {
-    if (address.length < 12) {
-        return address;
-    }
-
+function shortenAddress(
+    address: Address,
+) {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
 export function CustomerSmartAccount({
     address,
-}: CustomerSmartAccountProps) {
+}: {
+    address: Address;
+}) {
     return (
         <div className="flex min-w-0 items-center gap-2">
+
             <ShieldCheck className="size-4 text-muted-foreground" />
 
             <span className="truncate font-mono text-xs">
@@ -31,6 +36,7 @@ export function CustomerSmartAccount({
             >
                 Smart Account
             </Badge>
+
         </div>
     );
 }

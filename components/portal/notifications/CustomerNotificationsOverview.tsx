@@ -17,43 +17,76 @@ import {
     CustomerNotificationOverviewCard,
 } from "./CustomerNotificationOverviewCard";
 
-export function CustomerNotificationsOverview() {
+export function CustomerNotificationsOverview({
+    received,
+    deliverySuccess,
+    activeChannels,
+    unread,
+}: {
+    received: number;
+
+    deliverySuccess: number;
+
+    activeChannels: number;
+
+    unread: number;
+}) {
     return (
         <Section
             title="Overview"
             description="A summary of your notification activity and preferences."
         >
+
             <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
                 <CustomerNotificationOverviewCard
                     title="Notifications received"
-                    value="24"
-                    description="Last 30 days"
-                    icon={Bell}
+                    value={
+                        received.toLocaleString()
+                    }
+                    description="Current notification set"
+                    icon={
+                        Bell
+                    }
                 />
 
                 <CustomerNotificationOverviewCard
                     title="Delivery success"
-                    value="99.5%"
-                    description="Across enabled channels"
-                    icon={CheckCircle2}
+                    value={
+                        `${deliverySuccess.toFixed(1)}%`
+                    }
+                    description="Across recorded notifications"
+                    icon={
+                        CheckCircle2
+                    }
                 />
 
                 <CustomerNotificationOverviewCard
                     title="Active channels"
-                    value="2"
-                    description="Email and in-app"
-                    icon={Mail}
+                    value={
+                        String(
+                            activeChannels,
+                        )
+                    }
+                    description="Enabled delivery channels"
+                    icon={
+                        Mail
+                    }
                 />
 
                 <CustomerNotificationOverviewCard
                     title="Unread"
-                    value="3"
+                    value={
+                        unread.toLocaleString()
+                    }
                     description="Awaiting your review"
-                    icon={ShieldCheck}
+                    icon={
+                        ShieldCheck
+                    }
                 />
 
             </Grid>
+
         </Section>
     );
 }

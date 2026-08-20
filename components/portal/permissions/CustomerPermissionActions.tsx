@@ -1,5 +1,3 @@
-"use client";
-
 import {
     MoreHorizontal,
 } from "lucide-react";
@@ -17,7 +15,10 @@ export function CustomerPermissionActions({
         <Button
             variant="outline"
             size="sm"
-            aria-label={`Actions for ${permissionId}`}
+            aria-label={
+                `Actions for ${permissionId}`
+            }
+            disabled
         >
             Manage
             <MoreHorizontal />

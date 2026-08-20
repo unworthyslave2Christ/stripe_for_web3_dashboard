@@ -1,16 +1,8 @@
 "use client";
 
 import {
-    merchantOverviewDemo,
-} from "@/lib/demo/merchantOverviewDemo";
-
-import {
-    useAnimatedNumber,
-} from "@/hooks/ui/useAnimatedNumber";
-
-import {
-    appConfig,
-} from "@/app/config";
+    useMemo,
+} from "react";
 
 import {
     Badge,
@@ -23,17 +15,36 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function RevenueChart() {
+import {
+    useAnimatedNumber,
+} from "@/hooks/ui/useAnimatedNumber";
 
+interface RevenuePoint {
+    label:
+        string;
+
+    value:
+        number;
+}
+
+export function RevenueChart({
+    monthlyRevenue,
+    series,
+    demo,
+}: {
+    monthlyRevenue:
+        number;
+
+    series:
+        RevenuePoint[];
+
+    demo:
+        boolean;
+}) {
     const animatedRevenue =
         useAnimatedNumber(
-            appConfig.demoMode
-                ? merchantOverviewDemo.monthlyRevenue
-                : 0,
+            monthlyRevenue,
         );
-
-    const points =
-        merchantOverviewDemo.revenueSeries;
 
     const width =
         700;
@@ -44,68 +55,84 @@ export function RevenueChart() {
     const padding =
         24;
 
-    const maxValue =
-        Math.max(
-            ...points.map(
-                (point) =>
-                    point.value,
-            ),
+    const values =
+        series.map(
+            (
+                point,
+            ) =>
+                point.value,
         );
 
-    const minValue =
+    const max =
+        Math.max(
+            ...values,
+            1,
+        );
+
+    const min =
         Math.min(
-            ...points.map(
-                (point) =>
-                    point.value,
-            ),
+            ...values,
+            0,
         );
 
     const range =
         Math.max(
-            maxValue -
-                minValue,
+            max -
+                min,
             1,
         );
 
     const coordinates =
-        points.map(
-            (point, index) => {
-
-                const x =
-                    padding +
+        useMemo(
+            () =>
+                series.map(
                     (
-                        index /
-                        Math.max(
-                            points.length -
-                                1,
-                            1,
-                        )
-                    ) *
-                        (
-                            width -
-                            padding * 2
-                        );
+                        point,
+                        index,
+                    ) => {
+                        const x =
+                            padding +
+                            (
+                                index /
+                                Math.max(
+                                    series.length -
+                                        1,
+                                    1,
+                                )
+                            ) *
+                                (
+                                    width -
+                                    padding *
+                                        2
+                                );
 
-                const y =
-                    height -
-                    padding -
-                    (
-                        (
-                            point.value -
-                            minValue
-                        ) /
-                        range
-                    ) *
-                        (
+                        const y =
                             height -
-                            padding * 2
-                        );
+                            padding -
+                            (
+                                (
+                                    point.value -
+                                    min
+                                ) /
+                                range
+                            ) *
+                                (
+                                    height -
+                                    padding *
+                                        2
+                                );
 
-                return {
-                    x,
-                    y,
-                };
-            },
+                        return {
+                            x,
+                            y,
+                        };
+                    },
+                ),
+            [
+                series,
+                min,
+                range,
+            ],
         );
 
     const path =
@@ -115,13 +142,11 @@ export function RevenueChart() {
                     point,
                     index,
                 ) =>
-                    `${
-                        index === 0
-                            ? "M"
-                            : "L"
-                    } ${point.x} ${point.y}`,
+                    `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`,
             )
-            .join(" ");
+            .join(
+                " ",
+            );
 
     return (
         <Card className="xl:col-span-2">
@@ -142,7 +167,7 @@ export function RevenueChart() {
 
                     </div>
 
-                    {appConfig.demoMode && (
+                    {demo && (
                         <Badge variant="outline">
                             Test mode
                         </Badge>
@@ -150,16 +175,12 @@ export function RevenueChart() {
 
                 </div>
 
-                <div className="pt-3">
-
-                    <p className="text-3xl font-semibold tracking-tight">
-                        $
-                        {Math.round(
-                            animatedRevenue,
-                        ).toLocaleString()}
-                    </p>
-
-                </div>
+                <p className="pt-3 text-3xl font-semibold tracking-tight">
+                    $
+                    {Math.round(
+                        animatedRevenue,
+                    ).toLocaleString()}
+                </p>
 
             </CardHeader>
 
@@ -190,7 +211,9 @@ export function RevenueChart() {
                                 index,
                             ) => (
                                 <circle
-                                    key={index}
+                                    key={
+                                        index
+                                    }
                                     cx={
                                         point.x
                                     }
@@ -207,7 +230,7 @@ export function RevenueChart() {
 
                     <div className="grid grid-cols-6 gap-2 px-2 pb-1">
 
-                        {points.map(
+                        {series.map(
                             (
                                 point,
                             ) => (

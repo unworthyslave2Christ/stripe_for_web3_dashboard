@@ -1,68 +1,110 @@
-import { Button } from "@/components/ui/button";
+"use client";
 
-import { Container } from "@/components/layout/Container";
-import { Divider } from "@/components/layout/Divider";
-import { Inline } from "@/components/layout/Inline";
-import { Page } from "@/components/layout/Page";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { Section } from "@/components/layout/Section";
-import { Stack } from "@/components/layout/Stack";
+import {
+    Container,
+} from "@/components/layout/Container";
 
-import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import {
+    Divider,
+} from "@/components/layout/Divider";
 
-import { CustomersOverview } from "@/components/dashboard/platform/customers/CustomersOverview";
-import { CustomersPagination } from "@/components/dashboard/platform/customers/CustomersPagination";
-import { CustomersTable } from "@/components/dashboard/platform/customers/CustomersTable";
-import { CustomersToolbar } from "@/components/dashboard/platform/customers/CustomersToolbar";
+import {
+    Inline,
+} from "@/components/layout/Inline";
+
+import {
+    Page,
+} from "@/components/layout/Page";
+
+import {
+    PageHeader,
+} from "@/components/layout/PageHeader";
+
+import {
+    Stack,
+} from "@/components/layout/Stack";
+
+import {
+    Button,
+} from "@/components/ui/button";
+
+import {
+    CustomersOverview,
+} from "@/components/dashboard/platform/customers/CustomersOverview";
+
+import {
+    CustomersUnavailableState,
+} from "@/components/dashboard/platform/customers/CustomersUnavailableState";
+
+import {
+    useMerchantCustomersPage,
+} from "@/hooks/pages/merchant/useMerchantCustomersPage";
 
 export default function CustomersPage() {
+    const page =
+        useMerchantCustomersPage();
+
     return (
-            <Page>
-                <Container className="py-8 lg:py-10">
-                    <Stack gap={8}>
+        <Page>
 
-                        {/* PAGE HEADER */}
+            <Container className="py-8 lg:py-10">
 
-                        <PageHeader
-                            eyebrow="Customers"
-                            title="Customers"
-                            description="Manage the customers connected to your merchant account, their wallets, Smart Accounts, and billing activity."
-                            actions={
-                                <Inline gap={2}>
-                                    <Button variant="outline">
-                                        Export
-                                    </Button>
+                <Stack gap={8}>
 
-                                    <Button>
-                                        Add customer
-                                    </Button>
-                                </Inline>
-                            }
-                        />
+                    <PageHeader
+                        eyebrow="Customers"
+                        title="Customers"
+                        description="Manage customer records associated with your merchant account."
+                        actions={
+                            <Inline gap={2}>
 
-                        <Divider />
+                                <Button
+                                    variant="outline"
+                                    disabled
+                                >
+                                    Export
+                                </Button>
 
-                        {/* OVERVIEW */}
+                                <Button
+                                    disabled
+                                >
+                                    Add customer
+                                </Button>
 
-                        <CustomersOverview />
+                            </Inline>
+                        }
+                    />
 
-                        {/* CUSTOMER MANAGEMENT */}
+                    <Divider />
 
-                        <Section
-                            title="Customer management"
-                            description="Search, filter, and manage customers associated with your merchant."
-                        >
-                            <Stack gap={4}>
-                                <CustomersToolbar />
+                    <CustomersOverview
+                        total={
+                            page.total
+                        }
+                    />
 
-                                <CustomersTable />
+                    <section className="space-y-4">
 
-                                <CustomersPagination />
-                            </Stack>
-                        </Section>
+                        <div>
 
-                    </Stack>
-                </Container>
-            </Page>
+                            <h2 className="text-lg font-semibold tracking-tight">
+                                Customer management
+                            </h2>
+
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                Search and manage customer records associated with your merchant.
+                            </p>
+
+                        </div>
+
+                        <CustomersUnavailableState />
+
+                    </section>
+
+                </Stack>
+
+            </Container>
+
+        </Page>
     );
 }

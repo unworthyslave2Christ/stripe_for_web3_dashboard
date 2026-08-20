@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import {
@@ -13,7 +15,38 @@ import {
     CustomerPortalNavigation,
 } from "./CustomerPortalNavigation";
 
+import {
+    useCustomer,
+} from "@/hooks/customer/useCustomer";
+
+function getInitials(
+    name?: string,
+) {
+    if (!name) {
+        return "CU";
+    }
+
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(
+            (part) =>
+                part[0]
+                    ?.toUpperCase() ?? "",
+        )
+        .join("");
+}
+
 export function CustomerPortalSidebar() {
+    const {
+        customer,
+    } = useCustomer();
+
+    const displayName =
+        customer?.displayName ??
+        "Customer";
+
     return (
         <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r bg-card lg:flex lg:flex-col">
 
@@ -25,19 +58,15 @@ export function CustomerPortalSidebar() {
                     href="/portal"
                     className="flex items-center gap-2"
                 >
-
                     <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-
                         <span className="text-sm font-bold">
                             S
                         </span>
-
                     </div>
 
                     <span className="font-semibold tracking-tight">
                         Stripe for Web3
                     </span>
-
                 </Link>
 
             </div>
@@ -53,7 +82,9 @@ export function CustomerPortalSidebar() {
                     <Avatar className="size-8">
 
                         <AvatarFallback>
-                            AJ
+                            {getInitials(
+                                displayName,
+                            )}
                         </AvatarFallback>
 
                     </Avatar>
@@ -61,7 +92,7 @@ export function CustomerPortalSidebar() {
                     <div className="min-w-0">
 
                         <p className="truncate text-sm font-medium">
-                            Alex Johnson
+                            {displayName}
                         </p>
 
                         <p className="truncate text-xs text-muted-foreground">
@@ -74,11 +105,13 @@ export function CustomerPortalSidebar() {
 
             </div>
 
+            {/* NAVIGATION */}
+
             <div className="flex-1 overflow-y-auto px-3">
-
                 <CustomerPortalNavigation />
-
             </div>
+
+            {/* FOOTER */}
 
             <Separator />
 

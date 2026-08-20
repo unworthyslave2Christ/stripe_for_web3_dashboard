@@ -9,13 +9,24 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface OverviewKpiCardProps {
-    title: string;
-    value: string;
-    description: string;
-    trend?: string;
-    trendPositive?: boolean;
-    icon: LucideIcon;
+export interface OverviewKpiCardProps {
+    title:
+        string;
+
+    value:
+        string;
+
+    description:
+        string;
+
+    trend?:
+        string;
+
+    trendPositive?:
+        boolean;
+
+    icon:
+        LucideIcon;
 }
 
 export function OverviewKpiCard({
@@ -28,14 +39,19 @@ export function OverviewKpiCard({
 }: OverviewKpiCardProps) {
     return (
         <Card>
+
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                     {title}
                 </CardTitle>
 
                 <div className="flex size-8 items-center justify-center rounded-md bg-muted">
+
                     <Icon className="size-4 text-muted-foreground" />
+
                 </div>
+
             </CardHeader>
 
             <CardContent>
@@ -65,6 +81,7 @@ export function OverviewKpiCard({
                 </div>
 
             </CardContent>
+
         </Card>
     );
 }

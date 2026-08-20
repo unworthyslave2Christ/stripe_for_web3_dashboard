@@ -15,13 +15,12 @@ export function useAnimatedNumber(
         setValue,
     ] = useState(target);
 
-    const currentValue =
+    const current =
         useRef(target);
 
     useEffect(() => {
-
         const start =
-            currentValue.current;
+            current.current;
 
         const delta =
             target -
@@ -31,10 +30,12 @@ export function useAnimatedNumber(
             Math.abs(delta) <
             0.001
         ) {
-            currentValue.current =
+            current.current =
                 target;
 
-            setValue(target);
+            setValue(
+                target,
+            );
 
             return;
         }
@@ -42,12 +43,12 @@ export function useAnimatedNumber(
         const startTime =
             performance.now();
 
-        let frameId =
+        let frame =
             0;
 
-        function animate(
+        const animate = (
             now: number,
-        ) {
+        ) => {
             const elapsed =
                 now -
                 startTime;
@@ -67,39 +68,38 @@ export function useAnimatedNumber(
                     3,
                 );
 
-            const nextValue =
+            const next =
                 start +
                 delta *
                     eased;
 
-            currentValue.current =
-                nextValue;
+            current.current =
+                next;
 
             setValue(
-                nextValue,
+                next,
             );
 
             if (
                 progress <
                 1
             ) {
-                frameId =
+                frame =
                     requestAnimationFrame(
                         animate,
                     );
             }
-        }
+        };
 
-        frameId =
+        frame =
             requestAnimationFrame(
                 animate,
             );
 
-        return () => {
+        return () =>
             cancelAnimationFrame(
-                frameId,
+                frame,
             );
-        };
     }, [
         target,
         duration,

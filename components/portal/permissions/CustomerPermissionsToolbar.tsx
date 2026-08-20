@@ -16,7 +16,32 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function CustomerPermissionsToolbar() {
+import type {
+    PermissionStatusFilter,
+} from "@/hooks/permissions/useSmartAccountPermissions";
+
+export function CustomerPermissionsToolbar({
+    search,
+    onSearchChange,
+    status,
+    onStatusChange,
+}: {
+    search: string;
+
+    onSearchChange:
+        (
+            value: string,
+        ) => void;
+
+    status:
+        PermissionStatusFilter;
+
+    onStatusChange:
+        (
+            value:
+                PermissionStatusFilter,
+        ) => void;
+}) {
     return (
         <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
 
@@ -26,12 +51,33 @@ export function CustomerPermissionsToolbar() {
 
                 <Input
                     placeholder="Search permissions..."
+                    value={
+                        search
+                    }
+                    onChange={(
+                        event,
+                    ) =>
+                        onSearchChange(
+                            event.target.value,
+                        )
+                    }
                     className="pl-9"
                 />
 
             </div>
 
-            <Select defaultValue="all">
+            <Select
+                value={
+                    status
+                }
+                onValueChange={(
+                    value,
+                ) =>
+                    onStatusChange(
+                        value as PermissionStatusFilter,
+                    )
+                }
+            >
 
                 <SelectTrigger className="w-full sm:w-[170px]">
                     <SelectValue />

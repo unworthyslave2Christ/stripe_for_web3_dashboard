@@ -1,3 +1,6 @@
+// here is the merchant overview page flattened, provide a realistic version ensuring to maintain consistency, 
+
+
 const fs = require("fs");
 const path = require("path");
 
@@ -10,8 +13,9 @@ const PROJECT_ROOT = __dirname;
 const SOURCE_DIR = path.join(
     PROJECT_ROOT,
     "app",
-    "portal",
-    "subscriptions"
+    "dashboard",
+    "platform",
+    "plans",
 );
 
 const ENTRY_FILE = path.join(
@@ -22,8 +26,10 @@ const ENTRY_FILE = path.join(
 const OUTPUT_DIR = path.join(
     PROJECT_ROOT,
     "app",
-    "portal",
-    "subscriptions-flattened"
+    "dashboard",
+    "platform",
+    // "[customerId]",
+    "plans-flattened",
 );
 
 const OUTPUT_FILE = path.join(

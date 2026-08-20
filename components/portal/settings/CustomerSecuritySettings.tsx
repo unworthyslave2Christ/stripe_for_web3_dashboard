@@ -7,21 +7,41 @@ import {
 } from "lucide-react";
 
 import {
-    Switch,
-} from "@/components/ui/switch";
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card";
 
 import {
     Label,
 } from "@/components/ui/label";
 
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    Switch,
+} from "@/components/ui/switch";
 
-export function CustomerSecuritySettings() {
+export function CustomerSecuritySettings({
+    ownerWallet,
+    confirmSensitiveActions,
+    onConfirmSensitiveActionsChange,
+    demo,
+}: {
+    ownerWallet:
+        | string
+        | undefined;
+
+    confirmSensitiveActions:
+        boolean;
+
+    onConfirmSensitiveActionsChange:
+        (
+            value: boolean,
+        ) => void;
+
+    demo: boolean;
+}) {
     return (
         <Card>
 
@@ -31,9 +51,9 @@ export function CustomerSecuritySettings() {
                     Security
                 </CardTitle>
 
-                <p className="text-sm text-muted-foreground">
+                <CardDescription>
                     Review the security controls associated with your customer account.
-                </p>
+                </CardDescription>
 
             </CardHeader>
 
@@ -51,8 +71,13 @@ export function CustomerSecuritySettings() {
                                 Owner wallet
                             </p>
 
+                            <p className="mt-1 break-all font-mono text-xs leading-5 text-muted-foreground">
+                                {ownerWallet ??
+                                    "Wallet unavailable"}
+                            </p>
+
                             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Your connected wallet controls ownership of the Smart Account.
+                                This wallet controls ownership of the Smart Account.
                             </p>
 
                         </div>
@@ -74,7 +99,8 @@ export function CustomerSecuritySettings() {
                             </p>
 
                             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Active subscription permissions are displayed and managed separately on the Permissions page.
+                                Active subscription permissions are displayed
+                                and managed separately on the Permissions page.
                             </p>
 
                         </div>
@@ -109,10 +135,21 @@ export function CustomerSecuritySettings() {
 
                     <Switch
                         id="confirm-sensitive-actions"
-                        defaultChecked
+                        checked={
+                            confirmSensitiveActions
+                        }
+                        onCheckedChange={
+                            onConfirmSensitiveActionsChange
+                        }
                     />
 
                 </div>
+
+                {demo && (
+                    <p className="text-xs text-muted-foreground">
+                        Sensitive-action preference is currently local test-mode state.
+                    </p>
+                )}
 
             </CardContent>
 

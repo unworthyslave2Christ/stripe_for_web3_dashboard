@@ -6,6 +6,12 @@ import {
 } from "lucide-react";
 
 import {
+    usePrivy,
+} from "@privy-io/react-auth";
+
+import Link from "next/link";
+
+import {
     Button,
 } from "@/components/ui/button";
 
@@ -14,9 +20,18 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from "@/components/ui/card";
 
-export function CustomerAccountSettings() {
+export function CustomerAccountSettings({
+    customerExists,
+}: {
+    customerExists: boolean;
+}) {
+    const {
+        logout,
+    } = usePrivy();
+
     return (
         <Card>
 
@@ -26,35 +41,48 @@ export function CustomerAccountSettings() {
                     Account
                 </CardTitle>
 
-                <p className="text-sm text-muted-foreground">
+                <CardDescription>
                     Manage your customer portal session and account-level access.
-                </p>
+                </CardDescription>
 
             </CardHeader>
 
             <CardContent className="space-y-4">
 
                 <AccountAction
-                    icon={UserRound}
+                    icon={
+                        UserRound
+                    }
                     title="Customer profile"
                     description="Your customer record is associated with your connected wallet."
                 >
                     <Button
+                        render={
+                            <Link href="#profile">
+                                View profile
+                            </Link>
+                        }
                         variant="outline"
                         size="sm"
-                    >
-                        View profile
-                    </Button>
+                        disabled={
+                            !customerExists
+                        }
+                    />
                 </AccountAction>
 
                 <AccountAction
-                    icon={LogOut}
+                    icon={
+                        LogOut
+                    }
                     title="Sign out"
                     description="Disconnect this customer portal session from the current account."
                 >
                     <Button
                         variant="outline"
                         size="sm"
+                        onClick={
+                            logout
+                        }
                     >
                         <LogOut />
                         Sign out
@@ -74,8 +102,11 @@ function AccountAction({
     children,
 }: {
     icon: typeof UserRound;
+
     title: string;
+
     description: string;
+
     children: React.ReactNode;
 }) {
     return (
@@ -84,7 +115,9 @@ function AccountAction({
             <div className="flex gap-3">
 
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+
                     <Icon className="size-4 text-muted-foreground" />
+
                 </div>
 
                 <div>

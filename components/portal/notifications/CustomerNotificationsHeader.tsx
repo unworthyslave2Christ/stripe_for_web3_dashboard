@@ -1,12 +1,16 @@
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     Bell,
 } from "lucide-react";
 
-export function CustomerNotificationsHeader() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function CustomerNotificationsHeader({
+    demo,
+}: {
+    demo: boolean;
+}) {
     return (
         <div>
 
@@ -19,6 +23,12 @@ export function CustomerNotificationsHeader() {
                 <Badge variant="secondary">
                     Smart Account
                 </Badge>
+
+                {demo && (
+                    <Badge variant="outline">
+                        Test mode
+                    </Badge>
+                )}
 
             </div>
 
@@ -33,7 +43,8 @@ export function CustomerNotificationsHeader() {
             </div>
 
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                Choose what you want to be notified about and review recent notifications sent to you.
+                Choose what you want to be notified about and review recent
+                notifications sent to you.
             </p>
 
         </div>

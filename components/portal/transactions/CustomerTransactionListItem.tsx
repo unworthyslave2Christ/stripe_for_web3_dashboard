@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import {
     Activity,
     Blocks,
@@ -10,6 +8,10 @@ import {
     Card,
     CardContent,
 } from "@/components/ui/card";
+
+import type {
+    CustomerTransactionRecord,
+} from "@/types/customer-transaction";
 
 import {
     CustomerTransactionAction,
@@ -23,14 +25,11 @@ import {
     CustomerTransactionStatusBadge,
 } from "./CustomerTransactionStatusBadge";
 
-import type {
-    CustomerTransactionRecord,
-} from "./customer-transaction.types";
-
 export function CustomerTransactionListItem({
     transaction,
 }: {
-    transaction: CustomerTransactionRecord;
+    transaction:
+        CustomerTransactionRecord;
 }) {
     return (
         <Card className="transition-colors hover:border-foreground/20">
@@ -44,7 +43,9 @@ export function CustomerTransactionListItem({
                     <div className="flex min-w-0 flex-1 items-start gap-3">
 
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+
                             <Activity className="size-4 text-muted-foreground" />
+
                         </div>
 
                         <div className="min-w-0">
@@ -58,11 +59,13 @@ export function CustomerTransactionListItem({
                             </p>
 
                             <p className="mt-2 flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+
                                 <Blocks className="size-3" />
 
-                                {formatAddress(
+                                {formatHash(
                                     transaction.transactionHash,
                                 )}
+
                             </p>
 
                         </div>
@@ -88,6 +91,7 @@ export function CustomerTransactionListItem({
                     {/* AMOUNT */}
 
                     <div className="min-w-[130px]">
+
                         <CustomerTransactionAmount
                             amount={
                                 transaction.amount
@@ -96,16 +100,19 @@ export function CustomerTransactionListItem({
                                 transaction.currency
                             }
                         />
+
                     </div>
 
                     {/* STATUS */}
 
                     <div>
+
                         <CustomerTransactionStatusBadge
                             status={
                                 transaction.status
                             }
                         />
+
                     </div>
 
                     {/* TIME */}
@@ -122,7 +129,9 @@ export function CustomerTransactionListItem({
 
                         {transaction.blockNumber && (
                             <p className="mt-1 text-xs text-muted-foreground">
-                                Block {transaction.blockNumber}
+                                Block {
+                                    transaction.blockNumber
+                                }
                             </p>
                         )}
 
@@ -131,11 +140,13 @@ export function CustomerTransactionListItem({
                     {/* ACTION */}
 
                     <div className="shrink-0">
+
                         <CustomerTransactionAction
                             explorerUrl={
                                 transaction.explorerUrl
                             }
                         />
+
                     </div>
 
                 </div>
@@ -146,16 +157,19 @@ export function CustomerTransactionListItem({
     );
 }
 
-function formatAddress(
+function formatHash(
     hash: string,
 ) {
     return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
 }
 
 function formatType(
-    type: CustomerTransactionRecord["type"],
+    type:
+        CustomerTransactionRecord["type"],
 ) {
-    switch (type) {
+    switch (
+        type
+    ) {
         case "SUBSCRIPTION_BILLING":
             return "Subscription billing";
 

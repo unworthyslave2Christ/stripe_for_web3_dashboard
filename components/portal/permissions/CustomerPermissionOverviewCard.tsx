@@ -13,8 +13,11 @@ export function CustomerPermissionOverviewCard({
     icon: Icon,
 }: {
     title: string;
+
     value: string;
+
     description: string;
+
     icon: LucideIcon;
 }) {
     return (

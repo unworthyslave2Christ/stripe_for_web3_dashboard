@@ -17,43 +17,93 @@ import {
     CustomerBillingOverviewCard,
 } from "./CustomerBillingOverviewCard";
 
-export function CustomerBillingOverview() {
+export function CustomerBillingOverview({
+    totalBilled,
+    nextCharge,
+    successfulCharges,
+    refunds,
+    currency,
+}: {
+    totalBilled:
+        number;
+
+    nextCharge:
+        | {
+            amount: string;
+            currency: string;
+            date: string;
+        }
+        | null;
+
+    successfulCharges:
+        number;
+
+    refunds:
+        number;
+
+    currency:
+        string;
+}) {
     return (
         <Section
             title="Overview"
             description="A summary of your billing activity."
         >
+
             <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
                 <CustomerBillingOverviewCard
                     title="Total billed"
-                    value="$84.00"
+                    value={
+                        `${currency} ${totalBilled.toFixed(2)}`
+                    }
                     description="Lifetime billing"
-                    icon={CircleDollarSign}
+                    icon={
+                        CircleDollarSign
+                    }
                 />
 
                 <CustomerBillingOverviewCard
                     title="Next charge"
-                    value="$19.00"
-                    description="Scheduled for Jun 12"
-                    icon={CalendarClock}
+                    value={
+                        nextCharge
+                            ? `${nextCharge.currency} ${nextCharge.amount}`
+                            : "—"
+                    }
+                    description={
+                        nextCharge
+                            ? `Scheduled for ${nextCharge.date}`
+                            : "No upcoming charge"
+                    }
+                    icon={
+                        CalendarClock
+                    }
                 />
 
                 <CustomerBillingOverviewCard
                     title="Successful charges"
-                    value="6"
-                    description="All completed charges"
-                    icon={CheckCircle2}
+                    value={
+                        successfulCharges.toLocaleString()
+                    }
+                    description="Completed charges"
+                    icon={
+                        CheckCircle2
+                    }
                 />
 
                 <CustomerBillingOverviewCard
                     title="Refunds"
-                    value="$0.00"
-                    description="Lifetime refunds"
-                    icon={RotateCcw}
+                    value={
+                        `${currency} ${refunds.toFixed(2)}`
+                    }
+                    description="Recorded refunds"
+                    icon={
+                        RotateCcw
+                    }
                 />
 
             </Grid>
+
         </Section>
     );
 }

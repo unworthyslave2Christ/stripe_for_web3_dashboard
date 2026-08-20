@@ -9,6 +9,10 @@ import {
     CardContent,
 } from "@/components/ui/card";
 
+import type {
+    CustomerPermissionRecord,
+} from "@/types/customer-permission";
+
 import {
     CustomerPermissionActions,
 } from "./CustomerPermissionActions";
@@ -21,14 +25,11 @@ import {
     CustomerPermissionStatusBadge,
 } from "./CustomerPermissionStatusBadge";
 
-import type {
-    CustomerPermissionRecord,
-} from "./customer-permission.types";
-
 export function CustomerPermissionListItem({
     permission,
 }: {
-    permission: CustomerPermissionRecord;
+    permission:
+        CustomerPermissionRecord;
 }) {
     return (
         <Card className="transition-colors hover:border-foreground/20">
@@ -52,7 +53,9 @@ export function CustomerPermissionListItem({
                             <div className="flex flex-wrap items-center gap-2">
 
                                 <p className="text-sm font-semibold">
-                                    {permission.name}
+                                    {
+                                        permission.name
+                                    }
                                 </p>
 
                                 <CustomerPermissionStatusBadge
@@ -64,7 +67,9 @@ export function CustomerPermissionListItem({
                             </div>
 
                             <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
-                                {permission.description}
+                                {
+                                    permission.description
+                                }
                             </p>
 
                         </div>
@@ -103,7 +108,10 @@ export function CustomerPermissionListItem({
 
                             <CreditCard className="size-3.5 text-muted-foreground" />
 
-                            {permission.subscriptionNames.length} active
+                            {
+                                permission.subscriptionNames.length
+                            }{" "}
+                            associated
 
                         </p>
 
@@ -121,7 +129,9 @@ export function CustomerPermissionListItem({
 
                             <CalendarClock className="size-3.5 text-muted-foreground" />
 
-                            {permission.updatedAt}
+                            {
+                                permission.updatedAt
+                            }
 
                         </p>
 

@@ -1,5 +1,7 @@
+import Link from "next/link";
+
 import {
-    KeyRound,
+    FileKey2,
     Plus,
     Webhook,
 } from "lucide-react";
@@ -8,47 +10,61 @@ import {
     Button,
 } from "@/components/ui/button";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-
 export function QuickActions() {
     return (
-        <Card>
+        <div className="rounded-xl border bg-card p-6">
 
-            <CardHeader>
-                <CardTitle>
+            <div>
+
+                <h3 className="text-base font-medium">
                     Quick actions
-                </CardTitle>
+                </h3>
 
-                <CardDescription>
+                <p className="mt-1 text-sm text-muted-foreground">
                     Common merchant operations.
-                </CardDescription>
-            </CardHeader>
+                </p>
 
-            <CardContent className="flex flex-wrap gap-2">
+            </div>
 
-                <Button>
-                    <Plus />
-                    Create plan
-                </Button>
+            <div className="mt-5 flex flex-wrap gap-2">
 
-                <Button variant="outline">
-                    <KeyRound />
-                    Create API key
-                </Button>
+                <Button
+                    render={
+                        <Link
+                            href="/dashboard/platform/plans"
+                        >
+                            <Plus />
+                            Create plan
+                        </Link>
+                    }
+                />
 
-                <Button variant="outline">
-                    <Webhook />
-                    Configure webhook
-                </Button>
+                <Button
+                    render={
+                        <Link
+                            href="/dashboard/developers/api-keys"
+                        >
+                            <FileKey2 />
+                            API keys
+                        </Link>
+                    }
+                    variant="outline"
+                />
 
-            </CardContent>
+                <Button
+                    render={
+                        <Link
+                            href="/dashboard/developers/webhooks"
+                        >
+                            <Webhook />
+                            Webhooks
+                        </Link>
+                    }
+                    variant="outline"
+                />
 
-        </Card>
+            </div>
+
+        </div>
     );
 }

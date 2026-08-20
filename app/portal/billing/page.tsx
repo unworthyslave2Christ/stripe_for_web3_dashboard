@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -23,16 +25,20 @@ import {
 } from "@/components/portal/billing/CustomerBillingHeader";
 
 import {
-    CustomerBillingOverview,
-} from "@/components/portal/billing/CustomerBillingOverview";
-
-import {
     CustomerBillingInformation,
 } from "@/components/portal/billing/CustomerBillingInformation";
 
 import {
     CustomerBillingList,
 } from "@/components/portal/billing/CustomerBillingList";
+
+import {
+    CustomerBillingLoadingState,
+} from "@/components/portal/billing/CustomerBillingLoadingState";
+
+import {
+    CustomerBillingOverview,
+} from "@/components/portal/billing/CustomerBillingOverview";
 
 import {
     CustomerBillingPagination,
@@ -43,10 +49,94 @@ import {
 } from "@/components/portal/billing/CustomerBillingToolbar";
 
 import {
+    CustomerBillingErrorState,
+} from "@/components/portal/billing/CustomerBillingErrorState";
+
+import {
     CustomerUpcomingBilling,
 } from "@/components/portal/billing/CustomerUpcomingBilling";
 
+import {
+    useCustomerBillingPage,
+} from "@/hooks/pages/customer/useCustomerBillingPage";
+
 export default function CustomerBillingPage() {
+
+    const page =
+        useCustomerBillingPage();
+
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.loading &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerBillingLoadingState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.error &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerBillingErrorState
+                        error={
+                            page.error
+                        }
+                        onRetry={
+                            page.customer.refresh
+                        }
+                    />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // DATA
+    ////////////////////////////////////////////////////////////
+
+    const currency =
+        page.history.items[0]
+            ?.currency ??
+        "USD";
+
+    const nextCharge =
+        page.upcoming
+            ? {
+                amount:
+                    page.upcoming.amount,
+
+                currency:
+                    page.upcoming.currency,
+
+                date:
+                    page.upcoming.date,
+            }
+            : null;
+
     return (
         <Page>
 
@@ -56,13 +146,38 @@ export default function CustomerBillingPage() {
 
                     {/* HEADER */}
 
-                    <CustomerBillingHeader />
+                    <CustomerBillingHeader
+                        demo={
+                            page.mode ===
+                            "demo"
+                        }
+                    />
 
                     <Divider />
 
                     {/* OVERVIEW */}
 
-                    <CustomerBillingOverview />
+                    <CustomerBillingOverview
+                        totalBilled={
+                            page.summary.totalBilled
+                        }
+
+                        nextCharge={
+                            nextCharge
+                        }
+
+                        successfulCharges={
+                            page.summary.successfulCharges
+                        }
+
+                        refunds={
+                            page.summary.refunds
+                        }
+
+                        currency={
+                            currency
+                        }
+                    />
 
                     {/* UPCOMING */}
 
@@ -71,7 +186,11 @@ export default function CustomerBillingPage() {
                         description="Your next scheduled subscription charge."
                     >
 
-                        <CustomerUpcomingBilling />
+                        <CustomerUpcomingBilling
+                            upcoming={
+                                page.upcoming
+                            }
+                        />
 
                     </Section>
 
@@ -84,11 +203,51 @@ export default function CustomerBillingPage() {
 
                         <Stack gap={4}>
 
-                            <CustomerBillingToolbar />
+                            <CustomerBillingToolbar
+                                search={
+                                    page.history.search
+                                }
 
-                            <CustomerBillingList />
+                                onSearchChange={
+                                    page.history.setSearch
+                                }
 
-                            <CustomerBillingPagination />
+                                status={
+                                    page.history.status
+                                }
+
+                                onStatusChange={
+                                    page.history.setStatusFilter
+                                }
+                            />
+
+                            <CustomerBillingList
+                                billing={
+                                    page.history.items
+                                }
+                            />
+
+                            <CustomerBillingPagination
+                                page={
+                                    page.history.page
+                                }
+
+                                totalPages={
+                                    page.history.totalPages
+                                }
+
+                                totalCount={
+                                    page.history.totalCount
+                                }
+
+                                pageSize={
+                                    page.history.pageSize
+                                }
+
+                                onPageChange={
+                                    page.history.setPage
+                                }
+                            />
 
                         </Stack>
 
@@ -101,9 +260,32 @@ export default function CustomerBillingPage() {
                         description="How your Smart Account participates in recurring billing."
                     >
 
-                        <CustomerBillingInformation />
+                        <CustomerBillingInformation
+                            smartAccount={
+                                page.customer.customer
+                                    ?.smartAccount
+                            }
+
+                            billingAuthorizationActive={
+                                Boolean(
+                                    page.upcoming
+                                        ?.billingPermissionActive,
+                                )
+                            }
+
+                            demo={
+                                page.mode ===
+                                "demo"
+                            }
+                        />
 
                     </Section>
+
+                    {page.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing billing data...
+                        </p>
+                    )}
 
                 </Stack>
 

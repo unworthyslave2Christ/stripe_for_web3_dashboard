@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -27,12 +29,20 @@ import {
 } from "@/components/portal/notifications/CustomerNotificationPreferences";
 
 import {
-    CustomerNotificationList,
-} from "@/components/portal/notifications/CustomerNotificationList";
+    CustomerNotificationsErrorState,
+} from "@/components/portal/notifications/CustomerNotificationsErrorState";
 
 import {
     CustomerNotificationsHeader,
 } from "@/components/portal/notifications/CustomerNotificationsHeader";
+
+import {
+    CustomerNotificationList,
+} from "@/components/portal/notifications/CustomerNotificationList";
+
+import {
+    CustomerNotificationsLoadingState,
+} from "@/components/portal/notifications/CustomerNotificationsLoadingState";
 
 import {
     CustomerNotificationsOverview,
@@ -46,7 +56,64 @@ import {
     CustomerNotificationsToolbar,
 } from "@/components/portal/notifications/CustomerNotificationsToolbar";
 
+import {
+    useCustomerNotificationsPage,
+} from "@/hooks/pages/customer/useCustomerNotificationsPage";
+
 export default function CustomerNotificationsPage() {
+
+    const page =
+        useCustomerNotificationsPage();
+
+    ////////////////////////////////////////////////////////////
+    // LOADING
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.loading &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerNotificationsLoadingState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.error &&
+        !page.customer.customer
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <CustomerNotificationsErrorState
+                        error={
+                            page.error
+                        }
+                        onRetry={
+                            page.customer.refresh
+                        }
+                    />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
     return (
         <Page>
 
@@ -56,13 +123,40 @@ export default function CustomerNotificationsPage() {
 
                     {/* HEADER */}
 
-                    <CustomerNotificationsHeader />
+                    <CustomerNotificationsHeader
+                        demo={
+                            page.mode ===
+                            "demo"
+                        }
+                    />
 
                     <Divider />
 
                     {/* OVERVIEW */}
 
-                    <CustomerNotificationsOverview />
+                    <CustomerNotificationsOverview
+                        received={
+                            page.notifications.summary.received
+                        }
+
+                        deliverySuccess={
+                            page.notifications.summary.deliverySuccess
+                        }
+
+                        activeChannels={
+                            page.channels.filter(
+                                (
+                                    channel,
+                                ) =>
+                                    channel.status ===
+                                    "ACTIVE",
+                            ).length
+                        }
+
+                        unread={
+                            page.notifications.summary.unread
+                        }
+                    />
 
                     {/* PREFERENCES */}
 
@@ -71,13 +165,30 @@ export default function CustomerNotificationsPage() {
                         description="Choose which customer notifications you want to receive."
                     >
 
-                        <CustomerNotificationPreferences />
+                        <CustomerNotificationPreferences
+                            grouped={
+                                page.preferences.grouped
+                            }
+
+                            onChange={
+                                page.preferences.setEnabled
+                            }
+
+                            demo={
+                                page.mode ===
+                                "demo"
+                            }
+                        />
 
                     </Section>
 
                     {/* CHANNELS */}
 
-                    <CustomerNotificationChannels />
+                    <CustomerNotificationChannels
+                        channels={
+                            page.channels
+                        }
+                    />
 
                     {/* RECENT NOTIFICATIONS */}
 
@@ -88,15 +199,73 @@ export default function CustomerNotificationsPage() {
 
                         <Stack gap={4}>
 
-                            <CustomerNotificationsToolbar />
+                            <CustomerNotificationsToolbar
+                                search={
+                                    page.notifications.search
+                                }
 
-                            <CustomerNotificationList />
+                                onSearchChange={
+                                    page.notifications.setSearch
+                                }
 
-                            <CustomerNotificationsPagination />
+                                type={
+                                    page.notifications.type
+                                }
+
+                                onTypeChange={
+                                    page.notifications.setTypeFilter
+                                }
+
+                                status={
+                                    page.notifications.status
+                                }
+
+                                onStatusChange={
+                                    page.notifications.setStatusFilter
+                                }
+                            />
+
+                            <CustomerNotificationList
+                                notifications={
+                                    page.notifications.items
+                                }
+
+                                onMarkRead={
+                                    page.notifications.markAsRead
+                                }
+                            />
+
+                            <CustomerNotificationsPagination
+                                page={
+                                    page.notifications.page
+                                }
+
+                                totalPages={
+                                    page.notifications.totalPages
+                                }
+
+                                totalCount={
+                                    page.notifications.totalCount
+                                }
+
+                                pageSize={
+                                    page.notifications.pageSize
+                                }
+
+                                onPageChange={
+                                    page.notifications.setPage
+                                }
+                            />
 
                         </Stack>
 
                     </Section>
+
+                    {page.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing notifications...
+                        </p>
+                    )}
 
                 </Stack>
 

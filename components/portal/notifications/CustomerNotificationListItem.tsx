@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import {
@@ -19,6 +21,10 @@ import {
     CardContent,
 } from "@/components/ui/card";
 
+import type {
+    CustomerNotificationRecord,
+} from "@/types/customer-notification";
+
 import {
     CustomerNotificationStatusBadge,
 } from "./CustomerNotificationStatusBadge";
@@ -27,17 +33,21 @@ import {
     CustomerNotificationTypeBadge,
 } from "./CustomerNotificationTypeBadge";
 
-import type {
-    CustomerNotificationRecord,
-} from "./customer-notification.types";
-
 export function CustomerNotificationListItem({
     notification,
+    onMarkRead,
 }: {
-    notification: CustomerNotificationRecord;
+    notification:
+        CustomerNotificationRecord;
+
+    onMarkRead:
+        (
+            notificationId: string,
+        ) => void;
 }) {
     const unread =
-        notification.status !== "READ";
+        notification.status !==
+        "READ";
 
     return (
         <Card
@@ -71,7 +81,9 @@ export function CustomerNotificationListItem({
                                 <div className="flex flex-wrap items-center gap-2">
 
                                     <p className="text-sm font-semibold">
-                                        {notification.title}
+                                        {
+                                            notification.title
+                                        }
                                     </p>
 
                                     <CustomerNotificationTypeBadge
@@ -89,7 +101,9 @@ export function CustomerNotificationListItem({
                                 </div>
 
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    {notification.description}
+                                    {
+                                        notification.description
+                                    }
                                 </p>
 
                             </div>
@@ -98,7 +112,9 @@ export function CustomerNotificationListItem({
 
                                 <CalendarClock className="size-3.5" />
 
-                                {notification.createdAt}
+                                {
+                                    notification.createdAt
+                                }
 
                             </p>
 
@@ -109,29 +125,39 @@ export function CustomerNotificationListItem({
                                 variant="outline"
                                 className="mt-3"
                             >
-                                {notification.relatedPlanName}
+                                {
+                                    notification.relatedPlanName
+                                }
                             </Badge>
                         )}
 
                         <div className="mt-4 flex flex-wrap gap-2">
 
-                            <Button
-                                variant={
-                                    unread
-                                        ? "default"
-                                        : "outline"
-                                }
-                                size="sm"
-                            >
-                                {unread
-                                    ? "Mark as read"
-                                    : "Read"}
-                            </Button>
+                            {unread ? (
+                                <Button
+                                    size="sm"
+                                    onClick={() =>
+                                        onMarkRead(
+                                            notification.id,
+                                        )
+                                    }
+                                >
+                                    Mark as read
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled
+                                >
+                                    Read
+                                </Button>
+                            )}
 
                             {notification.relatedSubscriptionId && (
                                 <Button
                                     render={
-                                        <Link href="/portal/subscriptions">
+                                        <Link href={`/portal/subscriptions/${notification.relatedSubscriptionId}`}>
                                             View subscription
                                             <ArrowRight />
                                         </Link>

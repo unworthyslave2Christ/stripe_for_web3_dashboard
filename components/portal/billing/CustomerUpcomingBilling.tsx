@@ -22,7 +22,52 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function CustomerUpcomingBilling() {
+export function CustomerUpcomingBilling({
+    upcoming,
+}: {
+    upcoming:
+        | {
+            subscriptionId: number;
+            planName: string;
+            amount: string;
+            currency: string;
+            date: string;
+            billingPermissionActive: boolean;
+        }
+        | null;
+}) {
+    if (!upcoming) {
+        return (
+            <Card>
+
+                <CardHeader>
+
+                    <CardTitle>
+                        Upcoming billing
+                    </CardTitle>
+
+                </CardHeader>
+
+                <CardContent>
+
+                    <div className="rounded-xl border border-dashed bg-muted/20 p-6 text-center">
+
+                        <p className="text-sm font-medium">
+                            No upcoming charge
+                        </p>
+
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            There are currently no active subscriptions with a scheduled billing event.
+                        </p>
+
+                    </div>
+
+                </CardContent>
+
+            </Card>
+        );
+    }
+
     return (
         <Card className="overflow-hidden">
 
@@ -59,27 +104,29 @@ export function CustomerUpcomingBilling() {
                         <div className="flex items-start gap-4">
 
                             <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+
                                 <CreditCard className="size-4" />
+
                             </div>
 
                             <div>
 
                                 <Link
-                                    href="/portal/subscriptions"
+                                    href={`/portal/subscriptions/${upcoming.subscriptionId}`}
                                     className="font-medium hover:underline"
                                 >
-                                    Pro subscription
+                                    {upcoming.planName}
                                 </Link>
 
                                 <p className="mt-1 text-xs text-muted-foreground">
-                                    Subscription #10021
+                                    Subscription #{upcoming.subscriptionId}
                                 </p>
 
                                 <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
 
                                     <CalendarClock className="size-4" />
 
-                                    Jun 12, 2025
+                                    {upcoming.date}
 
                                 </p>
 
@@ -90,11 +137,12 @@ export function CustomerUpcomingBilling() {
                         <div className="text-left lg:text-right">
 
                             <p className="text-2xl font-semibold">
-                                $19.00
+                                {upcoming.currency}{" "}
+                                {upcoming.amount}
                             </p>
 
                             <p className="mt-1 text-xs text-muted-foreground">
-                                Monthly recurring charge
+                                Next scheduled charge
                             </p>
 
                         </div>
@@ -105,15 +153,23 @@ export function CustomerUpcomingBilling() {
 
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
 
-                            <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <ShieldCheck
+                                className={
+                                    upcoming.billingPermissionActive
+                                        ? "size-3.5 text-emerald-600 dark:text-emerald-400"
+                                        : "size-3.5"
+                                }
+                            />
 
-                            Billing authorization active
+                            {upcoming.billingPermissionActive
+                                ? "Billing authorization active"
+                                : "Billing authorization unavailable"}
 
                         </div>
 
                         <Button
                             render={
-                                <Link href="/portal/subscriptions">
+                                <Link href={`/portal/subscriptions/${upcoming.subscriptionId}`}>
                                     View subscription
                                     <ArrowRight />
                                 </Link>

@@ -8,21 +8,68 @@ import {
 } from "lucide-react";
 
 import {
-    Switch,
-} from "@/components/ui/switch";
-
-import {
-    Label,
-} from "@/components/ui/label";
-
-import {
     Card,
     CardContent,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 
-export function CustomerNotificationPreferences() {
+import {
+    Label,
+} from "@/components/ui/label";
+
+import {
+    Switch,
+} from "@/components/ui/switch";
+
+import type {
+    CustomerNotificationPreference,
+} from "@/types/customer-notification";
+
+interface NotificationPreferenceGroupProps {
+    icon: typeof CreditCard;
+
+    title: string;
+
+    description: string;
+
+    items:
+        CustomerNotificationPreference[];
+
+    onChange:
+        (
+            id: string,
+            enabled: boolean,
+        ) => void;
+}
+
+export function CustomerNotificationPreferences({
+    grouped,
+    onChange,
+    demo,
+}: {
+    grouped: {
+        BILLING:
+            CustomerNotificationPreference[];
+
+        SUBSCRIPTIONS:
+            CustomerNotificationPreference[];
+
+        SMART_ACCOUNT:
+            CustomerNotificationPreference[];
+
+        GENERAL:
+            CustomerNotificationPreference[];
+    };
+
+    onChange:
+        (
+            id: string,
+            enabled: boolean,
+        ) => void;
+
+    demo: boolean;
+}) {
     return (
         <Card>
 
@@ -41,92 +88,66 @@ export function CustomerNotificationPreferences() {
             <CardContent className="space-y-6">
 
                 <NotificationPreferenceGroup
-                    icon={CreditCard}
+                    icon={
+                        CreditCard
+                    }
                     title="Billing"
                     description="Important events related to your recurring charges."
-                    items={[
-                        {
-                            id: "billing-upcoming",
-                            title: "Upcoming billing",
-                            description:
-                                "Notify me before a scheduled subscription charge.",
-                            defaultChecked: true,
-                        },
-                        {
-                            id: "billing-succeeded",
-                            title: "Successful billing",
-                            description:
-                                "Notify me when a recurring charge succeeds.",
-                            defaultChecked: false,
-                        },
-                        {
-                            id: "billing-failed",
-                            title: "Failed billing",
-                            description:
-                                "Notify me when a recurring charge fails.",
-                            defaultChecked: true,
-                        },
-                    ]}
+                    items={
+                        grouped.BILLING
+                    }
+                    onChange={
+                        onChange
+                    }
                 />
 
                 <NotificationPreferenceGroup
-                    icon={CalendarClock}
+                    icon={
+                        CalendarClock
+                    }
                     title="Subscriptions"
                     description="Important lifecycle changes involving your subscriptions."
-                    items={[
-                        {
-                            id: "subscription-created",
-                            title: "Subscription created",
-                            description:
-                                "Notify me when a new subscription becomes active.",
-                            defaultChecked: true,
-                        },
-                        {
-                            id: "subscription-paused",
-                            title: "Subscription paused",
-                            description:
-                                "Notify me when a subscription is paused.",
-                            defaultChecked: true,
-                        },
-                        {
-                            id: "subscription-cancelled",
-                            title: "Subscription cancelled",
-                            description:
-                                "Notify me when a subscription is cancelled.",
-                            defaultChecked: true,
-                        },
-                    ]}
+                    items={
+                        grouped.SUBSCRIPTIONS
+                    }
+                    onChange={
+                        onChange
+                    }
                 />
 
                 <NotificationPreferenceGroup
-                    icon={ShieldCheck}
+                    icon={
+                        ShieldCheck
+                    }
                     title="Smart Account"
                     description="Important security and authorization events."
-                    items={[
-                        {
-                            id: "smart-account-event",
-                            title: "Smart Account activity",
-                            description:
-                                "Notify me about important account or permission events.",
-                            defaultChecked: true,
-                        },
-                    ]}
+                    items={
+                        grouped.SMART_ACCOUNT
+                    }
+                    onChange={
+                        onChange
+                    }
                 />
 
                 <NotificationPreferenceGroup
-                    icon={Bell}
+                    icon={
+                        Bell
+                    }
                     title="General"
                     description="Other important customer notifications."
-                    items={[
-                        {
-                            id: "general-notifications",
-                            title: "Important product notifications",
-                            description:
-                                "Receive important messages related to your Stripe for Web3 account.",
-                            defaultChecked: true,
-                        },
-                    ]}
+                    items={
+                        grouped.GENERAL
+                    }
+                    onChange={
+                        onChange
+                    }
                 />
+
+                {demo && (
+                    <p className="text-xs text-muted-foreground">
+                        Preference changes are currently local test-mode state.
+                    </p>
+                )}
 
             </CardContent>
 
@@ -139,24 +160,17 @@ function NotificationPreferenceGroup({
     title,
     description,
     items,
-}: {
-    icon: typeof CreditCard;
-    title: string;
-    description: string;
-    items: Array<{
-        id: string;
-        title: string;
-        description: string;
-        defaultChecked: boolean;
-    }>;
-}) {
+    onChange,
+}: NotificationPreferenceGroupProps) {
     return (
         <div className="space-y-4 border-b pb-6 last:border-0 last:pb-0">
 
             <div className="flex items-start gap-3">
 
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+
                     <Icon className="size-4 text-muted-foreground" />
+
                 </div>
 
                 <div>
@@ -173,38 +187,60 @@ function NotificationPreferenceGroup({
 
             </div>
 
-            <div className="space-y-3 pl-11">
+            <div className="space-y-3 pl-0 sm:pl-11">
 
-                {items.map((item) => (
-                    <div
-                        key={item.id}
-                        className="flex items-start justify-between gap-6 rounded-lg border p-3"
-                    >
+                {items.map(
+                    (
+                        item,
+                    ) => (
+                        <div
+                            key={
+                                item.id
+                            }
+                            className="flex items-start justify-between gap-6 rounded-lg border p-3"
+                        >
 
-                        <div>
+                            <div>
 
-                            <Label
-                                htmlFor={item.id}
-                                className="text-sm font-medium"
-                            >
-                                {item.title}
-                            </Label>
+                                <Label
+                                    htmlFor={
+                                        item.id
+                                    }
+                                    className="text-sm font-medium"
+                                >
+                                    {
+                                        item.title
+                                    }
+                                </Label>
 
-                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                {item.description}
-                            </p>
+                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                                    {
+                                        item.description
+                                    }
+                                </p>
+
+                            </div>
+
+                            <Switch
+                                id={
+                                    item.id
+                                }
+                                checked={
+                                    item.enabled
+                                }
+                                onCheckedChange={(
+                                    checked,
+                                ) =>
+                                    onChange(
+                                        item.id,
+                                        checked,
+                                    )
+                                }
+                            />
 
                         </div>
-
-                        <Switch
-                            id={item.id}
-                            defaultChecked={
-                                item.defaultChecked
-                            }
-                        />
-
-                    </div>
-                ))}
+                    ),
+                )}
 
             </div>
 

@@ -1,23 +1,40 @@
 import {
     Card,
     CardContent,
+    CardDescription,
     CardHeader,
     CardTitle,
-    CardDescription,
 } from "@/components/ui/card";
 
-export function CustomerChart() {
+export function CustomerChart({
+    values,
+    demo,
+}: {
+    values:
+        number[];
+
+    demo:
+        boolean;
+}) {
+    const max =
+        Math.max(
+            ...values,
+            1,
+        );
+
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle>
                     Customers
                 </CardTitle>
 
                 <CardDescription>
-                    Customer growth this year.
+                    Customer growth over the selected period.
                 </CardDescription>
+
             </CardHeader>
 
             <CardContent>
@@ -32,16 +49,25 @@ export function CustomerChart() {
 
                     <div className="absolute inset-0 flex items-end">
 
-                        {[25, 31, 35, 42, 49, 55, 63, 70, 77, 84, 92, 100].map(
-                            (height, index) => (
+                        {values.map(
+                            (
+                                value,
+                                index,
+                            ) => (
                                 <div
-                                    key={index}
+                                    key={
+                                        index
+                                    }
                                     className="flex h-full flex-1 items-end px-0.5"
                                 >
                                     <div
-                                        className="w-full rounded-t bg-primary/30 transition-colors hover:bg-primary/60"
+                                        className="w-full rounded-t bg-primary/30 transition-[height] duration-700 hover:bg-primary/60"
                                         style={{
-                                            height: `${height}%`,
+                                            height:
+                                                `${(
+                                                    value /
+                                                    max
+                                                ) * 100}%`,
                                         }}
                                     />
                                 </div>
@@ -51,6 +77,12 @@ export function CustomerChart() {
                     </div>
 
                 </div>
+
+                {demo && (
+                    <p className="mt-3 text-[11px] text-muted-foreground">
+                        Test-mode historical series.
+                    </p>
+                )}
 
             </CardContent>
 

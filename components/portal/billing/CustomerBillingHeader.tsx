@@ -1,12 +1,16 @@
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     ReceiptText,
 } from "lucide-react";
 
-export function CustomerBillingHeader() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function CustomerBillingHeader({
+    demo,
+}: {
+    demo: boolean;
+}) {
     return (
         <div>
 
@@ -19,6 +23,12 @@ export function CustomerBillingHeader() {
                 <Badge variant="secondary">
                     Smart Account
                 </Badge>
+
+                {demo && (
+                    <Badge variant="outline">
+                        Test mode
+                    </Badge>
+                )}
 
             </div>
 
@@ -33,7 +43,8 @@ export function CustomerBillingHeader() {
             </div>
 
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                Review upcoming charges, billing history, payment outcomes, and refunds associated with your subscriptions.
+                Review upcoming charges, billing history, payment outcomes,
+                and refunds associated with your subscriptions.
             </p>
 
         </div>

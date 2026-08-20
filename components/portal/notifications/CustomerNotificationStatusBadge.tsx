@@ -4,14 +4,17 @@ import {
 
 import type {
     CustomerNotificationStatus,
-} from "./customer-notification.types";
+} from "@/types/customer-notification";
 
 export function CustomerNotificationStatusBadge({
     status,
 }: {
-    status: CustomerNotificationStatus;
+    status:
+        CustomerNotificationStatus;
 }) {
-    switch (status) {
+    switch (
+        status
+    ) {
         case "DELIVERED":
             return (
                 <Badge variant="secondary">

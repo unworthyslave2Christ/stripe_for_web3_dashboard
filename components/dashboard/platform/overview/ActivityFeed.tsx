@@ -1,7 +1,6 @@
 import {
-    CreditCard,
-    UserPlus,
-    Wallet,
+    CheckCircle2,
+    Info,
 } from "lucide-react";
 
 import {
@@ -11,28 +10,32 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-const activity = [
-    {
-        title: "New customer created",
-        description: "Customer smart account registered.",
-        time: "4 minutes ago",
-        icon: UserPlus,
-    },
-    {
-        title: "Subscription activated",
-        description: "Pro subscription activated.",
-        time: "18 minutes ago",
-        icon: CreditCard,
-    },
-    {
-        title: "Smart account funded",
-        description: "Customer wallet received funds.",
-        time: "31 minutes ago",
-        icon: Wallet,
-    },
-];
+export function ActivityFeed({
+    items,
+    demo,
+}: {
+    items:
+        Array<{
+            id:
+                string;
 
-export function ActivityFeed() {
+            title:
+                string;
+
+            description:
+                string;
+
+            time:
+                string;
+
+            kind:
+                "success"
+                | "info";
+        }>;
+
+    demo:
+        boolean;
+}) {
     return (
         <Card>
 
@@ -44,43 +47,83 @@ export function ActivityFeed() {
 
             <CardContent>
 
-                <div className="space-y-5">
+                {demo && (
+                    <p className="mb-4 text-xs text-muted-foreground">
+                        Activity preview is currently using test data.
+                    </p>
+                )}
 
-                    {activity.map((item) => {
+                {!demo && (
+                    <div className="rounded-lg border bg-muted/20 p-4">
 
-                        const Icon = item.icon;
+                        <p className="text-sm font-medium">
+                            Activity feed
+                        </p>
 
-                        return (
-                            <div
-                                key={item.title}
-                                className="flex gap-3"
-                            >
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Live merchant activity will appear here once the
+                            activity API/resource is connected.
+                        </p>
 
-                                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                                    <Icon className="size-4 text-muted-foreground" />
-                                </div>
+                    </div>
+                )}
 
-                                <div className="min-w-0 flex-1">
+                {demo && (
+                    <div className="space-y-5">
 
-                                    <p className="text-sm font-medium">
-                                        {item.title}
-                                    </p>
+                        {items.map(
+                            (
+                                item,
+                            ) => {
+                                const Icon =
+                                    item.kind ===
+                                    "success"
+                                        ? CheckCircle2
+                                        : Info;
 
-                                    <p className="text-xs text-muted-foreground">
-                                        {item.description}
-                                    </p>
+                                return (
+                                    <div
+                                        key={
+                                            item.id
+                                        }
+                                        className="flex gap-3"
+                                    >
 
-                                    <p className="mt-1 text-[11px] text-muted-foreground">
-                                        {item.time}
-                                    </p>
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
 
-                                </div>
+                                            <Icon className="size-4 text-muted-foreground" />
 
-                            </div>
-                        );
-                    })}
+                                        </div>
 
-                </div>
+                                        <div className="min-w-0 flex-1">
+
+                                            <p className="text-sm font-medium">
+                                                {
+                                                    item.title
+                                                }
+                                            </p>
+
+                                            <p className="text-xs text-muted-foreground">
+                                                {
+                                                    item.description
+                                                }
+                                            </p>
+
+                                            <p className="mt-1 text-[11px] text-muted-foreground">
+                                                {
+                                                    item.time
+                                                }
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+                                );
+                            },
+                        )}
+
+                    </div>
+                )}
 
             </CardContent>
 

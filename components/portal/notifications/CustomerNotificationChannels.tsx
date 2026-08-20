@@ -12,11 +12,31 @@ import {
     Stack,
 } from "@/components/layout/Stack";
 
+import type {
+    CustomerNotificationChannelState,
+} from "@/types/customer-notification";
+
 import {
     CustomerNotificationChannelCard,
 } from "./CustomerNotificationChannelCard";
 
-export function CustomerNotificationChannels() {
+export function CustomerNotificationChannels({
+    channels,
+}: {
+    channels:
+        CustomerNotificationChannelState[];
+}) {
+    const iconMap = {
+        EMAIL:
+            Mail,
+
+        IN_APP:
+            Bell,
+
+        WEBHOOK:
+            Webhook,
+    } as const;
+
     return (
         <Section
             title="Notification channels"
@@ -25,32 +45,46 @@ export function CustomerNotificationChannels() {
 
             <Stack gap={3}>
 
-                <CustomerNotificationChannelCard
-                    icon={Mail}
-                    title="Email"
-                    description="Receive customer notifications at your configured email destination."
-                    destination="alex@example.com"
-                    status="ACTIVE"
-                    action="Manage"
-                />
+                {channels.map(
+                    (
+                        channel,
+                    ) => {
 
-                <CustomerNotificationChannelCard
-                    icon={Bell}
-                    title="In-app"
-                    description="Receive notifications directly inside your Stripe for Web3 portal."
-                    destination="This portal"
-                    status="ACTIVE"
-                    action="Enabled"
-                />
+                        const Icon =
+                            iconMap[
+                                channel.channel
+                            ];
 
-                <CustomerNotificationChannelCard
-                    icon={Webhook}
-                    title="Webhook"
-                    description="Receive supported customer events through your configured integration."
-                    destination="Not configured"
-                    status="INACTIVE"
-                    action="Configure"
-                />
+                        return (
+                            <CustomerNotificationChannelCard
+                                key={
+                                    channel.channel
+                                }
+                                icon={
+                                    Icon
+                                }
+                                title={
+                                    channel.title
+                                }
+                                description={
+                                    channel.description
+                                }
+                                destination={
+                                    channel.destination
+                                }
+                                status={
+                                    channel.status
+                                }
+                                action={
+                                    channel.channel ===
+                                    "WEBHOOK"
+                                        ? "Configure"
+                                        : "Manage"
+                                }
+                            />
+                        );
+                    },
+                )}
 
             </Stack>
 

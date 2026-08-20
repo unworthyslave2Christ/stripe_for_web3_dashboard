@@ -1,6 +1,41 @@
 "use client";
 
 import {
+    useMemo,
+} from "react";
+
+import {
+    AlertTriangle,
+    ArrowRight,
+    CalendarClock,
+    CheckCircle2,
+    Copy,
+    CreditCard,
+    Info,
+    RefreshCw,
+    ShieldCheck,
+    WalletCards,
+    Zap,
+} from "lucide-react";
+
+import Link from "next/link";
+
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+import {
+    Button,
+} from "@/components/ui/button";
+
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+
+import {
     Container,
 } from "@/components/layout/Container";
 
@@ -64,21 +99,10 @@ import {
     useCustomerOverviewPage,
 } from "@/hooks/pages/customer/useCustomerOverviewPage";
 
-import {
-    CreditCard,
-    ShieldCheck,
-    WalletCards,
-    Zap,
-} from "lucide-react";
-
 export default function CustomerPortalOverviewPage() {
 
     const page =
         useCustomerOverviewPage();
-
-    ////////////////////////////////////////////////////////////
-    // LOADING
-    ////////////////////////////////////////////////////////////
 
     if (
         page.customer.loading &&
@@ -96,10 +120,6 @@ export default function CustomerPortalOverviewPage() {
             </Page>
         );
     }
-
-    ////////////////////////////////////////////////////////////
-    // ERROR
-    ////////////////////////////////////////////////////////////
 
     if (
         page.customer.error &&
@@ -125,10 +145,6 @@ export default function CustomerPortalOverviewPage() {
         );
     }
 
-    ////////////////////////////////////////////////////////////
-    // NO CUSTOMER
-    ////////////////////////////////////////////////////////////
-
     if (
         page.customer.status ===
         "not-created"
@@ -146,15 +162,16 @@ export default function CustomerPortalOverviewPage() {
         );
     }
 
-    ////////////////////////////////////////////////////////////
-    // DATA
-    ////////////////////////////////////////////////////////////
-
     const customer =
         page.customer.data;
 
     const demo =
         page.demo;
+
+    type ModeType = "demo" | "live" ; 
+
+    const mode =
+        page.mode as ModeType;
 
     return (
         <Page>
@@ -173,15 +190,13 @@ export default function CustomerPortalOverviewPage() {
                             customer?.smartAccount
                         }
                         mode={
-                            page.demo
-                                ? "demo"
-                                : "live"
+                            mode
                         }
                     />
 
                     <Divider />
 
-                    {/* KPIS */}
+                    {/* KPIs */}
 
                     <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
@@ -191,7 +206,9 @@ export default function CustomerPortalOverviewPage() {
                                 page.subscriptionSummary.total.toLocaleString()
                             }
                             description="Total subscriptions"
-                            icon={CreditCard}
+                            icon={
+                                CreditCard
+                            }
                         />
 
                         <CustomerOverviewKpiCard
@@ -200,7 +217,9 @@ export default function CustomerPortalOverviewPage() {
                                 page.subscriptionSummary.active.toLocaleString()
                             }
                             description="Currently active"
-                            icon={Zap}
+                            icon={
+                                Zap
+                            }
                         />
 
                         <CustomerOverviewKpiCard
@@ -215,7 +234,9 @@ export default function CustomerPortalOverviewPage() {
                                     ? "Test-mode estimate"
                                     : "Awaiting billing data"
                             }
-                            icon={WalletCards}
+                            icon={
+                                WalletCards
+                            }
                         />
 
                         <CustomerOverviewKpiCard
@@ -226,7 +247,9 @@ export default function CustomerPortalOverviewPage() {
                                     : "Pending"
                             }
                             description="Smart Account billing capability"
-                            icon={ShieldCheck}
+                            icon={
+                                ShieldCheck
+                            }
                         />
 
                     </Grid>
@@ -258,7 +281,7 @@ export default function CustomerPortalOverviewPage() {
 
                     </Grid>
 
-                    {/* SUBSCRIPTIONS */}
+                    {/* SECONDARY */}
 
                     <Grid className="grid-cols-1 gap-4 lg:grid-cols-2">
 
@@ -294,8 +317,6 @@ export default function CustomerPortalOverviewPage() {
                     {/* ACTIONS */}
 
                     <CustomerQuickActions />
-
-                    {/* LIVE STATUS */}
 
                     {page.subscriptions.refreshing && (
                         <p className="text-xs text-muted-foreground">

@@ -1,12 +1,16 @@
 import {
-    Badge,
-} from "@/components/ui/badge";
-
-import {
     Activity,
 } from "lucide-react";
 
-export function CustomerTransactionsHeader() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function CustomerTransactionsHeader({
+    demo,
+}: {
+    demo: boolean;
+}) {
     return (
         <div>
 
@@ -19,6 +23,12 @@ export function CustomerTransactionsHeader() {
                 <Badge variant="secondary">
                     Smart Account
                 </Badge>
+
+                {demo && (
+                    <Badge variant="outline">
+                        Test mode
+                    </Badge>
+                )}
 
             </div>
 

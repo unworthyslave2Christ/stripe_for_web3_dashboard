@@ -1,7 +1,14 @@
+"use client";
+
+import {
+    useState,
+} from "react";
+
 import Link from "next/link";
 
 import {
     ArrowRight,
+    Check,
     CheckCircle2,
     Copy,
     ShieldCheck,
@@ -29,10 +36,34 @@ export function CustomerSmartAccountCard({
         | string
         | undefined;
 }) {
+    const [
+        copied,
+        setCopied,
+    ] = useState(false);
+
     const ready =
         Boolean(
             smartAccount,
         );
+
+    async function copyAddress() {
+        if (!smartAccount) {
+            return;
+        }
+
+        await navigator.clipboard.writeText(
+            smartAccount,
+        );
+
+        setCopied(true);
+
+        window.setTimeout(
+            () => {
+                setCopied(false);
+            },
+            1500,
+        );
+    }
 
     return (
         <Card>
@@ -77,7 +108,9 @@ export function CustomerSmartAccountCard({
                             </p>
 
                             <code className="mt-2 block break-all rounded-lg border bg-muted/20 p-3 font-mono text-xs leading-5">
-                                {smartAccount}
+                                {
+                                    smartAccount
+                                }
                             </code>
 
                         </div>
@@ -87,9 +120,21 @@ export function CustomerSmartAccountCard({
                             <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={
+                                    copyAddress
+                                }
                             >
-                                <Copy />
-                                Copy
+                                {copied ? (
+                                    <>
+                                        <Check />
+                                        Copied
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy />
+                                        Copy
+                                    </>
+                                )}
                             </Button>
 
                             <Button
