@@ -4,28 +4,35 @@ import {
 
 export function PlansLoadingState() {
     return (
-        <div className="space-y-3">
+        <div className="space-y-6">
 
-            {Array.from({
-                length: 5,
-            }).map((_, index) => (
-                <div
-                    key={index}
-                    className="flex items-center gap-4 rounded-xl border bg-card p-4"
-                >
+            <div className="space-y-3">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-9 w-64" />
+                <Skeleton className="h-4 w-[520px] max-w-full" />
+            </div>
 
-                    <Skeleton className="size-9 rounded-lg" />
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-                    <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-40" />
-                        <Skeleton className="h-3 w-24" />
+                {Array.from({
+                    length: 4,
+                }).map((_, index) => (
+                    <div
+                        key={index}
+                        className="rounded-xl border bg-card p-5"
+                    >
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="mt-4 h-8 w-20" />
+                        <Skeleton className="mt-4 h-3 w-32" />
                     </div>
+                ))}
 
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-5 w-16" />
+            </div>
 
-                </div>
-            ))}
+            <div className="rounded-xl border bg-card p-6">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="mt-6 h-48 w-full" />
+            </div>
 
         </div>
     );

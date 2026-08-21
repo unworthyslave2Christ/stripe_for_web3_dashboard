@@ -7,28 +7,30 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function PlansErrorState() {
+export function PlansErrorState({
+    error,
+    onRetry,
+}: {
+    error: Error;
+    onRetry: () => void;
+}) {
     return (
-        <div className="flex min-h-[360px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
 
-            <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10">
-                <AlertTriangle className="size-5 text-destructive" />
-            </div>
-
-            <h3 className="mt-4 text-base font-semibold">
+            <p className="text-sm font-medium">
                 Unable to load plans
-            </h3>
+            </p>
 
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                We couldn't retrieve the plans associated with this merchant.
+                {error.message}
             </p>
 
             <Button
-                variant="outline"
                 className="mt-5"
+                variant="outline"
+                onClick={onRetry}
             >
-                <RefreshCw />
-                Try again
+                Refresh
             </Button>
 
         </div>

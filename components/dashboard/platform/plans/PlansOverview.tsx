@@ -6,18 +6,34 @@ import {
 } from "lucide-react";
 
 import {
-    Grid,
-} from "@/components/layout/Grid";
-
-import {
     Section,
 } from "@/components/layout/Section";
+
+import {
+    Grid,
+} from "@/components/layout/Grid";
 
 import {
     PlanKpiCard,
 } from "./PlanKpiCard";
 
-export function PlansOverview() {
+interface PlansOverviewProps {
+    summary: {
+        total: number;
+
+        active: number;
+
+        paused: number;
+
+        archived: number;
+
+        monthlyRevenue: number;
+    };
+}
+
+export function PlansOverview({
+    summary,
+}: PlansOverviewProps) {
     return (
         <Section
             title="Overview"
@@ -27,28 +43,42 @@ export function PlansOverview() {
 
                 <PlanKpiCard
                     title="Total plans"
-                    value="8"
-                    description="All plans created"
+                    value={
+                        summary.total.toLocaleString()
+                    }
+                    description="All plans returned by the API"
                     icon={Layers3}
                 />
 
                 <PlanKpiCard
                     title="Active plans"
-                    value="6"
+                    value={
+                        summary.active.toLocaleString()
+                    }
                     description="Currently available"
                     icon={Users}
                 />
 
                 <PlanKpiCard
                     title="Plan revenue"
-                    value="$45,231"
+                    value={
+                        `$${summary.monthlyRevenue.toLocaleString(
+                            undefined,
+                            {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            },
+                        )}`
+                    }
                     description="Current monthly revenue"
                     icon={CircleDollarSign}
                 />
 
                 <PlanKpiCard
                     title="Archived plans"
-                    value="2"
+                    value={
+                        summary.archived.toLocaleString()
+                    }
                     description="No longer offered"
                     icon={Archive}
                 />

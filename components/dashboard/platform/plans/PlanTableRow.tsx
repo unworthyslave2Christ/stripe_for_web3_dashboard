@@ -20,15 +20,13 @@ import {
 
 import type {
     PlanRecord,
-} from "./plan.types";
-
-interface PlanTableRowProps {
-    plan: PlanRecord;
-}
+} from "@stripe-for-web3/core";
 
 export function PlanTableRow({
     plan,
-}: PlanTableRowProps) {
+}: {
+    plan: PlanRecord;
+}) {
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
 
@@ -40,14 +38,14 @@ export function PlanTableRow({
                 <PlanPricing plan={plan} />
             </td>
 
-            <td className="px-4 py-4">
-                {plan.activeSubscribers}
+            <td className="px-4 py-4 text-sm">
+                0
+                {/* {plan.activeSubscribers} */}
             </td>
 
-            <td className="px-4 py-4">
-                <span className="font-medium">
-                    {plan.monthlyRevenue}
-                </span>
+            <td className="px-4 py-4 text-sm">
+                {/* {plan.monthlyRevenue} */}
+                0
             </td>
 
             <td className="px-4 py-4">
@@ -57,19 +55,19 @@ export function PlanTableRow({
             </td>
 
             <td className="px-4 py-4 text-sm text-muted-foreground">
-                {plan.createdAt}
+                {plan.createdAt.toLocaleDateString()}
             </td>
 
             <td className="px-4 py-4 text-right">
-
                 <Button
                     variant="ghost"
                     size="icon"
                     className="size-8"
+                    disabled
+                    aria-label={`Actions for ${plan.name}`}
                 >
                     <MoreHorizontal />
                 </Button>
-
             </td>
 
         </tr>

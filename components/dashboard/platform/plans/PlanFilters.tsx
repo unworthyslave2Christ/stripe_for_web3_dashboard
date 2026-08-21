@@ -1,5 +1,3 @@
-"use client";
-
 import {
     SlidersHorizontal,
 } from "lucide-react";
@@ -16,61 +14,125 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function PlanFilters() {
+import type {
+    BillingInterval,
+    PlanStatus,
+} from "./plan.types";
+
+export function PlanFilters({
+    status,
+    interval,
+    onStatusChange,
+    onIntervalChange,
+}: {
+    status:
+        | "ALL"
+        | PlanStatus;
+
+    interval:
+        | "ALL"
+        | BillingInterval;
+
+    onStatusChange: (
+        value:
+            | "ALL"
+            | PlanStatus,
+    ) => void;
+
+    onIntervalChange: (
+        value:
+            | "ALL"
+            | BillingInterval,
+    ) => void;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
-            <Select defaultValue="all">
+            <Select
+                value={status}
+                onValueChange={(
+                    value,
+                ) =>
+                    onStatusChange(
+                        value as
+                            | "ALL"
+                            | PlanStatus,
+                    )
+                }
+            >
                 <SelectTrigger className="w-[140px]">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
 
                 <SelectContent>
-                    <SelectItem value="all">
+
+                    <SelectItem value="ALL">
                         All plans
                     </SelectItem>
 
-                    <SelectItem value="active">
+                    <SelectItem value="ACTIVE">
                         Active
                     </SelectItem>
 
-                    <SelectItem value="paused">
+                    <SelectItem value="PAUSED">
                         Paused
                     </SelectItem>
 
-                    <SelectItem value="archived">
+                    <SelectItem value="ARCHIVED">
                         Archived
                     </SelectItem>
+
                 </SelectContent>
+
             </Select>
 
-            <Select defaultValue="all">
+            <Select
+                value={interval}
+                onValueChange={(
+                    value,
+                ) =>
+                    onIntervalChange(
+                        value as
+                            | "ALL"
+                            | BillingInterval,
+                    )
+                }
+            >
+
                 <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Interval" />
                 </SelectTrigger>
 
                 <SelectContent>
-                    <SelectItem value="all">
+
+                    <SelectItem value="ALL">
                         All intervals
                     </SelectItem>
 
-                    <SelectItem value="month">
+                    <SelectItem value="MONTH">
                         Monthly
                     </SelectItem>
 
-                    <SelectItem value="year">
+                    <SelectItem value="YEAR">
                         Yearly
                     </SelectItem>
 
-                    <SelectItem value="week">
+                    <SelectItem value="WEEK">
                         Weekly
                     </SelectItem>
+
+                    <SelectItem value="DAY">
+                        Daily
+                    </SelectItem>
+
                 </SelectContent>
+
             </Select>
 
             <Button
                 variant="outline"
                 size="sm"
+                disabled
             >
                 <SlidersHorizontal />
                 More filters

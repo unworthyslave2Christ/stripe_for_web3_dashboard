@@ -16,6 +16,7 @@ const SOURCE_DIR = path.join(
     "dashboard",
     "platform",
     "plans",
+    "[planId]",
 );
 
 const ENTRY_FILE = path.join(
@@ -28,8 +29,8 @@ const OUTPUT_DIR = path.join(
     "app",
     "dashboard",
     "platform",
-    // "[customerId]",
-    "plans-flattened",
+    "[planId]",
+    "plan-detail-flattened",
 );
 
 const OUTPUT_FILE = path.join(

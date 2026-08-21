@@ -4,7 +4,6 @@ import type {
 
 import {
     Card,
-    CardContent,
 } from "@/components/ui/card";
 
 interface PlanKpiCardProps {

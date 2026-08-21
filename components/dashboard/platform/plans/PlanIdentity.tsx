@@ -6,15 +6,13 @@ import {
 
 import type {
     PlanRecord,
-} from "./plan.types";
-
-interface PlanIdentityProps {
-    plan: PlanRecord;
-}
+} from "@stripe-for-web3/core";
 
 export function PlanIdentity({
     plan,
-}: PlanIdentityProps) {
+}: {
+    plan: PlanRecord;
+}) {
     return (
         <div className="flex min-w-0 items-center gap-3">
 
@@ -25,7 +23,7 @@ export function PlanIdentity({
             <div className="min-w-0">
 
                 <Link
-                    href={`/dashboard/platform/plans/${plan.id}`}
+                    href={`/dashboard/platform/plans/${plan.planId}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {plan.name}

@@ -3,35 +3,41 @@ import {
 } from "@/components/ui/badge";
 
 import type {
-    PlanStatus,
-} from "./plan.types";
-
-interface PlanStatusBadgeProps {
-    status: PlanStatus;
-}
+    PlanRecord,
+} from "@stripe-for-web3/core";
 
 export function PlanStatusBadge({
     status,
-}: PlanStatusBadgeProps) {
-    if (status === "ACTIVE") {
-        return (
-            <Badge variant="secondary">
-                Active
-            </Badge>
-        );
-    }
+}: {
+    status: PlanRecord["status"];
+}) {
+    switch (status) {
+        case "ACTIVE":
+            return (
+                <Badge variant="secondary">
+                    Active
+                </Badge>
+            );
 
-    if (status === "PAUSED") {
-        return (
-            <Badge variant="outline">
-                Paused
-            </Badge>
-        );
-    }
+        case "PAUSED":
+            return (
+                <Badge variant="outline">
+                    Paused
+                </Badge>
+            );
 
-    return (
-        <Badge variant="destructive">
-            Archived
-        </Badge>
-    );
+        case "ARCHIVED":
+            return (
+                <Badge variant="destructive">
+                    Archived
+                </Badge>
+            );
+
+        default:
+            return (
+                <Badge variant="outline">
+                    {String(status)}
+                </Badge>
+            );
+    }
 }

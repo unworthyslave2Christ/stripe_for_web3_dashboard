@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Download,
     Plus,
@@ -10,13 +8,21 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function PlanActions() {
+export function PlanActions({
+    refreshing,
+    onRefresh,
+}: {
+    refreshing: boolean;
+
+    onRefresh: () => void;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
             <Button
                 variant="outline"
                 size="sm"
+                disabled
             >
                 <Download />
                 Export
@@ -25,12 +31,27 @@ export function PlanActions() {
             <Button
                 variant="outline"
                 size="sm"
+                onClick={onRefresh}
+                disabled={
+                    refreshing
+                }
             >
-                <RefreshCw />
-                Refresh
+                <RefreshCw
+                    className={
+                        refreshing
+                            ? "animate-spin"
+                            : undefined
+                    }
+                />
+                {refreshing
+                    ? "Refreshing"
+                    : "Refresh"}
             </Button>
 
-            <Button size="sm">
+            <Button
+                size="sm"
+                disabled
+            >
                 <Plus />
                 Create plan
             </Button>

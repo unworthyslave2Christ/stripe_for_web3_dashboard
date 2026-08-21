@@ -8,6 +8,10 @@ import {
     MoreHorizontal,
 } from "lucide-react";
 
+import type {
+    PlanRecord,
+} from "@stripe-for-web3/core";
+
 import {
     Badge,
 } from "@/components/ui/badge";
@@ -17,6 +21,10 @@ import {
 } from "@/components/ui/button";
 
 import {
+    Inline,
+} from "@/components/layout/Inline";
+
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -24,46 +32,67 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {
-    Inline,
-} from "@/components/layout/Inline";
+function PlanStatusBadge({
+    status,
+}: {
+    status: PlanRecord["status"];
+}) {
+    switch (status) {
+        case "ACTIVE":
+            return (
+                <Badge variant="secondary">
+                    Active
+                </Badge>
+            );
 
-import {
-    PlanStatusBadge,
-} from "../PlanStatusBadge";
+        case "PAUSED":
+            return (
+                <Badge variant="outline">
+                    Paused
+                </Badge>
+            );
 
-interface PlanDetailHeaderProps {
-    plan: {
-        id: string;
-        planId: number;
-        name: string;
-        description: string;
-        status: "ACTIVE" | "PAUSED" | "ARCHIVED";
-    };
+        case "ARCHIVED":
+            return (
+                <Badge variant="destructive">
+                    Archived
+                </Badge>
+            );
+
+        default:
+            return (
+                <Badge variant="outline">
+                    {String(status)}
+                </Badge>
+            );
+    }
 }
 
 export function PlanDetailHeader({
     plan,
-}: PlanDetailHeaderProps) {
+}: {
+    plan: PlanRecord;
+}) {
     return (
         <div className="space-y-5">
 
             <Button
                 render={
-                    <Link href="/dashboard/plans">
-                    <ArrowLeft />
-                    Plans
+                    <Link
+                        href="/dashboard/platform/plans"
+                    >
+                        <ArrowLeft />
+                        Plans
                     </Link>
                 }
                 variant="ghost"
                 size="sm"
                 className="-ml-2"
             />
-                
-         
+
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 
-                <div className="flex items-start gap-4">
+                <div className="flex min-w-0 items-start gap-4">
 
                     <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border bg-muted/40">
                         <Layers3 className="size-5 text-muted-foreground" />
@@ -84,9 +113,11 @@ export function PlanDetailHeader({
                             />
                         </Inline>
 
-                        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                            {plan.description}
-                        </p>
+                        {/* {plan.description && (
+                            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                                {plan.description}
+                            </p>
+                        )} */}
 
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                             <span>
@@ -98,7 +129,7 @@ export function PlanDetailHeader({
                             </span>
 
                             <span>
-                                {plan.id}
+                                {plan.planId}
                             </span>
                         </div>
 
@@ -108,9 +139,8 @@ export function PlanDetailHeader({
 
                 <DropdownMenu>
 
-                    <DropdownMenuTrigger 
-                        render=
-                        {
+                    <DropdownMenuTrigger
+                        render={
                             <Button
                                 variant="outline"
                             >
@@ -119,37 +149,47 @@ export function PlanDetailHeader({
                             </Button>
                         }
                     />
-                        
+
                     <DropdownMenuContent align="end">
 
                         <DropdownMenuItem>
                             Edit plan
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem>
-                            View subscribers
-                        </DropdownMenuItem>
+                        {plan.status ===
+                            "ACTIVE" && (
+                            <DropdownMenuItem>
+                                Pause plan
+                            </DropdownMenuItem>
+                        )}
 
-                        <DropdownMenuItem>
-                            View activity
-                        </DropdownMenuItem>
+                        {plan.status ===
+                            "PAUSED" && (
+                            <DropdownMenuItem>
+                                Resume plan
+                            </DropdownMenuItem>
+                        )}
 
                         <DropdownMenuSeparator />
 
                         <DropdownMenuItem>
-                            Pause plan
+                            View subscribers
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem className="text-destructive">
-                            Archive plan
-                        </DropdownMenuItem>
+                        {plan.status !==
+                            "ARCHIVED" && (
+                            <DropdownMenuItem
+                                variant="destructive"
+                            >
+                                Archive plan
+                            </DropdownMenuItem>
+                        )}
 
                     </DropdownMenuContent>
 
                 </DropdownMenu>
 
             </div>
-
         </div>
     );
 }

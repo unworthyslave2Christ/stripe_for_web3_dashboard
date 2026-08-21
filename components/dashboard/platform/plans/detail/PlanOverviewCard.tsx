@@ -1,13 +1,52 @@
-import type {
+import {
+    Calendar,
+    CircleDollarSign,
+    Coins,
     LucideIcon,
+    Store,
 } from "lucide-react";
+
+import type {
+    BillingPeriodNamed,
+    PlanRecord,
+} from "@stripe-for-web3/core";
 
 import {
     Card,
-    CardContent,
 } from "@/components/ui/card";
 
-export function PlanOverviewCard({
+import {
+    Grid,
+} from "@/components/layout/Grid";
+
+import {
+    Section,
+} from "@/components/layout/Section";
+
+import {
+    formatDate,
+} from "./planDetailFormatters";
+
+function formatInterval(
+    interval: PlanRecord["billingPeriodNamed"],
+) {
+    switch (interval as string) {
+        case "DAY":
+            return "day";
+
+        case "WEEK":
+            return "week";
+
+        case "YEAR":
+            return "year";
+
+        case "MONTH":
+        default:
+            return "month";
+    }
+}
+
+function PlanOverviewCard({
     title,
     value,
     description,
@@ -41,12 +80,56 @@ export function PlanOverviewCard({
 
             </div>
 
-            <CardContent className="p-0 pt-4">
-                <p className="text-xs text-muted-foreground">
-                    {description}
-                </p>
-            </CardContent>
+            <p className="mt-4 text-xs text-muted-foreground">
+                {description}
+            </p>
 
         </Card>
+    );
+}
+
+export function PlanOverview({
+    plan,
+}: {
+    plan: PlanRecord;
+}) {
+    return (
+        <Section
+            title="Overview"
+            description="Current configuration for this billing plan."
+        >
+            <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                <PlanOverviewCard
+                    title="Price"
+                    // value={`${plan.currency} ${plan.amount}`}
+                    value={`${plan.amount}`}
+                    description={`Per ${formatInterval(plan.billingPeriodNamed as BillingPeriodNamed)}`}
+                    icon={CircleDollarSign}
+                />
+
+                <PlanOverviewCard
+                    title="Payment token"
+                    value={plan.paymentToken}
+                    description="Configured billing asset"
+                    icon={Coins}
+                />
+
+                <PlanOverviewCard
+                    title="Merchant"
+                    value={String(plan.merchantId)}
+                    description="Owning merchant"
+                    icon={Store}
+                />
+
+                <PlanOverviewCard
+                    title="Created"
+                    value={formatDate(plan.createdAt)}
+                    description="Plan creation date"
+                    icon={Calendar}
+                />
+
+            </Grid>
+        </Section>
     );
 }
