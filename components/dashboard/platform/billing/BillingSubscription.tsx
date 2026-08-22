@@ -13,7 +13,7 @@ export function BillingSubscription({
         <div className="min-w-0">
 
             <Link
-                href={`/dashboard/subscriptions/${billing.subscriptionId}`}
+                href={`/dashboard/platform/subscriptions/${billing.subscriptionId}`}
                 className="block truncate text-sm font-medium hover:underline"
             >
                 {billing.planName}

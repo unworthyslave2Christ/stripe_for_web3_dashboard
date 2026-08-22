@@ -1,12 +1,8 @@
 "use client";
 
-import {
-    MoreHorizontal,
-} from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
-import {
-    Button,
-} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export function SubscriptionActions({
     subscriptionId,
@@ -19,6 +15,7 @@ export function SubscriptionActions({
             size="icon"
             className="size-8"
             aria-label={`Actions for subscription ${subscriptionId}`}
+            disabled
         >
             <MoreHorizontal />
         </Button>

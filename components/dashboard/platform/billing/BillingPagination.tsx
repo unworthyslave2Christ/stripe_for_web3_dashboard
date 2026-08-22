@@ -7,12 +7,18 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function BillingPagination() {
+export function BillingPagination({
+    available,
+}: {
+    available: boolean;
+}) {
     return (
         <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
 
             <p className="text-sm text-muted-foreground">
-                Showing 1–25 of 12,482 billing events
+                {available
+                    ? "Billing event pagination"
+                    : "Billing events are not available yet"}
             </p>
 
             <div className="flex items-center gap-1">
@@ -30,42 +36,16 @@ export function BillingPagination() {
                     variant="secondary"
                     size="sm"
                     className="size-8"
+                    disabled
                 >
                     1
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="size-8"
-                >
-                    2
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="size-8"
-                >
-                    3
-                </Button>
-
-                <span className="px-1 text-sm text-muted-foreground">
-                    …
-                </span>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="size-8"
-                >
-                    500
                 </Button>
 
                 <Button
                     variant="outline"
                     size="icon"
                     className="size-8"
+                    disabled
                 >
                     <ChevronRight />
                 </Button>

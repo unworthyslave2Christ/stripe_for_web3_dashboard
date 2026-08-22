@@ -1,39 +1,21 @@
-import {
-    SubscriptionActions,
-} from "./SubscriptionActions";
-
-import {
-    SubscriptionAmount,
-} from "./SubscriptionAmount";
-
-import {
-    SubscriptionCustomer,
-} from "./SubscriptionCustomer";
-
-import {
-    SubscriptionIdentity,
-} from "./SubscriptionIdentity";
-
-import {
-    SubscriptionPlan,
-} from "./SubscriptionPlan";
-
-import {
-    SubscriptionStatusBadge,
-} from "./SubscriptionStatusBadge";
-
 import type {
-    SubscriptionRecord,
-} from "./subscription.types";
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
+
+import { SubscriptionIdentity } from "./SubscriptionIdentity";
+import { SubscriptionCustomer } from "./SubscriptionCustomer";
+import { SubscriptionPlan } from "./SubscriptionPlan";
+import { SubscriptionAmount } from "./SubscriptionAmount";
+import { SubscriptionStatusBadge } from "./SubscriptionStatusBadge";
+import { SubscriptionActions } from "./SubscriptionActions";
 
 export function SubscriptionTableRow({
     subscription,
 }: {
-    subscription: SubscriptionRecord;
+    subscription: MerchantSubscriptionRecord;
 }) {
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
-
             <td className="px-4 py-4">
                 <SubscriptionIdentity
                     subscription={subscription}
@@ -64,16 +46,12 @@ export function SubscriptionTableRow({
                 />
             </td>
 
-            <td className="px-4 py-4">
-                <span className="text-sm">
-                    {subscription.nextBilling}
-                </span>
+            <td className="px-4 py-4 text-sm">
+                {subscription.nextBilling ?? "—"}
             </td>
 
-            <td className="px-4 py-4">
-                <span className="text-sm font-medium">
-                    {subscription.totalBilled}
-                </span>
+            <td className="px-4 py-4 text-sm font-medium">
+                {subscription.totalBilled}
             </td>
 
             <td className="px-4 py-4 text-right">
@@ -83,7 +61,6 @@ export function SubscriptionTableRow({
                     }
                 />
             </td>
-
         </tr>
     );
 }

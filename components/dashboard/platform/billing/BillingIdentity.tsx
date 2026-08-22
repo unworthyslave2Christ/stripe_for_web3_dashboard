@@ -17,15 +17,13 @@ export function BillingIdentity({
         <div className="flex min-w-0 items-center gap-3">
 
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
-
                 <ReceiptText className="size-4 text-muted-foreground" />
-
             </div>
 
             <div className="min-w-0">
 
                 <Link
-                    href={`/dashboard/billing/${billing.id}`}
+                    href={`/dashboard/platform/billing/${billing.id}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {billing.billingId}

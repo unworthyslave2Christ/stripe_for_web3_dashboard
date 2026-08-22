@@ -1,10 +1,10 @@
-import Link from "next/link";
-
 import {
     KeyRound,
 } from "lucide-react";
 
-import type {
+import Link from "next/link";
+
+import {
     ApiKeyRecord,
 } from "./developer.types";
 
@@ -17,9 +17,7 @@ export function ApiKeyIdentity({
         <div className="flex min-w-0 items-center gap-3">
 
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
-
                 <KeyRound className="size-4 text-muted-foreground" />
-
             </div>
 
             <div className="min-w-0">

@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     BillingStatus,
 } from "./billing.types";
 
-interface BillingStatusBadgeProps {
-    status: BillingStatus;
-}
-
 export function BillingStatusBadge({
     status,
-}: BillingStatusBadgeProps) {
+}: {
+    status: BillingStatus;
+}) {
     switch (status) {
         case "SUCCEEDED":
             return (
@@ -37,13 +37,6 @@ export function BillingStatusBadge({
             return (
                 <Badge variant="outline">
                     Refunded
-                </Badge>
-            );
-
-        default:
-            return (
-                <Badge variant="outline">
-                    Unknown
                 </Badge>
             );
     }

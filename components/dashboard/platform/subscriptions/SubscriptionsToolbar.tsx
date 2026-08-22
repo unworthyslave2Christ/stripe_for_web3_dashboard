@@ -1,37 +1,33 @@
-import {
-    Stack,
-} from "@/components/layout/Stack";
+"use client";
 
-import {
-    SubscriptionFilters,
-} from "./SubscriptionFilters";
+import { Stack } from "@/components/layout/Stack";
 
-import {
-    SubscriptionSearch,
-} from "./SubscriptionSearch";
+import { SubscriptionSearch } from "./SubscriptionSearch";
+import { SubscriptionFilters } from "./SubscriptionFilters";
+import { SubscriptionsActions } from "./SubscriptionsActions";
 
-import {
-    SubscriptionsActions,
-} from "./SubscriptionsActions";
+export function SubscriptionsToolbar({
+    refreshing,
+    onRefresh,
+}: {
+    refreshing: boolean;
 
-export function SubscriptionsToolbar() {
+    onRefresh: () => void;
+}) {
     return (
         <div className="rounded-xl border bg-card p-4">
-
             <Stack gap={4}>
-
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-
                     <SubscriptionSearch />
 
-                    <SubscriptionsActions />
-
+                    <SubscriptionsActions
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
                 </div>
 
                 <SubscriptionFilters />
-
             </Stack>
-
         </div>
     );
 }

@@ -1,3 +1,5 @@
+// SubscriptionOverview.tsx
+
 import {
     CalendarClock,
     CircleDollarSign,
@@ -17,25 +19,20 @@ import {
     SubscriptionOverviewCard,
 } from "./SubscriptionOverviewCard";
 
-interface SubscriptionOverviewProps {
-    subscription: {
-        amount: string;
-        currency: string;
-        interval: string;
-        nextBilling: string;
-        totalBilled: string;
-    };
-}
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionOverview({
     subscription,
-}: SubscriptionOverviewProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
     return (
         <Section
             title="Overview"
             description="A summary of this subscription."
         >
-
             <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
                 <SubscriptionOverviewCard
@@ -47,33 +44,39 @@ export function SubscriptionOverview({
 
                 <SubscriptionOverviewCard
                     title="Next billing"
-                    value={subscription.nextBilling}
+                    value={
+                        subscription.nextBilling ??
+                        "Not scheduled"
+                    }
                     description="Scheduled billing date"
                     icon={CalendarClock}
                 />
 
                 <SubscriptionOverviewCard
                     title="Total billed"
-                    value={subscription.totalBilled}
+                    value={
+                        subscription.totalBilled
+                    }
                     description="Lifetime subscription revenue"
                     icon={CreditCard}
                 />
 
                 <SubscriptionOverviewCard
                     title="Billing cycle"
-                    value={formatInterval(subscription.interval)}
+                    value={formatInterval(
+                        subscription.interval,
+                    )}
                     description="Current recurring interval"
                     icon={Repeat2}
                 />
 
             </Grid>
-
         </Section>
     );
 }
 
 function formatInterval(
-    interval: string,
+    interval: MerchantSubscriptionRecord["interval"],
 ) {
     switch (interval) {
         case "DAY":

@@ -1,5 +1,3 @@
-"use client";
-
 import {
     MoreHorizontal,
 } from "lucide-react";
@@ -10,8 +8,10 @@ import {
 
 export function BillingOperatorActions({
     operatorId,
+    disabled = false,
 }: {
     operatorId: string;
+    disabled?: boolean;
 }) {
     return (
         <Button
@@ -19,6 +19,7 @@ export function BillingOperatorActions({
             size="icon"
             className="size-8"
             aria-label={`Actions for ${operatorId}`}
+            disabled={disabled}
         >
             <MoreHorizontal />
         </Button>

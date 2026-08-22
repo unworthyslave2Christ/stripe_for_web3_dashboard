@@ -1,8 +1,8 @@
-import Link from "next/link";
-
 import {
     Webhook,
 } from "lucide-react";
+
+import Link from "next/link";
 
 import type {
     WebhookRecord,
@@ -25,7 +25,7 @@ export function WebhookIdentity({
             <div className="min-w-0">
 
                 <Link
-                    href={`/dashboard/webhooks/${webhook.id}`}
+                    href={`/dashboard/developers/webhooks/${webhook.id}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {webhook.name}

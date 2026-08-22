@@ -1,3 +1,9 @@
+"use client";
+
+import {
+    useParams,
+} from "next/navigation";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -19,10 +25,6 @@ import {
 } from "@/components/layout/Stack";
 
 import {
-    DashboardShell,
-} from "@/components/dashboard/DashboardShell";
-
-import {
     SubscriptionDetailBreadcrumb,
 } from "@/components/dashboard/platform/subscriptions/detail/SubscriptionDetailBreadcrumb";
 
@@ -35,81 +37,235 @@ import {
 } from "@/components/dashboard/platform/subscriptions/detail/SubscriptionOverview";
 
 import {
-    SubscriptionCustomerCard,
-} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionCustomerCard";
-
-import {
-    SubscriptionPlanCard,
-} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionPlanCard";
-
-import {
-    SubscriptionPermissionCard,
-} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionPermissionCard";
+    SubscriptionConfiguration,
+} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionConfiguration";
 
 import {
     SubscriptionBillingSummary,
 } from "@/components/dashboard/platform/subscriptions/detail/SubscriptionBillingSummary";
 
 import {
-    SubscriptionBillingHistory,
-} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionBillingHistory";
+    SubscriptionActivity,
+} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionActivity";
 
 import {
     SubscriptionLifecycle,
 } from "@/components/dashboard/platform/subscriptions/detail/SubscriptionLifecycle";
 
 import {
-    SubscriptionActivity,
-} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionActivity";
+    SubscriptionDetailLoadingState,
+    SubscriptionDetailNotFoundState,
+    SubscriptionDetailNotExposedState,
+    SubscriptionDetailErrorState,
+} from "@/components/dashboard/platform/subscriptions/detail/SubscriptionDetailStates";
 
-export default async function SubscriptionDetailPage({
-    params,
-}: {
-    params: Promise<{
-        subscriptionId: string;
-    }>;
-}) {
-    const { subscriptionId } = await params;
+import {
+    useMerchantSubscriptionPage,
+} from "@/hooks/pages/merchant/useMerchantSubscriptionPage";
 
-    /*
-     * PLACEHOLDER
-     *
-     * Replace with the real subscription lookup later.
-     */
-    const subscription = {
-        id: `sub_${subscriptionId}`,
-        subscriptionId: Number(subscriptionId),
+export default function SubscriptionDetailPage() {
+    ////////////////////////////////////////////////////////////
+    // ROUTE PARAMETER
+    ////////////////////////////////////////////////////////////
 
-        customerId: "cus_8F42A91",
-        customerName: "Alex Johnson",
+    const params =
+        useParams<{
+            subscriptionId: string;
+        }>();
 
-        customerWallet:
-            "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    const rawSubscriptionId =
+        params.subscriptionId;
 
-        smartAccount:
-            "0xf1cc103c9b156eE9c2C496f582075a3086eC2347",
+    const parsedSubscriptionId =
+        Number(
+            rawSubscriptionId,
+        );
 
-        planId: 90,
-        planName: "Pro",
+    const subscriptionId =
+        Number.isInteger(
+            parsedSubscriptionId,
+        )
+            ? parsedSubscriptionId
+            : null;
 
-        amount: "19",
-        currency: "USD",
-        interval: "MONTH" as const,
+    ////////////////////////////////////////////////////////////
+    // DATA
+    ////////////////////////////////////////////////////////////
 
-        status: "ACTIVE" as const,
+    const page =
+        useMerchantSubscriptionPage(
+            subscriptionId,
+        );
 
-        nextBilling: "Jun 12, 2025",
-        createdAt: "May 12, 2025",
+    ////////////////////////////////////////////////////////////
+    // INVALID / INITIAL WAIT
+    ////////////////////////////////////////////////////////////
 
-        totalBilled: "$76.00",
+    if (
+        page.status ===
+            "waiting" ||
+        page.status ===
+            "loading"
+    ) {
+        return (
+            <Page>
 
-        successfulPayments: 4,
-        failedPayments: 0,
+                <Container className="py-8 lg:py-10">
 
-        permissionId: "perm_8F42A91",
-    };
+                    <SubscriptionDetailLoadingState />
 
-    return (
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // ERROR
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.status ===
+        "error"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <SubscriptionDetailErrorState
+                        error={
+                            page.error ??
+                            new Error(
+                                "Unable to load subscription.",
+                            )
+                        }
+                        onRetry={
+                            page.refresh
+                        }
+                    />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // SUBSCRIPTION RESOURCE IS NOT EXPOSED YET
+    //
+    // Current SDK boundary:
+    //
+    // MerchantClient currently exposes the merchant/plans
+    // resources used elsewhere in the dashboard, but the
+    // subscription-detail lookup is not yet exposed.
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.status ===
+        "not-exposed"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <Stack gap={8}>
+
+                        <SubscriptionDetailBreadcrumb
+                            subscriptionId={
+                                subscriptionId!
+                            }
+                        />
+
+                        <SubscriptionDetailNotExposedState
+                            subscriptionId={
+                                subscriptionId!
+                            }
+                        />
+
+                    </Stack>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // NOT FOUND
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.status ===
+            "not-found" ||
+        !subscriptionId
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <SubscriptionDetailNotFoundState
+                        subscriptionId={
+                            subscriptionId!
+                        }
+                    />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // FUTURE READY RESOURCE BRANCH
+    //
+    // Once useMerchantSubscriptionPage() returns:
+    //
+    // {
+    //     status: "ready",
+    //     data: SubscriptionRecord
+    // }
+    //
+    // the rest of this page becomes active without changing
+    // the route structure or surrounding architecture.
+    ////////////////////////////////////////////////////////////
+
+    if (
+        page.status ===
+        "ready"
+    ) {
+        const subscription =
+            page.data;
+
+        ////////////////////////////////////////////////////////
+        // DEFENSIVE GUARD
+        ////////////////////////////////////////////////////////
+
+        if (!subscription) {
+            return (
+                <Page>
+
+                    <Container className="py-8 lg:py-10">
+
+                        <SubscriptionDetailNotFoundState
+                            subscriptionId={
+                                subscriptionId
+                            }
+                        />
+
+                    </Container>
+
+                </Page>
+            );
+        }
+
+        ////////////////////////////////////////////////////////
+        // REAL DETAIL PAGE
+        ////////////////////////////////////////////////////////
+
+        return (
             <Page>
 
                 <Container className="py-8 lg:py-10">
@@ -137,34 +293,11 @@ export default async function SubscriptionDetailPage({
                         />
 
                         <Section
-                            title="Customer & plan"
-                            description="The customer and billing plan associated with this subscription."
+                            title="Configuration"
+                            description="The canonical plan, billing, customer, and Smart Account configuration for this subscription."
                         >
 
-                            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-
-                                <SubscriptionCustomerCard
-                                    subscription={
-                                        subscription
-                                    }
-                                />
-
-                                <SubscriptionPlanCard
-                                    subscription={
-                                        subscription
-                                    }
-                                />
-
-                            </div>
-
-                        </Section>
-
-                        <Section
-                            title="Smart account"
-                            description="Account Abstraction and delegated billing authorization for this subscription."
-                        >
-
-                            <SubscriptionPermissionCard
+                            <SubscriptionConfiguration
                                 subscription={
                                     subscription
                                 }
@@ -174,26 +307,33 @@ export default async function SubscriptionDetailPage({
 
                         <Section
                             title="Billing"
-                            description="Payment performance and billing history for this subscription."
+                            description="Recurring billing state and payment history for this subscription."
                         >
 
-                            <Stack gap={4}>
+                            <SubscriptionBillingSummary
+                                subscription={
+                                    subscription
+                                }
+                            />
 
-                                <SubscriptionBillingSummary
-                                    subscription={
-                                        subscription
-                                    }
-                                />
+                        </Section>
 
-                                <SubscriptionBillingHistory />
+                        <Section
+                            title="Activity"
+                            description="Recent events involving this subscription."
+                        >
 
-                            </Stack>
+                            <SubscriptionActivity
+                                // subscription={
+                                //     subscription
+                                // }
+                            />
 
                         </Section>
 
                         <Section
                             title="Lifecycle"
-                            description="The current state and available subscription lifecycle transitions."
+                            description="Current subscription state and lifecycle information."
                         >
 
                             <SubscriptionLifecycle
@@ -204,19 +344,36 @@ export default async function SubscriptionDetailPage({
 
                         </Section>
 
-                        <Section
-                            title="Activity"
-                            description="Recent events associated with this subscription."
-                        >
-
-                            <SubscriptionActivity />
-
-                        </Section>
+                        {page.refreshing && (
+                            <p className="text-xs text-muted-foreground">
+                                Refreshing subscription data...
+                            </p>
+                        )}
 
                     </Stack>
 
                 </Container>
 
             </Page>
+        );
+    }
+
+    ////////////////////////////////////////////////////////////
+    // EXHAUSTIVE FALLBACK
+    //
+    // Keeps the page safe if another status is introduced into
+    // the hook before this component is updated.
+    ////////////////////////////////////////////////////////////
+
+    return (
+        <Page>
+
+            <Container className="py-8 lg:py-10">
+
+                <SubscriptionDetailLoadingState />
+
+            </Container>
+
+        </Page>
     );
 }

@@ -7,12 +7,18 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function BillingOperatorsPagination() {
+export function BillingOperatorsPagination({
+    available,
+}: {
+    available: boolean;
+}) {
     return (
         <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
 
             <p className="text-sm text-muted-foreground">
-                Showing 1–5 of 5 operators
+                {available
+                    ? "Operator pagination"
+                    : "Billing operators are not available yet"}
             </p>
 
             <div className="flex items-center gap-1">
@@ -30,6 +36,7 @@ export function BillingOperatorsPagination() {
                     variant="secondary"
                     size="sm"
                     className="size-8"
+                    disabled
                 >
                     1
                 </Button>

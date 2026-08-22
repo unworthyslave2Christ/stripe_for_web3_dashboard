@@ -4,7 +4,19 @@ import {
 
 import type {
     PermissionScope as PermissionScopeType,
-} from "./permission.types";
+} from "@/types/merchant/permission.types";
+
+function formatScope(
+    scope: PermissionScopeType,
+) {
+    return scope
+        .toLowerCase()
+        .replace(
+            /^./,
+            (character) =>
+                character.toUpperCase(),
+        );
+}
 
 export function PermissionScope({
     scopes,
@@ -37,16 +49,4 @@ export function PermissionScope({
 
         </div>
     );
-}
-
-function formatScope(
-    scope: PermissionScopeType,
-) {
-    return scope
-        .toLowerCase()
-        .replace(
-            /^./,
-            (character) =>
-                character.toUpperCase(),
-        );
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Search,
 } from "lucide-react";
@@ -8,7 +6,11 @@ import {
     Input,
 } from "@/components/ui/input";
 
-export function BillingSearch() {
+export function BillingSearch({
+    disabled = false,
+}: {
+    disabled?: boolean;
+}) {
     return (
         <div className="relative w-full sm:w-80">
 
@@ -17,6 +19,7 @@ export function BillingSearch() {
             <Input
                 placeholder="Search billing events..."
                 className="pl-9"
+                disabled={disabled}
             />
 
         </div>

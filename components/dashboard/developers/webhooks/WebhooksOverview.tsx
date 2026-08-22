@@ -17,7 +17,20 @@ import {
     WebhookKpiCard,
 } from "./WebhookKpiCard";
 
-export function WebhooksOverview() {
+export function WebhooksOverview({
+    total,
+    active,
+    successRate,
+    failing,
+}: {
+    total: number;
+
+    active: number;
+
+    successRate: number;
+
+    failing: number;
+}) {
     return (
         <Section
             title="Overview"
@@ -27,33 +40,35 @@ export function WebhooksOverview() {
 
                 <WebhookKpiCard
                     title="Total endpoints"
-                    value="4"
+                    value={String(total)}
                     description="Configured endpoints"
                     icon={Webhook}
                 />
 
                 <WebhookKpiCard
                     title="Active endpoints"
-                    value="3"
+                    value={String(active)}
                     description="Currently receiving events"
                     icon={Radio}
                 />
 
                 <WebhookKpiCard
                     title="Successful deliveries"
-                    value="99.2%"
-                    description="Last 30 days"
-                    trend="+0.6%"
+                    value={`${successRate}%`}
+                    description="Available delivery history"
+                    trend={
+                        total > 0
+                            ? "Healthy"
+                            : undefined
+                    }
                     trendPositive
                     icon={CheckCircle2}
                 />
 
                 <WebhookKpiCard
-                    title="Failed deliveries"
-                    value="0.8%"
-                    description="Last 30 days"
-                    trend="-0.3%"
-                    trendPositive
+                    title="Failing endpoints"
+                    value={String(failing)}
+                    description="Endpoints requiring attention"
                     icon={XCircle}
                 />
 

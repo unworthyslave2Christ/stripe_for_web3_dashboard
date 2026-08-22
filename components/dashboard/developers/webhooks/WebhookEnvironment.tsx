@@ -11,15 +11,11 @@ export function WebhookEnvironment({
 }: {
     environment: WebhookEnvironmentType;
 }) {
-    if (environment === "LIVE") {
-        return (
-            <Badge variant="outline">
-                Live
-            </Badge>
-        );
-    }
-
-    return (
+    return environment === "LIVE" ? (
+        <Badge variant="outline">
+            Live
+        </Badge>
+    ) : (
         <Badge variant="secondary">
             Test
         </Badge>

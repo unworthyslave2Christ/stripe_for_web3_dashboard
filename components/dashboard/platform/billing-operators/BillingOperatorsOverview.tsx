@@ -17,7 +17,16 @@ import {
     BillingOperatorKpiCard,
 } from "./BillingOperatorKpiCard";
 
-export function BillingOperatorsOverview() {
+export function BillingOperatorsOverview({
+    available,
+}: {
+    available: boolean;
+}) {
+    const value =
+        available
+            ? "—"
+            : "—";
+
     return (
         <Section
             title="Overview"
@@ -27,29 +36,45 @@ export function BillingOperatorsOverview() {
 
                 <BillingOperatorKpiCard
                     title="Total operators"
-                    value="5"
-                    description="Configured operators"
+                    value={value}
+                    description={
+                        available
+                            ? "Operator count"
+                            : "Awaiting operator API"
+                    }
                     icon={Users}
                 />
 
                 <BillingOperatorKpiCard
                     title="Active operators"
-                    value="4"
-                    description="Currently authorized"
+                    value={value}
+                    description={
+                        available
+                            ? "Currently authorized"
+                            : "Awaiting operator API"
+                    }
                     icon={ShieldCheck}
                 />
 
                 <BillingOperatorKpiCard
                     title="Pending"
-                    value="1"
-                    description="Awaiting activation"
+                    value={value}
+                    description={
+                        available
+                            ? "Awaiting activation"
+                            : "Awaiting operator API"
+                    }
                     icon={Clock3}
                 />
 
                 <BillingOperatorKpiCard
                     title="Needs attention"
-                    value="1"
-                    description="Expired or expiring"
+                    value={value}
+                    description={
+                        available
+                            ? "Expired or expiring"
+                            : "Awaiting operator API"
+                    }
                     icon={AlertTriangle}
                 />
 

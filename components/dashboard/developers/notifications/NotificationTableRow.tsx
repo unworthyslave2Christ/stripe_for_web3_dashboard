@@ -1,30 +1,30 @@
 import {
-    NotificationActions,
-} from "./NotificationActions";
+    NotificationIdentity,
+} from "./NotificationIdentity";
 
 import {
     NotificationChannel,
 } from "./NotificationChannel";
 
 import {
-    NotificationDelivery,
-} from "./NotificationDelivery";
-
-import {
-    NotificationIdentity,
-} from "./NotificationIdentity";
-
-import {
-    NotificationLastSent,
-} from "./NotificationLastSent";
+    NotificationTrigger,
+} from "./NotificationTrigger";
 
 import {
     NotificationStatusBadge,
 } from "./NotificationStatusBadge";
 
 import {
-    NotificationTrigger,
-} from "./NotificationTrigger";
+    NotificationDelivery,
+} from "./NotificationDelivery";
+
+import {
+    NotificationLastSent,
+} from "./NotificationLastSent";
+
+import {
+    NotificationActions,
+} from "./NotificationActions";
 
 import type {
     NotificationRecord,
@@ -37,10 +37,11 @@ export function NotificationTableRow({
 }) {
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
-
             <td className="px-4 py-4">
                 <NotificationIdentity
-                    notification={notification}
+                    notification={
+                        notification
+                    }
                 />
             </td>
 
@@ -91,7 +92,6 @@ export function NotificationTableRow({
                     }
                 />
             </td>
-
         </tr>
     );
 }

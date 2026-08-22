@@ -1,16 +1,16 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 
 import type {
-    SubscriptionStatus,
-} from "./subscription.types";
-
-interface SubscriptionStatusBadgeProps {
-    status: SubscriptionStatus;
-}
+    MerchantSubscriptionStatus,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionStatusBadge({
     status,
-}: SubscriptionStatusBadgeProps) {
+}: {
+    status: MerchantSubscriptionStatus;
+}) {
     switch (status) {
         case "ACTIVE":
             return (

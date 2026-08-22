@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Download,
     Plus,
@@ -10,13 +8,18 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function BillingOperatorsActions() {
+export function BillingOperatorsActions({
+    ready,
+}: {
+    ready: boolean;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
             <Button
                 variant="outline"
                 size="sm"
+                disabled={!ready}
             >
                 <Download />
                 Export
@@ -25,12 +28,16 @@ export function BillingOperatorsActions() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled={!ready}
             >
                 <RefreshCw />
                 Refresh
             </Button>
 
-            <Button size="sm">
+            <Button
+                size="sm"
+                disabled={!ready}
+            >
                 <Plus />
                 Add operator
             </Button>

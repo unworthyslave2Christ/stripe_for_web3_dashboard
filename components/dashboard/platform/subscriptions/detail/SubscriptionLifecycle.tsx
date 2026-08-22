@@ -1,3 +1,5 @@
+"use client";
+
 import {
     CheckCircle2,
     CirclePause,
@@ -16,13 +18,13 @@ import {
 } from "@/components/ui/card";
 
 import type {
-    SubscriptionStatus,
-} from "../subscription.types";
+    MerchantSubscriptionStatus,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionLifecycle({
     status,
 }: {
-    status: SubscriptionStatus;
+    status: MerchantSubscriptionStatus;
 }) {
     return (
         <Card>
@@ -48,7 +50,7 @@ export function SubscriptionLifecycle({
 
                     <LifecycleState
                         label="Paused"
-                        description="Billing temporarily stopped."
+                        description="Billing is temporarily stopped."
                         active={
                             status === "PAUSED"
                         }
@@ -92,7 +94,6 @@ function LifecycleState({
                     : "bg-muted/20",
             ].join(" ")}
         >
-
             <div className="flex items-center justify-between">
 
                 <Icon
@@ -118,7 +119,6 @@ function LifecycleState({
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 {description}
             </p>
-
         </div>
     );
 }

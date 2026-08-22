@@ -13,19 +13,21 @@ import type {
     BillingOperatorRecord,
 } from "./billing-operator.types";
 
-interface BillingOperatorIdentityProps {
-    operator: BillingOperatorRecord;
-}
-
 export function BillingOperatorIdentity({
     operator,
-}: BillingOperatorIdentityProps) {
-    const initials = operator.name
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase();
+}: {
+    operator: BillingOperatorRecord;
+}) {
+    const initials =
+        operator.name
+            .split(" ")
+            .map(
+                (part) =>
+                    part[0],
+            )
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
 
     return (
         <div className="flex items-center gap-3">
@@ -39,7 +41,7 @@ export function BillingOperatorIdentity({
             <div className="min-w-0">
 
                 <Link
-                    href={`/dashboard/billing-operators/${operator.id}`}
+                    href={`/dashboard/platform/billing-operators/${operator.id}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {operator.name}
@@ -47,7 +49,7 @@ export function BillingOperatorIdentity({
 
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
 
-                    <ShieldCheck className="size-3" />
+                    <ShieldCheck className="size-3 shrink-0" />
 
                     <span className="truncate">
                         {operator.operatorId}

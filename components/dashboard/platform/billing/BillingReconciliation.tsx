@@ -19,7 +19,11 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function BillingReconciliation() {
+export function BillingReconciliation({
+    available,
+}: {
+    available: boolean;
+}) {
     return (
         <Card>
 
@@ -36,22 +40,26 @@ export function BillingReconciliation() {
                     <ReconciliationItem
                         icon={CheckCircle2}
                         title="On-chain settlements"
-                        value="12,421"
-                        status="Healthy"
+                        value={available ? "—" : "—"}
+                        status={
+                            available
+                                ? "Healthy"
+                                : "Unavailable"
+                        }
                     />
 
                     <ReconciliationItem
                         icon={Clock3}
                         title="Pending reconciliation"
-                        value="17"
-                        status="Pending"
+                        value="—"
+                        status="Unavailable"
                     />
 
                     <ReconciliationItem
                         icon={AlertTriangle}
                         title="Exceptions"
-                        value="3"
-                        status="Review"
+                        value="—"
+                        status="Unavailable"
                     />
 
                 </div>
@@ -61,16 +69,21 @@ export function BillingReconciliation() {
                     <div>
 
                         <p className="text-sm font-medium">
-                            Last reconciliation
+                            Reconciliation service
                         </p>
 
                         <p className="mt-1 text-xs text-muted-foreground">
-                            Completed 7 minutes ago.
+                            Reconciliation operations are not yet
+                            exposed through the merchant SDK.
                         </p>
 
                     </div>
 
-                    <Button variant="outline" size="sm">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        disabled
+                    >
                         Review reconciliation
                     </Button>
 

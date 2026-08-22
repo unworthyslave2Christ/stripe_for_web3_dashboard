@@ -1,29 +1,24 @@
 import Link from "next/link";
-
-import {
-    CreditCard,
-} from "lucide-react";
+import { CreditCard } from "lucide-react";
 
 import type {
-    SubscriptionRecord,
-} from "./subscription.types";
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
-interface SubscriptionIdentityProps {
-    subscription: SubscriptionRecord;
-}
+import { cn } from "@/lib/utils";
 
 export function SubscriptionIdentity({
     subscription,
-}: SubscriptionIdentityProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
     return (
         <div className="flex min-w-0 items-center gap-3">
-
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
                 <CreditCard className="size-4 text-muted-foreground" />
             </div>
 
             <div className="min-w-0">
-
                 <Link
                     href={`/dashboard/platform/subscriptions/${subscription.id}`}
                     className="block truncate text-sm font-medium hover:underline"
@@ -34,9 +29,7 @@ export function SubscriptionIdentity({
                 <p className="truncate text-xs text-muted-foreground">
                     {subscription.id}
                 </p>
-
             </div>
-
         </div>
     );
 }

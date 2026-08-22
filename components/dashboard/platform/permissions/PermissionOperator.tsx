@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type {
     PermissionRecord,
-} from "./permission.types";
+} from "@/types/merchant/permission.types";
 
 export function PermissionOperator({
     permission,
@@ -13,7 +13,7 @@ export function PermissionOperator({
         <div className="min-w-0">
 
             <Link
-                href={`/dashboard/billing-operators/${permission.operatorId}`}
+                href={`/dashboard/platform/billing-operators/${permission.operatorId}`}
                 className="block truncate text-sm font-medium hover:underline"
             >
                 {permission.operatorName}

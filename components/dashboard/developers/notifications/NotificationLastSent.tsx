@@ -5,17 +5,17 @@ import {
 export function NotificationLastSent({
     value,
 }: {
-    value: string | null;
+    value: Date | null;
 }) {
     return (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-
             <CalendarClock className="size-3.5" />
 
             <span>
-                {value || "Never"}
+                {value
+                    ? value.toLocaleString()
+                    : "Never"}
             </span>
-
         </div>
     );
 }

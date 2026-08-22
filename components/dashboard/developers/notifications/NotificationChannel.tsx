@@ -11,15 +11,18 @@ export function NotificationChannel({
 }: {
     channel: NotificationChannelType;
 }) {
-    const label = {
+    const label: Record<
+        NotificationChannelType,
+        string
+    > = {
         EMAIL: "Email",
         WEBHOOK: "Webhook",
         IN_APP: "In-app",
-    }[channel];
+    };
 
     return (
         <Badge variant="outline">
-            {label}
+            {label[channel]}
         </Badge>
     );
 }

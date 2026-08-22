@@ -18,6 +18,11 @@ export type WebhookEvent =
     | "billing.failed"
     | "refund.created";
 
+export type WebhookDeliveryStatus =
+    | "SUCCEEDED"
+    | "FAILED"
+    | "PENDING";
+
 export interface WebhookRecord {
     id: string;
 
@@ -38,9 +43,7 @@ export interface WebhookRecord {
     lastDeliveryAt: string | null;
 
     lastDeliveryStatus:
-        | "SUCCEEDED"
-        | "FAILED"
-        | "PENDING"
+        | WebhookDeliveryStatus
         | null;
 
     successfulDeliveries: number;

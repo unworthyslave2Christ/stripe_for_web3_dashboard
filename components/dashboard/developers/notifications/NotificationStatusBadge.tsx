@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     NotificationStatus,
 } from "./notification.types";
 
-interface NotificationStatusBadgeProps {
-    status: NotificationStatus;
-}
-
 export function NotificationStatusBadge({
     status,
-}: NotificationStatusBadgeProps) {
+}: {
+    status: NotificationStatus;
+}) {
     switch (status) {
         case "ACTIVE":
             return (

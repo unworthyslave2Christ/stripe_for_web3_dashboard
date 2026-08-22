@@ -1,3 +1,17 @@
+"use client";
+
+import {
+    Inline,
+} from "@/components/layout/Inline";
+
+import {
+    PageHeader,
+} from "@/components/layout/PageHeader";
+
+import {
+    Button,
+} from "@/components/ui/button";
+
 import {
     Container,
 } from "@/components/layout/Container";
@@ -7,16 +21,8 @@ import {
 } from "@/components/layout/Divider";
 
 import {
-    Inline,
-} from "@/components/layout/Inline";
-
-import {
     Page,
 } from "@/components/layout/Page";
-
-import {
-    PageHeader,
-} from "@/components/layout/PageHeader";
 
 import {
     Section,
@@ -27,16 +33,8 @@ import {
 } from "@/components/layout/Stack";
 
 import {
-    Button,
-} from "@/components/ui/button";
-
-import {
     SubscriptionsOverview,
 } from "@/components/dashboard/platform/subscriptions/SubscriptionsOverview";
-
-import {
-    SubscriptionsPagination,
-} from "@/components/dashboard/platform/subscriptions/SubscriptionsPagination";
 
 import {
     SubscriptionsTable,
@@ -46,58 +44,163 @@ import {
     SubscriptionsToolbar,
 } from "@/components/dashboard/platform/subscriptions/SubscriptionsToolbar";
 
+import {
+    SubscriptionsPagination,
+} from "@/components/dashboard/platform/subscriptions/SubscriptionsPagination";
+
+import {
+    SubscriptionCollectionUnavailable,
+} from "@/components/dashboard/platform/subscriptions/SubscriptionCollectionUnavailable";
+
+import {
+    useMerchantSubscriptionsPage,
+} from "@/hooks/pages/merchant/useMerchantSubscriptionsPage";
+
 export default function SubscriptionsPage() {
+    const page =
+        useMerchantSubscriptionsPage();
+
+    const subscriptions =
+        page.subscriptions;
+
     return (
         <Page>
-
             <Container className="py-8 lg:py-10">
-
                 <Stack gap={8}>
-
                     <PageHeader
                         eyebrow="Subscriptions"
                         title="Subscriptions"
-                        description="Monitor and manage the customer subscriptions created against your merchant plans."
+                        description="Monitor recurring subscriptions created against your merchant plans."
                         actions={
                             <Inline gap={2}>
-
-                                <Button variant="outline">
+                                <Button
+                                    variant="outline"
+                                    disabled
+                                >
                                     Export
                                 </Button>
 
-                                <Button>
+                                <Button
+                                    render={
+                                        <a href="/dashboard/platform/plans">
+                                            View plans
+                                        </a>
+                                    }
+                                >
                                     View plans
                                 </Button>
-
                             </Inline>
                         }
                     />
 
                     <Divider />
 
-                    <SubscriptionsOverview />
+                    {page.status === "disconnected" && (
+                        <SubscriptionCollectionUnavailable
+                            merchantId={
+                                page.merchantId
+                            }
+                            refreshing={
+                                page.refreshing
+                            }
+                            onRefresh={
+                                page.refresh
+                            }
+                        />
+                    )}
 
-                    <Section
-                        title="Subscription management"
-                        description="Search, filter, and inspect subscriptions across your merchant account."
-                    >
+                    {page.status === "waiting" && (
+                        <SubscriptionCollectionUnavailable
+                            merchantId={
+                                page.merchantId
+                            }
+                            refreshing={
+                                page.refreshing
+                            }
+                            onRefresh={
+                                page.refresh
+                            }
+                        />
+                    )}
 
-                        <Stack gap={4}>
+                    {page.status === "merchant-loading" && (
+                        <SubscriptionCollectionUnavailable
+                            merchantId={
+                                page.merchantId
+                            }
+                            refreshing
+                            onRefresh={
+                                page.refresh
+                            }
+                        />
+                    )}
 
-                            <SubscriptionsToolbar />
+                    {page.status === "error" && (
+                        <SubscriptionCollectionUnavailable
+                            merchantId={
+                                page.merchantId
+                            }
+                            refreshing={
+                                page.refreshing
+                            }
+                            onRefresh={
+                                page.refresh
+                            }
+                        />
+                    )}
 
-                            <SubscriptionsTable />
+                    {page.status === "unsupported" && (
+                        <>
+                            <SubscriptionsOverview
+                                subscriptions={
+                                    subscriptions
+                                }
+                            />
 
-                            <SubscriptionsPagination />
+                            <Section
+                                title="Subscription management"
+                                description="Search, filter, and inspect subscriptions across your merchant account."
+                            >
+                                <Stack gap={4}>
+                                    <SubscriptionsToolbar
+                                        refreshing={
+                                            page.refreshing
+                                        }
+                                        onRefresh={
+                                            page.refresh
+                                        }
+                                    />
 
-                        </Stack>
+                                    <SubscriptionsTable
+                                        subscriptions={
+                                            subscriptions
+                                        }
+                                    />
 
-                    </Section>
+                                    <SubscriptionsPagination
+                                        hasData={
+                                            subscriptions.length >
+                                            0
+                                        }
+                                    />
+                                </Stack>
+                            </Section>
 
+                            <SubscriptionCollectionUnavailable
+                                merchantId={
+                                    page.merchantId
+                                }
+                                refreshing={
+                                    page.refreshing
+                                }
+                                onRefresh={
+                                    page.refresh
+                                }
+                            />
+                        </>
+                    )}
                 </Stack>
-
             </Container>
-
         </Page>
     );
 }

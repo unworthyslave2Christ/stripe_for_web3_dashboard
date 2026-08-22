@@ -1,10 +1,12 @@
-import Link from "next/link";
+"use client";
 
 import {
     CalendarClock,
     ExternalLink,
     Layers3,
 } from "lucide-react";
+
+import Link from "next/link";
 
 import {
     Button,
@@ -17,34 +19,33 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface SubscriptionPlanCardProps {
-    subscription: {
-        planId: number;
-        planName: string;
-        amount: string;
-        currency: string;
-        interval: string;
-    };
-}
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionPlanCard({
     subscription,
-}: SubscriptionPlanCardProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
     return (
         <Card>
 
             <CardHeader>
+
                 <CardTitle className="flex items-center gap-2">
                     <Layers3 className="size-4" />
                     Plan
                 </CardTitle>
+
             </CardHeader>
 
             <CardContent className="space-y-5">
 
                 <div>
+
                     <Link
-                        href={`/dashboard/plans/${subscription.planId}`}
+                        href={`/dashboard/platform/plans/${subscription.planId}`}
                         className="text-lg font-semibold hover:underline"
                     >
                         {subscription.planName}
@@ -53,6 +54,7 @@ export function SubscriptionPlanCard({
                     <p className="mt-1 text-xs text-muted-foreground">
                         Plan #{subscription.planId}
                     </p>
+
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -90,7 +92,7 @@ export function SubscriptionPlanCard({
                 <Button
                     render={
                         <Link
-                            href={`/dashboard/plans/${subscription.planId}`}
+                            href={`/dashboard/platform/plans/${subscription.planId}`}
                         >
                             View plan
                             <ExternalLink />
@@ -98,9 +100,7 @@ export function SubscriptionPlanCard({
                     }
                     variant="outline"
                     className="w-full"
-                >
-                   
-                </Button>
+                />
 
             </CardContent>
 
@@ -109,7 +109,7 @@ export function SubscriptionPlanCard({
 }
 
 function formatInterval(
-    interval: string,
+    interval: MerchantSubscriptionRecord["interval"],
 ) {
     switch (interval) {
         case "DAY":

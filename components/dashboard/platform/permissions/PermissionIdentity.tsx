@@ -6,7 +6,7 @@ import {
 
 import type {
     PermissionRecord,
-} from "./permission.types";
+} from "@/types/merchant/permission.types";
 
 export function PermissionIdentity({
     permission,
@@ -23,7 +23,7 @@ export function PermissionIdentity({
             <div className="min-w-0">
 
                 <Link
-                    href={`/dashboard/permissions/${permission.id}`}
+                    href={`/dashboard/platform/permissions/${permission.id}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {permission.name}

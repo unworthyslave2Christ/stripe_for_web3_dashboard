@@ -1,6 +1,7 @@
 "use client";
 
 import {
+    useMemo,
     useState,
 } from "react";
 
@@ -15,10 +16,6 @@ import {
 import {
     Divider,
 } from "@/components/layout/Divider";
-
-import {
-    Grid,
-} from "@/components/layout/Grid";
 
 import {
     Inline,
@@ -68,11 +65,112 @@ import {
     CreateWebhookDialog,
 } from "@/components/dashboard/developers/webhooks/CreateWebhookDialog";
 
+import {
+    useWebhooksPage,
+} from "@/hooks/pages/developer/useWebhooksPage";
+
 export default function WebhooksPage() {
+    const page =
+        useWebhooksPage();
+
     const [
         createDialogOpen,
         setCreateDialogOpen,
     ] = useState(false);
+
+    const [
+        search,
+        setSearch,
+    ] = useState("");
+
+    const [
+        environment,
+        setEnvironment,
+    ] = useState<
+        "all" | "TEST" | "LIVE"
+    >("all");
+
+    const [
+        status,
+        setStatus,
+    ] = useState<
+        "all" |
+            "ACTIVE" |
+            "DISABLED" |
+            "FAILING"
+    >("all");
+
+    const [
+        event,
+        setEvent,
+    ] = useState<string>("all");
+
+    const visibleWebhooks =
+        useMemo(() => {
+            const query =
+                search
+                    .trim()
+                    .toLowerCase();
+
+            return page.table.data.filter(
+                (webhook) => {
+                    if (
+                        environment !==
+                            "all" &&
+                        webhook.environment !==
+                            environment
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        status !==
+                            "all" &&
+                        webhook.status !==
+                            status
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        event !== "all" &&
+                        !webhook.events.includes(
+                            event as never,
+                        )
+                    ) {
+                        return false;
+                    }
+
+                    if (!query) {
+                        return true;
+                    }
+
+                    return (
+                        webhook.name
+                            .toLowerCase()
+                            .includes(
+                                query,
+                            ) ||
+                        webhook.webhookId
+                            .toLowerCase()
+                            .includes(
+                                query,
+                            ) ||
+                        webhook.endpointUrl
+                            .toLowerCase()
+                            .includes(
+                                query,
+                            )
+                    );
+                },
+            );
+        }, [
+            page.table.data,
+            search,
+            environment,
+            status,
+            event,
+        ]);
 
     return (
         <Page>
@@ -81,8 +179,6 @@ export default function WebhooksPage() {
 
                 <Stack gap={8}>
 
-                    {/* HEADER */}
-
                     <PageHeader
                         eyebrow="Developers"
                         title="Webhooks"
@@ -90,11 +186,18 @@ export default function WebhooksPage() {
                         actions={
                             <Inline gap={2}>
 
-                                <Button variant="outline">
+                                <Button
+                                    variant="outline"
+                                >
                                     Documentation
                                 </Button>
 
                                 <Button
+                                    disabled={
+                                        !page.actions
+                                            .create
+                                            .available
+                                    }
                                     onClick={() =>
                                         setCreateDialogOpen(
                                             true,
@@ -110,28 +213,82 @@ export default function WebhooksPage() {
 
                     <Divider />
 
-                    {/* OVERVIEW */}
+                    {page.merchant.status ===
+                        "not-implemented" && (
+                        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
 
-                    <WebhooksOverview />
+                            <p className="text-sm font-medium">
+                                Webhook API operations are pending
+                            </p>
 
-                    {/* HEALTH */}
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                The merchant SDK does not yet expose live webhook
+                                resource operations. Demo mode may still display
+                                representative endpoint data.
+                            </p>
+
+                        </div>
+                    )}
+
+                    {page.merchant.error && (
+                        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
+                            {page.merchant.error.message}
+                        </div>
+                    )}
+
+                    <WebhooksOverview
+                        total={
+                            page.overview.data.total
+                        }
+                        active={
+                            page.overview.data.active
+                        }
+                        successRate={
+                            page.overview.data
+                                .successRate
+                        }
+                        failing={
+                            page.overview.data.failing
+                        }
+                    />
 
                     <Section
                         title="Endpoint health"
                         description="Monitor webhook delivery reliability across your integrations."
                     >
 
-                        <Grid className="grid-cols-1 gap-4 xl:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
 
-                            <WebhooksDeliveryChart />
+                            <WebhooksDeliveryChart
+                                successRate={
+                                    page.health.data
+                                        .successRate
+                                }
+                                available={
+                                    page.table
+                                        .available
+                                }
+                            />
 
-                            <WebhooksHealthSummary />
+                            <WebhooksHealthSummary
+                                total={
+                                    page.health.data.total
+                                }
+                                active={
+                                    page.health.data.active
+                                }
+                                failing={
+                                    page.health.data.failing
+                                }
+                                successRate={
+                                    page.health.data
+                                        .successRate
+                                }
+                            />
 
-                        </Grid>
+                        </div>
 
                     </Section>
-
-                    {/* ENDPOINT MANAGEMENT */}
 
                     <Section
                         title="Webhook endpoints"
@@ -140,24 +297,101 @@ export default function WebhooksPage() {
 
                         <Stack gap={4}>
 
-                            <WebhooksToolbar />
+                            <WebhooksToolbar
+                                search={
+                                    search
+                                }
+                                onSearchChange={
+                                    setSearch
+                                }
+                                environment={
+                                    environment
+                                }
+                                status={
+                                    status
+                                }
+                                event={
+                                    event as
+                                        | "all"
+                                        | never
+                                }
+                                onEnvironmentChange={
+                                    setEnvironment
+                                }
+                                onStatusChange={
+                                    setStatus
+                                }
+                                onEventChange={
+                                    (value) =>
+                                        setEvent(
+                                            value,
+                                        )
+                                }
+                                onRefresh={
+                                    page.actions
+                                        .refresh
+                                        .run
+                                }
+                                refreshing={
+                                    page.actions
+                                        .refresh
+                                        .loading
+                                }
+                                refreshAvailable={
+                                    page.actions
+                                        .refresh
+                                        .available
+                                }
+                            />
 
-                            <WebhooksTable />
+                            <WebhooksTable
+                                webhooks={
+                                    visibleWebhooks
+                                }
+                            />
 
-                            <WebhooksPagination />
+                            <WebhooksPagination
+                                count={
+                                    visibleWebhooks.length
+                                }
+                            />
 
                         </Stack>
 
                     </Section>
+
+                    {page.table.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing webhook data...
+                        </p>
+                    )}
 
                 </Stack>
 
             </Container>
 
             <CreateWebhookDialog
-                open={createDialogOpen}
+                open={
+                    createDialogOpen
+                }
                 onOpenChange={
                     setCreateDialogOpen
+                }
+                available={
+                    page.actions.create
+                        .available
+                }
+                loading={
+                    page.actions.create
+                        .loading
+                }
+                error={
+                    page.actions.create
+                        .error
+                }
+                onCreate={
+                    page.actions.create
+                        .run
                 }
             />
 

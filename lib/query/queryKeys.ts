@@ -72,6 +72,13 @@ export const queryKeys = {
             merchantId,
         ] as const,
 
+        plan: (planId: number) =>
+            [
+                "merchant",
+                "plan",
+                planId,
+            ] as const,
+
         customers: (
             merchantId: number | string,
             params: {
@@ -85,6 +92,14 @@ export const queryKeys = {
             "customers",
             merchantId,
             params,
+        ] as const,
+
+        notifications: (
+            merchantId: number,
+        ) => [
+            "merchant",
+            merchantId,
+            "notifications",
         ] as const,
     },
 } as const;

@@ -1,20 +1,20 @@
 "use client";
 
-import Link from "next/link";
-
 import {
     ArrowLeft,
     CreditCard,
     MoreHorizontal,
 } from "lucide-react";
 
-import {
-    Badge,
-} from "@/components/ui/badge";
+import Link from "next/link";
 
 import {
     Button,
 } from "@/components/ui/button";
+
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import {
     DropdownMenu,
@@ -32,33 +32,21 @@ import {
     SubscriptionStatusBadge,
 } from "../SubscriptionStatusBadge";
 
-interface SubscriptionDetailHeaderProps {
-    subscription: {
-        subscriptionId: number;
-
-        customerName: string;
-
-        customerId: string;
-
-        planName: string;
-
-        status:
-            | "ACTIVE"
-            | "PAUSED"
-            | "CANCELLED"
-            | "PENDING";
-    };
-}
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionDetailHeader({
     subscription,
-}: SubscriptionDetailHeaderProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
     return (
         <div className="space-y-5">
 
             <Button
                 render={
-                    <Link href="/dashboard/subscriptions">
+                    <Link href="/dashboard/platform/subscriptions">
                         <ArrowLeft />
                         Subscriptions
                     </Link>
@@ -83,7 +71,8 @@ export function SubscriptionDetailHeader({
                             className="flex-wrap"
                         >
                             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                                Subscription #{subscription.subscriptionId}
+                                Subscription #
+                                {subscription.subscriptionId}
                             </h1>
 
                             <SubscriptionStatusBadge
@@ -96,7 +85,7 @@ export function SubscriptionDetailHeader({
                         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
 
                             <Link
-                                href={`/dashboard/customers/${subscription.customerId}`}
+                                href={`/dashboard/platform/customers/${subscription.customerId}`}
                                 className="hover:text-foreground hover:underline"
                             >
                                 {subscription.customerName}
@@ -105,7 +94,7 @@ export function SubscriptionDetailHeader({
                             <span>•</span>
 
                             <Link
-                                href={`/dashboard/plans/${subscription.planName}`}
+                                href={`/dashboard/platform/plans/${subscription.planId}`}
                                 className="hover:text-foreground hover:underline"
                             >
                                 {subscription.planName}
@@ -119,9 +108,12 @@ export function SubscriptionDetailHeader({
 
                 <DropdownMenu>
 
-                    <DropdownMenuTrigger 
+                    <DropdownMenuTrigger
                         render={
-                            <Button variant="outline">
+                            <Button
+                                variant="outline"
+                                disabled
+                            >
                                 Manage subscription
                                 <MoreHorizontal />
                             </Button>
@@ -130,27 +122,30 @@ export function SubscriptionDetailHeader({
 
                     <DropdownMenuContent align="end">
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                             View customer
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                             View plan
                         </DropdownMenuItem>
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                             Pause subscription
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                             Resume subscription
                         </DropdownMenuItem>
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem
+                            disabled
+                            className="text-destructive"
+                        >
                             Cancel subscription
                         </DropdownMenuItem>
 

@@ -19,10 +19,12 @@ import {
 export function SubscriptionFilters() {
     return (
         <div className="flex flex-wrap items-center gap-2">
-
-            <Select defaultValue="all">
+            <Select
+                defaultValue="all"
+                disabled
+            >
                 <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -48,9 +50,12 @@ export function SubscriptionFilters() {
                 </SelectContent>
             </Select>
 
-            <Select defaultValue="all">
+            <Select
+                defaultValue="all"
+                disabled
+            >
                 <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Interval" />
+                    <SelectValue />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -75,11 +80,11 @@ export function SubscriptionFilters() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled
             >
                 <SlidersHorizontal />
                 More filters
             </Button>
-
         </div>
     );
 }

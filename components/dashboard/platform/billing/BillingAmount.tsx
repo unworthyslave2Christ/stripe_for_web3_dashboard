@@ -15,9 +15,7 @@ export function BillingAmount({
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-                {formatInterval(
-                    billing.interval,
-                )}
+                {formatInterval(billing.interval)}
             </p>
 
         </div>

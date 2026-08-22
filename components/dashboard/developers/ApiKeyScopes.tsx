@@ -6,6 +6,22 @@ import type {
     ApiKeyScope,
 } from "./developer.types";
 
+function formatScope(
+    scope: ApiKeyScope,
+) {
+    return scope
+        .toLowerCase()
+        .replaceAll(
+            "_",
+            " ",
+        )
+        .replace(
+            /^./,
+            (character) =>
+                character.toUpperCase(),
+        );
+}
+
 export function ApiKeyScopes({
     scopes,
 }: {
@@ -22,7 +38,9 @@ export function ApiKeyScopes({
                         variant="secondary"
                         className="text-[10px]"
                     >
-                        {formatScope(scope)}
+                        {formatScope(
+                            scope,
+                        )}
                     </Badge>
                 ))}
 
@@ -37,17 +55,4 @@ export function ApiKeyScopes({
 
         </div>
     );
-}
-
-function formatScope(
-    scope: ApiKeyScope,
-) {
-    return scope
-        .toLowerCase()
-        .replaceAll("_", " ")
-        .replace(
-            /^./,
-            (character) =>
-                character.toUpperCase(),
-        );
 }

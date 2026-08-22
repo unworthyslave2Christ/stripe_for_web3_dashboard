@@ -1,5 +1,4 @@
-// here is the merchant overview page flattened, provide a realistic version ensuring to maintain consistency, 
-
+// here is the flattened file, realize it:
 
 const fs = require("fs");
 const path = require("path");
@@ -14,9 +13,8 @@ const SOURCE_DIR = path.join(
     PROJECT_ROOT,
     "app",
     "dashboard",
-    "platform",
-    "plans",
-    "[planId]",
+    "account",
+    "settings",
 );
 
 const ENTRY_FILE = path.join(
@@ -28,9 +26,8 @@ const OUTPUT_DIR = path.join(
     PROJECT_ROOT,
     "app",
     "dashboard",
-    "platform",
-    "[planId]",
-    "plan-detail-flattened",
+    "account",
+    "settings-flattened",
 );
 
 const OUTPUT_FILE = path.join(

@@ -1,8 +1,12 @@
 import {
+    Archive,
     CheckCircle2,
     CirclePause,
-    Archive,
 } from "lucide-react";
+
+import type {
+    PlanRecord,
+} from "@stripe-for-web3/core";
 
 import {
     Badge,
@@ -15,18 +19,13 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-import type {
-    PlanStatus,
-} from "../plan.types";
-
 export function PlanLifecycle({
     status,
 }: {
-    status: PlanStatus;
+    status: PlanRecord["status"];
 }) {
     return (
         <Card>
-
             <CardHeader>
                 <CardTitle>
                     Lifecycle
@@ -34,34 +33,40 @@ export function PlanLifecycle({
             </CardHeader>
 
             <CardContent>
-
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-
                     <LifecycleStep
                         label="Active"
-                        description="Plan available for new subscriptions."
-                        active={status === "ACTIVE"}
+                        description="Available for new subscriptions."
+                        active={
+                            status === "ACTIVE"
+                        }
                         icon={CheckCircle2}
                     />
 
                     <LifecycleStep
                         label="Paused"
-                        description="Plan temporarily unavailable for new subscriptions."
-                        active={status === "PAUSED"}
+                        description="Temporarily unavailable for new subscriptions."
+                        active={
+                            status === "PAUSED"
+                        }
                         icon={CirclePause}
                     />
 
                     <LifecycleStep
                         label="Archived"
-                        description="Plan permanently removed from normal offerings."
-                        active={status === "ARCHIVED"}
+                        description="Removed from normal plan offerings."
+                        active={
+                            status === "ARCHIVED"
+                        }
                         icon={Archive}
                     />
-
                 </div>
 
+                <div className="mt-4 rounded-lg border border-dashed bg-muted/20 p-4 text-xs text-muted-foreground">
+                    Lifecycle mutations will be enabled once the corresponding
+                    merchant SDK/API operations are exposed.
+                </div>
             </CardContent>
-
         </Card>
     );
 }
@@ -86,9 +91,7 @@ function LifecycleStep({
                     : "bg-muted/20",
             ].join(" ")}
         >
-
             <div className="flex items-center justify-between gap-3">
-
                 <Icon
                     className={
                         active
@@ -102,7 +105,6 @@ function LifecycleStep({
                         Current
                     </Badge>
                 )}
-
             </div>
 
             <p className="mt-3 text-sm font-medium">
@@ -112,7 +114,6 @@ function LifecycleStep({
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 {description}
             </p>
-
         </div>
     );
 }

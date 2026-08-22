@@ -1,3 +1,5 @@
+// components/dashboard/platform/billing/billing.types.ts
+
 export type BillingStatus =
     | "SUCCEEDED"
     | "PENDING"
@@ -36,4 +38,23 @@ export interface BillingRecord {
     smartAccount: string;
 
     transactionHash: string | null;
+}
+
+export interface BillingOverviewData {
+    grossVolume: string;
+    successfulVolume: string;
+    failedVolume: string;
+    refunds: string;
+
+    successfulRate: string;
+    pendingRate: string;
+    failedRate: string;
+}
+
+export interface BillingReconciliationData {
+    settled: number;
+    pending: number;
+    exceptions: number;
+
+    lastReconciledAt: string;
 }

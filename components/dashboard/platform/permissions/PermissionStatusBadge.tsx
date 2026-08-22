@@ -4,15 +4,13 @@ import {
 
 import type {
     PermissionStatus,
-} from "./permission.types";
-
-interface PermissionStatusBadgeProps {
-    status: PermissionStatus;
-}
+} from "@/types/merchant/permission.types";
 
 export function PermissionStatusBadge({
     status,
-}: PermissionStatusBadgeProps) {
+}: {
+    status: PermissionStatus;
+}) {
     switch (status) {
         case "ACTIVE":
             return (

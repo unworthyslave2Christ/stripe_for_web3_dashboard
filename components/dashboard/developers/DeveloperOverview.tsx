@@ -14,10 +14,66 @@ import {
 } from "@/components/layout/Section";
 
 import {
-    PermissionKpiCard,
-} from "@/components/dashboard/platform/permissions/PermissionKpiCard";
+    Card,
+} from "@/components/ui/card";
 
-export function DeveloperOverview() {
+function DeveloperKpiCard({
+    title,
+    value,
+    description,
+    icon: Icon,
+}: {
+    title: string;
+    value: string;
+    description: string;
+    icon: React.ComponentType<{
+        className?: string;
+    }>;
+}) {
+    return (
+        <Card className="p-5">
+
+            <div className="flex items-start justify-between gap-4">
+
+                <div className="min-w-0">
+
+                    <p className="text-sm text-muted-foreground">
+                        {title}
+                    </p>
+
+                    <p className="mt-2 text-2xl font-semibold tracking-tight">
+                        {value}
+                    </p>
+
+                </div>
+
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+                    <Icon className="size-4 text-muted-foreground" />
+                </div>
+
+            </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">
+                {description}
+            </p>
+
+        </Card>
+    );
+}
+
+export function DeveloperOverview({
+    summary,
+    available,
+}: {
+    summary: {
+        total: number;
+        active: number;
+        live: number;
+        attention: number;
+    };
+
+    available: boolean;
+}) {
     return (
         <Section
             title="Developer access"
@@ -25,31 +81,63 @@ export function DeveloperOverview() {
         >
             <Grid className="grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-                <PermissionKpiCard
+                <DeveloperKpiCard
                     title="Total API keys"
-                    value="6"
-                    description="All environments"
+                    value={
+                        available
+                            ? summary.total.toLocaleString()
+                            : "—"
+                    }
+                    description={
+                        available
+                            ? "All environments"
+                            : "API key resource unavailable"
+                    }
                     icon={KeyRound}
                 />
 
-                <PermissionKpiCard
+                <DeveloperKpiCard
                     title="Active keys"
-                    value="5"
-                    description="Currently usable"
+                    value={
+                        available
+                            ? summary.active.toLocaleString()
+                            : "—"
+                    }
+                    description={
+                        available
+                            ? "Currently usable"
+                            : "Waiting for API implementation"
+                    }
                     icon={ShieldCheck}
                 />
 
-                <PermissionKpiCard
+                <DeveloperKpiCard
                     title="Live keys"
-                    value="2"
-                    description="Production access"
+                    value={
+                        available
+                            ? summary.live.toLocaleString()
+                            : "—"
+                    }
+                    description={
+                        available
+                            ? "Production access"
+                            : "Waiting for API implementation"
+                    }
                     icon={Radio}
                 />
 
-                <PermissionKpiCard
+                <DeveloperKpiCard
                     title="Needs attention"
-                    value="1"
-                    description="Expired or expiring"
+                    value={
+                        available
+                            ? summary.attention.toLocaleString()
+                            : "—"
+                    }
+                    description={
+                        available
+                            ? "Expired or expiring"
+                            : "Waiting for API implementation"
+                    }
                     icon={AlertTriangle}
                 />
 

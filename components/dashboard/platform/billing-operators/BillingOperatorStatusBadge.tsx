@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     BillingOperatorStatus,
 } from "./billing-operator.types";
 
-interface BillingOperatorStatusBadgeProps {
-    status: BillingOperatorStatus;
-}
-
 export function BillingOperatorStatusBadge({
     status,
-}: BillingOperatorStatusBadgeProps) {
+}: {
+    status: BillingOperatorStatus;
+}) {
     switch (status) {
         case "ACTIVE":
             return (

@@ -1,6 +1,4 @@
-import {
-    Button,
-} from "@/components/ui/button";
+"use client";
 
 import {
     Container,
@@ -35,6 +33,10 @@ import {
 } from "@/components/layout/Stack";
 
 import {
+    Button,
+} from "@/components/ui/button";
+
+import {
     BillingOverview,
 } from "@/components/dashboard/platform/billing/BillingOverview";
 
@@ -45,10 +47,6 @@ import {
 import {
     BillingSuccessSummary,
 } from "@/components/dashboard/platform/billing/BillingSuccessSummary";
-
-import {
-    BillingReconciliation,
-} from "@/components/dashboard/platform/billing/BillingReconciliation";
 
 import {
     BillingToolbar,
@@ -62,7 +60,83 @@ import {
     BillingPagination,
 } from "@/components/dashboard/platform/billing/BillingPagination";
 
+import {
+    BillingReconciliation,
+} from "@/components/dashboard/platform/billing/BillingReconciliation";
+
+import {
+    BillingUnavailableState,
+} from "@/components/dashboard/platform/billing/BillingUnavailableState";
+
+import {
+    useMerchantBillingPage,
+} from "@/hooks/pages/merchant/useMerchantBillingPage";
+
 export default function BillingPage() {
+    const page =
+        useMerchantBillingPage();
+
+    if (
+        page.status ===
+            "disconnected" ||
+        page.status ===
+            "waiting"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <BillingUnavailableState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    if (
+        page.status ===
+        "loading"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="space-y-4">
+                        <div className="h-8 w-40 animate-pulse rounded bg-muted" />
+                        <div className="h-4 w-80 animate-pulse rounded bg-muted" />
+                        <div className="h-32 w-full animate-pulse rounded-xl bg-muted" />
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    if (
+        page.status ===
+        "error"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <BillingUnavailableState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    const billingAvailable =
+        !(page.status ===
+        "unavailable" || page.status === "not-created");
+
     return (
         <Page>
 
@@ -70,32 +144,37 @@ export default function BillingPage() {
 
                 <Stack gap={8}>
 
-                    {/* HEADER */}
-
                     <PageHeader
                         eyebrow="Billing"
                         title="Billing"
                         description="Monitor billing volume, payment outcomes, refunds, and reconciliation across your merchant account."
                         actions={
                             <Inline gap={2}>
-                                <Button variant="outline">
+
+                                <Button
+                                    variant="outline"
+                                    disabled={!billingAvailable}
+                                >
                                     Export
                                 </Button>
 
-                                <Button>
+                                <Button
+                                    disabled={!billingAvailable}
+                                >
                                     Reconcile
                                 </Button>
+
                             </Inline>
                         }
                     />
 
                     <Divider />
 
-                    {/* OVERVIEW */}
-
-                    <BillingOverview />
-
-                    {/* PERFORMANCE */}
+                    <BillingOverview
+                        available={
+                            billingAvailable
+                        }
+                    />
 
                     <Section
                         title="Billing performance"
@@ -104,15 +183,21 @@ export default function BillingPage() {
 
                         <Grid className="grid-cols-1 gap-4 xl:grid-cols-3">
 
-                            <BillingRevenueChart />
+                            <BillingRevenueChart
+                                available={
+                                    billingAvailable
+                                }
+                            />
 
-                            <BillingSuccessSummary />
+                            <BillingSuccessSummary
+                                available={
+                                    billingAvailable
+                                }
+                            />
 
                         </Grid>
 
                     </Section>
-
-                    {/* OPERATIONS */}
 
                     <Section
                         title="Billing operations"
@@ -121,26 +206,46 @@ export default function BillingPage() {
 
                         <Stack gap={4}>
 
-                            <BillingToolbar />
+                            <BillingToolbar
+                                ready={
+                                    billingAvailable
+                                }
+                            />
 
-                            <BillingTable />
+                            <BillingTable
+                                records={
+                                    []
+                                }
+                            />
 
-                            <BillingPagination />
+                            <BillingPagination
+                                available={
+                                    billingAvailable
+                                }
+                            />
 
                         </Stack>
 
                     </Section>
-
-                    {/* RECONCILIATION */}
 
                     <Section
                         title="Reconciliation"
                         description="Compare billing events with their settlement and infrastructure state."
                     >
 
-                        <BillingReconciliation />
+                        <BillingReconciliation
+                            available={
+                                billingAvailable
+                            }
+                        />
 
                     </Section>
+
+                    {page.merchant.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing merchant data...
+                        </p>
+                    )}
 
                 </Stack>
 

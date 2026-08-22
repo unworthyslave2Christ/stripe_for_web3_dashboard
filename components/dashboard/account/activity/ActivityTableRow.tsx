@@ -1,18 +1,44 @@
-import { MoreHorizontal } from "lucide-react";
+"use client";
 
-import { Button } from "@/components/ui/button";
+import {
+    MoreHorizontal,
+} from "lucide-react";
 
-import { ActivityActor } from "./ActivityActor";
-import { ActivityEntity } from "./ActivityEntity";
-import { ActivityEvent } from "./ActivityEvent";
-import { ActivityMetadata } from "./ActivityMetadata";
-import { ActivitySeverityBadge } from "./ActivitySeverityBadge";
-import { ActivityStatusBadge } from "./ActivityStatusBadge";
-import { ActivityTypeBadge } from "./ActivityTypeBadge";
+import {
+    Button,
+} from "@/components/ui/button";
 
 import type {
     ActivityRecord,
 } from "./activity.types";
+
+import {
+    ActivityEvent,
+} from "./ActivityEvent";
+
+import {
+    ActivityEntity,
+} from "./ActivityEntity";
+
+import {
+    ActivityActor,
+} from "./ActivityActor";
+
+import {
+    ActivityTypeBadge,
+} from "./ActivityTypeBadge";
+
+import {
+    ActivitySeverityBadge,
+} from "./ActivitySeverityBadge";
+
+import {
+    ActivityStatusBadge,
+} from "./ActivityStatusBadge";
+
+import {
+    ActivityMetadata,
+} from "./ActivityMetadata";
 
 export function ActivityTableRow({
     activity,
@@ -21,17 +47,13 @@ export function ActivityTableRow({
 }) {
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
-
             <td className="px-4 py-4">
-
                 <ActivityEvent
                     activity={activity}
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivityEntity
                     entityType={
                         activity.entityType
@@ -43,11 +65,9 @@ export function ActivityTableRow({
                         activity.entityName
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivityActor
                     actorType={
                         activity.actorType
@@ -56,51 +76,41 @@ export function ActivityTableRow({
                         activity.actorName
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivityTypeBadge
                     type={
                         activity.eventType
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivitySeverityBadge
                     severity={
                         activity.severity
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivityStatusBadge
                     status={
                         activity.status
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4">
-
                 <ActivityMetadata
                     metadata={
                         activity.metadata
                     }
                 />
-
             </td>
 
             <td className="px-4 py-4 text-right">
-
                 <Button
                     variant="ghost"
                     size="icon"
@@ -109,9 +119,7 @@ export function ActivityTableRow({
                 >
                     <MoreHorizontal />
                 </Button>
-
             </td>
-
         </tr>
     );
 }

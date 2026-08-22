@@ -1,3 +1,5 @@
+"use client";
+
 import {
     CheckCircle2,
     ShieldCheck,
@@ -19,16 +21,20 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface SubscriptionPermissionCardProps {
-    subscription: {
-        smartAccount: string;
-        permissionId: string | null;
-    };
-}
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionPermissionCard({
     subscription,
-}: SubscriptionPermissionCardProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
+    const configured =
+        Boolean(
+            subscription.permissionId,
+        );
+
     return (
         <Card>
 
@@ -49,16 +55,27 @@ export function SubscriptionPermissionCard({
                             </CardTitle>
 
                             <p className="mt-1 text-sm text-muted-foreground">
-                                The Smart Account authorization used by this subscription.
+                                The Smart Account authorization associated with this subscription.
                             </p>
 
                         </div>
 
                     </div>
 
-                    <Badge variant="secondary">
-                        <CheckCircle2 />
-                        Active
+                    <Badge
+                        variant={
+                            configured
+                                ? "secondary"
+                                : "outline"
+                        }
+                    >
+                        {configured && (
+                            <CheckCircle2 />
+                        )}
+
+                        {configured
+                            ? "Configured"
+                            : "Not exposed"}
                     </Badge>
 
                 </div>
@@ -89,7 +106,8 @@ export function SubscriptionPermissionCard({
                         </p>
 
                         <p className="mt-2 break-all font-mono text-xs">
-                            {subscription.permissionId || "Not configured"}
+                            {subscription.permissionId ??
+                                "Not exposed by the current subscription resource"}
                         </p>
 
                     </div>
@@ -98,7 +116,10 @@ export function SubscriptionPermissionCard({
 
                 <div className="mt-4">
 
-                    <Button variant="outline">
+                    <Button
+                        variant="outline"
+                        disabled
+                    >
                         Manage permission
                     </Button>
 

@@ -1,6 +1,4 @@
-import {
-    Button,
-} from "@/components/ui/button";
+"use client";
 
 import {
     Container,
@@ -9,6 +7,10 @@ import {
 import {
     Divider,
 } from "@/components/layout/Divider";
+
+import {
+    Grid,
+} from "@/components/layout/Grid";
 
 import {
     Inline,
@@ -31,30 +33,109 @@ import {
 } from "@/components/layout/Stack";
 
 import {
+    Button,
+} from "@/components/ui/button";
+
+import {
     BillingOperatorsOverview,
 } from "@/components/dashboard/platform/billing-operators/BillingOperatorsOverview";
 
 import {
-    BillingOperatorsPagination,
-} from "@/components/dashboard/platform/billing-operators/BillingOperatorsPagination";
+    BillingOperatorsToolbar,
+} from "@/components/dashboard/platform/billing-operators/BillingOperatorsToolbar";
 
 import {
     BillingOperatorsTable,
 } from "@/components/dashboard/platform/billing-operators/BillingOperatorsTable";
 
 import {
-    BillingOperatorsToolbar,
-} from "@/components/dashboard/platform/billing-operators/BillingOperatorsToolbar";
+    BillingOperatorsPagination,
+} from "@/components/dashboard/platform/billing-operators/BillingOperatorsPagination";
+
+import {
+    BillingOperatorsUnavailableState,
+} from "@/components/dashboard/platform/billing-operators/BillingOperatorsUnavailableState";
+
+import {
+    useMerchantBillingOperatorsPage,
+} from "@/hooks/pages/merchant/useMerchantBillingOperatorsPage";
 
 export default function BillingOperatorsPage() {
+    const page =
+        useMerchantBillingOperatorsPage();
+
+    if (
+        page.status ===
+            "disconnected" ||
+        page.status ===
+            "waiting"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <BillingOperatorsUnavailableState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    if (
+        page.status ===
+        "loading"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <div className="space-y-4">
+
+                        <div className="h-8 w-52 animate-pulse rounded bg-muted" />
+
+                        <div className="h-4 w-96 max-w-full animate-pulse rounded bg-muted" />
+
+                        <div className="h-32 w-full animate-pulse rounded-xl bg-muted" />
+
+                    </div>
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    if (
+        page.status ===
+        "error"
+    ) {
+        return (
+            <Page>
+
+                <Container className="py-8 lg:py-10">
+
+                    <BillingOperatorsUnavailableState />
+
+                </Container>
+
+            </Page>
+        );
+    }
+
+    const operatorsAvailable =
+        !( page.status ===
+        "unavailable" || page.status ===
+        "not-created") ;
+
     return (
         <Page>
 
             <Container className="py-8 lg:py-10">
 
                 <Stack gap={8}>
-
-                    {/* HEADER */}
 
                     <PageHeader
                         eyebrow="Billing operators"
@@ -63,11 +144,20 @@ export default function BillingOperatorsPage() {
                         actions={
                             <Inline gap={2}>
 
-                                <Button variant="outline">
+                                <Button
+                                    variant="outline"
+                                    disabled={
+                                        !operatorsAvailable
+                                    }
+                                >
                                     Export
                                 </Button>
 
-                                <Button>
+                                <Button
+                                    disabled={
+                                        !operatorsAvailable
+                                    }
+                                >
                                     Add operator
                                 </Button>
 
@@ -77,11 +167,11 @@ export default function BillingOperatorsPage() {
 
                     <Divider />
 
-                    {/* OVERVIEW */}
-
-                    <BillingOperatorsOverview />
-
-                    {/* OPERATOR MANAGEMENT */}
+                    <BillingOperatorsOverview
+                        available={
+                            operatorsAvailable
+                        }
+                    />
 
                     <Section
                         title="Operator management"
@@ -90,15 +180,33 @@ export default function BillingOperatorsPage() {
 
                         <Stack gap={4}>
 
-                            <BillingOperatorsToolbar />
+                            <BillingOperatorsToolbar
+                                ready={
+                                    operatorsAvailable
+                                }
+                            />
 
-                            <BillingOperatorsTable />
+                            <BillingOperatorsTable
+                                operators={
+                                    page.operators.data
+                                }
+                            />
 
-                            <BillingOperatorsPagination />
+                            <BillingOperatorsPagination
+                                available={
+                                    operatorsAvailable
+                                }
+                            />
 
                         </Stack>
 
                     </Section>
+
+                    {page.merchant.refreshing && (
+                        <p className="text-xs text-muted-foreground">
+                            Refreshing merchant data...
+                        </p>
+                    )}
 
                 </Stack>
 

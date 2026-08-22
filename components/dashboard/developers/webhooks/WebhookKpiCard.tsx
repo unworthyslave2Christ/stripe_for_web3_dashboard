@@ -46,9 +46,7 @@ export function WebhookKpiCard({
                 </div>
 
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
-
                     <Icon className="size-4 text-muted-foreground" />
-
                 </div>
 
             </div>

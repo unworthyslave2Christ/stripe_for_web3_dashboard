@@ -1,12 +1,10 @@
+"use client";
+
 import {
     AlertTriangle,
     CheckCircle2,
     Clock3,
 } from "lucide-react";
-
-import {
-    Badge,
-} from "@/components/ui/badge";
 
 import {
     Card,
@@ -15,7 +13,24 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function WebhooksHealthSummary() {
+import {
+    Badge,
+} from "@/components/ui/badge";
+
+export function WebhooksHealthSummary({
+    total,
+    active,
+    failing,
+    successRate,
+}: {
+    total: number;
+
+    active: number;
+
+    failing: number;
+
+    successRate: number;
+}) {
     return (
         <Card>
 
@@ -30,21 +45,21 @@ export function WebhooksHealthSummary() {
                 <HealthRow
                     icon={CheckCircle2}
                     title="Healthy endpoints"
-                    value="3"
+                    value={String(active)}
                     description="Receiving events normally"
                 />
 
                 <HealthRow
                     icon={Clock3}
-                    title="Pending deliveries"
-                    value="12"
-                    description="Waiting for response"
+                    title="Configured endpoints"
+                    value={String(total)}
+                    description="Known to this merchant workspace"
                 />
 
                 <HealthRow
                     icon={AlertTriangle}
                     title="Failing endpoints"
-                    value="1"
+                    value={String(failing)}
                     description="Requires investigation"
                 />
 
@@ -53,17 +68,27 @@ export function WebhooksHealthSummary() {
                     <div className="flex items-center justify-between gap-3">
 
                         <div>
+
                             <p className="text-xs text-muted-foreground">
-                                Overall delivery success
+                                Delivery success
                             </p>
 
                             <p className="mt-1 text-2xl font-semibold">
-                                99.2%
+                                {successRate}%
                             </p>
+
                         </div>
 
-                        <Badge variant="secondary">
-                            Healthy
+                        <Badge
+                            variant={
+                                failing === 0
+                                    ? "secondary"
+                                    : "outline"
+                            }
+                        >
+                            {failing === 0
+                                ? "Healthy"
+                                : "Needs attention"}
                         </Badge>
 
                     </div>
@@ -83,8 +108,11 @@ function HealthRow({
     description,
 }: {
     icon: typeof CheckCircle2;
+
     title: string;
+
     value: string;
+
     description: string;
 }) {
     return (

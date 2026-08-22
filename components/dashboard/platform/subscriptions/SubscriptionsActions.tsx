@@ -5,17 +5,22 @@ import {
     RefreshCw,
 } from "lucide-react";
 
-import {
-    Button,
-} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
-export function SubscriptionsActions() {
+export function SubscriptionsActions({
+    refreshing,
+    onRefresh,
+}: {
+    refreshing: boolean;
+
+    onRefresh: () => void;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
-
             <Button
                 variant="outline"
                 size="sm"
+                disabled
             >
                 <Download />
                 Export
@@ -24,11 +29,18 @@ export function SubscriptionsActions() {
             <Button
                 variant="outline"
                 size="sm"
+                onClick={onRefresh}
+                disabled={refreshing}
             >
-                <RefreshCw />
+                <RefreshCw
+                    className={
+                        refreshing
+                            ? "animate-spin"
+                            : undefined
+                    }
+                />
                 Refresh
             </Button>
-
         </div>
     );
 }

@@ -3,101 +3,86 @@ import {
     CardContent,
 } from "@/components/ui/card";
 
-import {
-    ApiKeyTableRow,
-} from "./ApiKeyTableRow";
-
 import type {
     ApiKeyRecord,
 } from "./developer.types";
 
-const apiKeys: ApiKeyRecord[] = [
-    {
-        id: "key_001",
-        keyId: "key_live_primary",
-        name: "Production backend",
-        prefix: "sw_live_91a7",
-        environment: "LIVE",
-        status: "ACTIVE",
-        scopes: [
-            "READ_CUSTOMERS",
-            "READ_PLANS",
-            "READ_SUBSCRIPTIONS",
-            "READ_BILLING",
-        ],
-        createdAt: "Jun 01, 2025",
-        lastUsedAt: "2 minutes ago",
-        expiresAt: null,
-        createdBy: "ACMEFLOW",
-    },
-    {
-        id: "key_002",
-        keyId: "key_live_worker",
-        name: "Billing worker",
-        prefix: "sw_live_72bc",
-        environment: "LIVE",
-        status: "ACTIVE",
-        scopes: [
-            "READ_SUBSCRIPTIONS",
-            "READ_BILLING",
-            "WRITE_BILLING",
-            "WRITE_SUBSCRIPTIONS",
-        ],
-        createdAt: "May 27, 2025",
-        lastUsedAt: "8 minutes ago",
-        expiresAt: null,
-        createdBy: "ACMEFLOW",
-    },
-    {
-        id: "key_003",
-        keyId: "key_test_frontend",
-        name: "Test integration",
-        prefix: "sw_test_21df",
-        environment: "TEST",
-        status: "ACTIVE",
-        scopes: [
-            "READ_CUSTOMERS",
-            "READ_PLANS",
-        ],
-        createdAt: "May 21, 2025",
-        lastUsedAt: "42 minutes ago",
-        expiresAt: null,
-        createdBy: "ACMEFLOW",
-    },
-    {
-        id: "key_004",
-        keyId: "key_test_old",
-        name: "Legacy test key",
-        prefix: "sw_test_19ad",
-        environment: "TEST",
-        status: "REVOKED",
-        scopes: [
-            "READ_CUSTOMERS",
-        ],
-        createdAt: "Apr 12, 2025",
-        lastUsedAt: "Apr 29, 2025",
-        expiresAt: null,
-        createdBy: "ACMEFLOW",
-    },
-    {
-        id: "key_005",
-        keyId: "key_test_expired",
-        name: "Temporary integration",
-        prefix: "sw_test_11ac",
-        environment: "TEST",
-        status: "EXPIRED",
-        scopes: [
-            "READ_CUSTOMERS",
-            "READ_BILLING",
-        ],
-        createdAt: "Mar 01, 2025",
-        lastUsedAt: "Apr 02, 2025",
-        expiresAt: "Apr 30, 2025",
-        createdBy: "ACMEFLOW",
-    },
-];
+import {
+    ApiKeyIdentity,
+} from "./ApiKeyIdentity";
 
-export function ApiKeysTable() {
+import {
+    ApiKeyEnvironment,
+} from "./ApiKeyEnvironment";
+
+import {
+    ApiKeyScopes,
+} from "./ApiKeyScopes";
+
+import {
+    ApiKeyStatusBadge,
+} from "./ApiKeyStatusBadge";
+
+import {
+    ApiKeyActions,
+} from "./ApiKeyActions";
+
+export function ApiKeysTable({
+    apiKeys,
+    available,
+}: {
+    apiKeys: ApiKeyRecord[];
+
+    available: boolean;
+}) {
+    if (!available) {
+        return (
+            <Card>
+
+                <CardContent className="flex min-h-48 items-center justify-center p-6 text-center">
+
+                    <div className="max-w-md">
+
+                        <p className="text-sm font-medium">
+                            API key management is not connected
+                        </p>
+
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                            No API-key records are displayed because the current merchant SDK/API does not yet expose the API-key resource.
+                        </p>
+
+                    </div>
+
+                </CardContent>
+
+            </Card>
+        );
+    }
+
+    if (apiKeys.length === 0) {
+        return (
+            <Card>
+
+                <CardContent className="flex min-h-48 items-center justify-center p-6 text-center">
+
+                    <div>
+
+                        <p className="text-sm font-medium">
+                            No API keys found
+                        </p>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Create an API key when key-management operations are available.
+                        </p>
+
+                    </div>
+
+                </CardContent>
+
+            </Card>
+        );
+    }
+
     return (
         <Card className="overflow-hidden">
 
@@ -108,7 +93,6 @@ export function ApiKeysTable() {
                     <table className="w-full min-w-[1100px]">
 
                         <thead>
-
                             <tr className="border-b bg-muted/30">
 
                                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
@@ -138,17 +122,74 @@ export function ApiKeysTable() {
                                 <th className="px-4 py-3" />
 
                             </tr>
-
                         </thead>
 
                         <tbody>
 
-                            {apiKeys.map((apiKey) => (
-                                <ApiKeyTableRow
-                                    key={apiKey.id}
-                                    apiKey={apiKey}
-                                />
-                            ))}
+                            {apiKeys.map(
+                                (apiKey) => (
+                                    <tr
+                                        key={
+                                            apiKey.id
+                                        }
+                                        className="border-b transition-colors hover:bg-muted/40 last:border-0"
+                                    >
+                                        <td className="px-4 py-4">
+                                            <ApiKeyIdentity
+                                                apiKey={
+                                                    apiKey
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <ApiKeyEnvironment
+                                                environment={
+                                                    apiKey.environment
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <ApiKeyScopes
+                                                scopes={
+                                                    apiKey.scopes
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="px-4 py-4">
+                                            <ApiKeyStatusBadge
+                                                status={
+                                                    apiKey.status
+                                                }
+                                            />
+                                        </td>
+
+                                        <td className="px-4 py-4 text-sm">
+                                            {
+                                                apiKey.lastUsedAt ??
+                                                "Never"
+                                            }
+                                        </td>
+
+                                        <td className="px-4 py-4 text-sm text-muted-foreground">
+                                            {
+                                                apiKey.createdAt
+                                            }
+                                        </td>
+
+                                        <td className="px-4 py-4 text-right">
+                                            <ApiKeyActions
+                                                keyId={
+                                                    apiKey.keyId
+                                                }
+                                                available
+                                            />
+                                        </td>
+                                    </tr>
+                                ),
+                            )}
 
                         </tbody>
 

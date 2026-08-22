@@ -13,7 +13,9 @@ export function BillingOperatorType({
 }) {
     return (
         <Badge variant="outline">
-            {type === "HUMAN" ? "Human" : "Service"}
+            {type === "HUMAN"
+                ? "Human"
+                : "Service"}
         </Badge>
     );
 }

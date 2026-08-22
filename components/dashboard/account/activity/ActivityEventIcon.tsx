@@ -1,4 +1,5 @@
 import {
+    Activity,
     AlertTriangle,
     Bell,
     Bot,
@@ -24,7 +25,8 @@ export function ActivityEventIcon({
     entityType: ActivityEntityType;
     severity: ActivitySeverity;
 }) {
-    const Icon = getIcon(entityType);
+    const Icon =
+        getIcon(entityType);
 
     const className =
         severity === "ERROR"
@@ -37,7 +39,9 @@ export function ActivityEventIcon({
 
     return (
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-            <Icon className={`size-4 ${className}`} />
+            <Icon
+                className={`size-4 ${className}`}
+            />
         </div>
     );
 }
@@ -77,6 +81,6 @@ function getIcon(
             return Bot;
 
         default:
-            return AlertTriangle;
+            return Activity;
     }
 }

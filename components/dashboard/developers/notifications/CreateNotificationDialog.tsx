@@ -1,13 +1,13 @@
 "use client";
 
 import {
+    useState,
+} from "react";
+
+import {
     Bell,
     Check,
 } from "lucide-react";
-
-import {
-    useState,
-} from "react";
 
 import {
     Button,
@@ -30,58 +30,82 @@ import {
     Label,
 } from "@/components/ui/label";
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+interface CreateNotificationDialogProps {
+    open: boolean;
+
+    onOpenChange: (
+        open: boolean,
+    ) => void;
+
+    createAvailable: boolean;
+
+    onCreate?: () => Promise<void>;
+}
 
 export function CreateNotificationDialog({
     open,
     onOpenChange,
-}: {
-    open: boolean;
-    onOpenChange: (
-        open: boolean,
-    ) => void;
-}) {
+    createAvailable,
+    onCreate,
+}: CreateNotificationDialogProps) {
     const [
         created,
         setCreated,
-    ] = useState(false);
+    ] =
+        useState(false);
+
+    const [
+        submitting,
+        setSubmitting,
+    ] =
+        useState(false);
+
+    async function handleCreate() {
+        if (
+            !createAvailable ||
+            !onCreate
+        ) {
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            await onCreate();
+            setCreated(true);
+        } finally {
+            setSubmitting(false);
+        }
+    }
 
     function closeDialog() {
         setCreated(false);
+        setSubmitting(false);
         onOpenChange(false);
     }
 
     return (
         <Dialog
             open={open}
-            onOpenChange={closeDialog}
+            onOpenChange={
+                closeDialog
+            }
         >
             <DialogContent className="sm:max-w-lg">
-
                 {!created ? (
                     <>
                         <DialogHeader>
-
                             <DialogTitle>
                                 Create notification
                             </DialogTitle>
 
                             <DialogDescription>
-                                Create a notification policy for your merchant.
+                                Configure a notification policy for your merchant.
                             </DialogDescription>
-
                         </DialogHeader>
 
                         <div className="space-y-5 py-2">
-
                             <div className="space-y-2">
-
                                 <Label htmlFor="notification-name">
                                     Name
                                 </Label>
@@ -90,120 +114,68 @@ export function CreateNotificationDialog({
                                     id="notification-name"
                                     placeholder="Failed billing alert"
                                 />
-
                             </div>
 
                             <div className="space-y-2">
-
                                 <Label>
                                     Trigger
                                 </Label>
 
-                                <Select defaultValue="billing_failed">
-
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-
-                                        <SelectItem value="billing_failed">
-                                            Billing fails
-                                        </SelectItem>
-
-                                        <SelectItem value="billing_succeeded">
-                                            Billing succeeds
-                                        </SelectItem>
-
-                                        <SelectItem value="subscription_created">
-                                            Subscription created
-                                        </SelectItem>
-
-                                        <SelectItem value="subscription_cancelled">
-                                            Subscription cancelled
-                                        </SelectItem>
-
-                                        <SelectItem value="subscription_renewal">
-                                            Subscription renewal
-                                        </SelectItem>
-
-                                    </SelectContent>
-
-                                </Select>
-
+                                <div className="rounded-lg border bg-muted/30 p-3 text-sm">
+                                    Billing fails
+                                </div>
                             </div>
 
                             <div className="space-y-2">
-
                                 <Label>
                                     Channel
                                 </Label>
 
-                                <Select defaultValue="email">
-
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-
-                                        <SelectItem value="email">
-                                            Email
-                                        </SelectItem>
-
-                                        <SelectItem value="webhook">
-                                            Webhook
-                                        </SelectItem>
-
-                                        <SelectItem value="in-app">
-                                            In-app
-                                        </SelectItem>
-
-                                    </SelectContent>
-
-                                </Select>
-
+                                <div className="rounded-lg border bg-muted/30 p-3 text-sm">
+                                    Email
+                                </div>
                             </div>
 
-                            <div className="rounded-lg border bg-muted/30 p-4">
+                            {!createAvailable && (
+                                <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+                                    <p className="text-sm font-medium">
+                                        Creation is not available yet
+                                    </p>
 
-                                <p className="text-sm font-medium">
-                                    Audience
-                                </p>
-
-                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                    Audience selection and notification templates
-                                    will be configured in the full notification builder.
-                                </p>
-
-                            </div>
-
+                                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                                        The merchant notification mutation has not yet been exposed by the SDK.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         <DialogFooter>
-
                             <Button
                                 variant="outline"
-                                onClick={closeDialog}
+                                onClick={
+                                    closeDialog
+                                }
                             >
                                 Cancel
                             </Button>
 
                             <Button
-                                onClick={() =>
-                                    setCreated(true)
+                                disabled={
+                                    !createAvailable ||
+                                    submitting
+                                }
+                                onClick={
+                                    handleCreate
                                 }
                             >
                                 <Bell />
                                 Create notification
                             </Button>
-
                         </DialogFooter>
                     </>
                 ) : (
                     <>
                         <DialogHeader>
-
                             <DialogTitle>
                                 Notification created
                             </DialogTitle>
@@ -211,42 +183,37 @@ export function CreateNotificationDialog({
                             <DialogDescription>
                                 The notification policy has been created successfully.
                             </DialogDescription>
-
                         </DialogHeader>
 
                         <div className="rounded-lg border bg-muted/30 p-5">
-
                             <div className="flex items-start gap-3">
-
                                 <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                                     <Check className="size-4" />
                                 </div>
 
                                 <div>
-
                                     <p className="text-sm font-medium">
                                         Policy is ready
                                     </p>
 
                                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                        The policy will begin generating notifications
-                                        when its configured trigger occurs.
+                                        The backend has accepted the notification policy.
                                     </p>
-
                                 </div>
-
                             </div>
-
                         </div>
 
                         <DialogFooter>
-                            <Button onClick={closeDialog}>
+                            <Button
+                                onClick={
+                                    closeDialog
+                                }
+                            >
                                 Done
                             </Button>
                         </DialogFooter>
                     </>
                 )}
-
             </DialogContent>
         </Dialog>
     );

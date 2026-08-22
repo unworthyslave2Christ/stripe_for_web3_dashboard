@@ -10,13 +10,21 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function WebhooksDeliveryChart() {
+export function WebhooksDeliveryChart({
+    successRate,
+    available,
+}: {
+    successRate: number;
+
+    available: boolean;
+}) {
     return (
         <Card className="xl:col-span-2">
 
             <CardHeader className="flex flex-row items-start justify-between gap-4">
 
                 <div>
+
                     <CardTitle>
                         Delivery performance
                     </CardTitle>
@@ -24,18 +32,23 @@ export function WebhooksDeliveryChart() {
                     <CardDescription>
                         Webhook delivery success over the selected period.
                     </CardDescription>
+
                 </div>
 
                 <div className="text-right">
 
                     <p className="text-lg font-semibold">
-                        99.2%
+                        {available
+                            ? `${successRate}%`
+                            : "—"}
                     </p>
 
-                    <p className="flex items-center justify-end gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                        <ArrowUpRight className="size-3" />
-                        0.6%
-                    </p>
+                    {available && (
+                        <p className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
+                            <ArrowUpRight className="size-3" />
+                            Delivery history available
+                        </p>
+                    )}
 
                 </div>
 
@@ -43,30 +56,21 @@ export function WebhooksDeliveryChart() {
 
             <CardContent>
 
-                <div className="h-[280px] rounded-lg border bg-muted/20 p-4">
+                <div className="flex h-[280px] items-center justify-center rounded-lg border bg-muted/20">
 
-                    <div className="relative h-full">
+                    <div className="text-center">
 
-                        <div className="absolute inset-x-0 top-1/4 border-t border-dashed" />
-                        <div className="absolute inset-x-0 top-1/2 border-t border-dashed" />
-                        <div className="absolute inset-x-0 top-3/4 border-t border-dashed" />
+                        <p className="text-sm font-medium">
+                            {available
+                                ? "Delivery analytics"
+                                : "Delivery analytics unavailable"}
+                        </p>
 
-                        <svg
-                            viewBox="0 0 800 220"
-                            className="absolute inset-0 h-full w-full"
-                            preserveAspectRatio="none"
-                        >
-
-                            <path
-                                d="M0 155 C60 150 95 148 140 140 C185 132 215 143 260 120 C310 95 350 120 390 100 C440 74 480 100 520 76 C560 52 610 76 650 54 C700 34 750 52 800 25"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                className="text-primary"
-                                vectorEffect="non-scaling-stroke"
-                            />
-
-                        </svg>
+                        <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
+                            {available
+                                ? "Historical webhook delivery metrics are available for this merchant."
+                                : "The current merchant SDK does not yet expose webhook delivery history."}
+                        </p>
 
                     </div>
 

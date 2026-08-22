@@ -1,5 +1,3 @@
-"use client";
-
 import {
     SlidersHorizontal,
 } from "lucide-react";
@@ -16,11 +14,18 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function BillingOperatorFilters() {
+export function BillingOperatorFilters({
+    disabled = false,
+}: {
+    disabled?: boolean;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
-            <Select defaultValue="all">
+            <Select
+                defaultValue="all"
+                disabled={disabled}
+            >
                 <SelectTrigger className="w-[145px]">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -50,7 +55,10 @@ export function BillingOperatorFilters() {
                 </SelectContent>
             </Select>
 
-            <Select defaultValue="all">
+            <Select
+                defaultValue="all"
+                disabled={disabled}
+            >
                 <SelectTrigger className="w-[145px]">
                     <SelectValue placeholder="Type" />
                 </SelectTrigger>
@@ -75,6 +83,7 @@ export function BillingOperatorFilters() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled={disabled}
             >
                 <SlidersHorizontal />
                 Permissions

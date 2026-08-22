@@ -1,20 +1,39 @@
+"use client";
+
 import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import {
+    Button,
+} from "@/components/ui/button";
 
-export function ActivityPagination() {
+interface ActivityPaginationProps {
+    total: number;
+    pageSize?: number;
+}
+
+export function ActivityPagination({
+    total,
+    pageSize = 25,
+}: ActivityPaginationProps) {
+    const shown =
+        Math.min(
+            total,
+            pageSize,
+        );
+
     return (
         <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-
             <p className="text-sm text-muted-foreground">
-                Showing 1–25 of 18,421 events
+                Showing 1–
+                {shown} of{" "}
+                {total.toLocaleString()}{" "}
+                events
             </p>
 
             <div className="flex items-center gap-1">
-
                 <Button
                     variant="outline"
                     size="icon"
@@ -36,40 +55,24 @@ export function ActivityPagination() {
                     variant="ghost"
                     size="sm"
                     className="size-8"
+                    disabled={
+                        total <= pageSize
+                    }
                 >
                     2
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="size-8"
-                >
-                    3
-                </Button>
-
-                <span className="px-1 text-sm text-muted-foreground">
-                    …
-                </span>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="size-8"
-                >
-                    737
                 </Button>
 
                 <Button
                     variant="outline"
                     size="icon"
                     className="size-8"
+                    disabled={
+                        total <= pageSize
+                    }
                 >
                     <ChevronRight />
                 </Button>
-
             </div>
-
         </div>
     );
 }

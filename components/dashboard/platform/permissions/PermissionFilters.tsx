@@ -16,11 +16,56 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function PermissionFilters() {
+import type {
+    PermissionScope,
+    PermissionStatus,
+} from "@/types/merchant/permission.types";
+
+interface PermissionFiltersProps {
+    status:
+        | "all"
+        | PermissionStatus;
+
+    scope:
+        | "all"
+        | PermissionScope;
+
+    onStatusChange: (
+        value:
+            | "all"
+            | PermissionStatus,
+    ) => void;
+
+    onScopeChange: (
+        value:
+            | "all"
+            | PermissionScope,
+    ) => void;
+
+    disabled?: boolean;
+}
+
+export function PermissionFilters({
+    status,
+    scope,
+    onStatusChange,
+    onScopeChange,
+    disabled = false,
+}: PermissionFiltersProps) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
-            <Select defaultValue="all">
+            <Select
+                value={status}
+                onValueChange={(value) =>
+                    onStatusChange(
+                        value as
+                            | "all"
+                            | PermissionStatus,
+                    )
+                }
+                disabled={disabled}
+            >
                 <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -31,26 +76,36 @@ export function PermissionFilters() {
                         All statuses
                     </SelectItem>
 
-                    <SelectItem value="active">
+                    <SelectItem value="ACTIVE">
                         Active
                     </SelectItem>
 
-                    <SelectItem value="pending">
+                    <SelectItem value="PENDING">
                         Pending
                     </SelectItem>
 
-                    <SelectItem value="revoked">
+                    <SelectItem value="REVOKED">
                         Revoked
                     </SelectItem>
 
-                    <SelectItem value="expired">
+                    <SelectItem value="EXPIRED">
                         Expired
                     </SelectItem>
 
                 </SelectContent>
             </Select>
 
-            <Select defaultValue="all">
+            <Select
+                value={scope}
+                onValueChange={(value) =>
+                    onScopeChange(
+                        value as
+                            | "all"
+                            | PermissionScope,
+                    )
+                }
+                disabled={disabled}
+            >
                 <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Scope" />
                 </SelectTrigger>
@@ -61,20 +116,28 @@ export function PermissionFilters() {
                         All scopes
                     </SelectItem>
 
-                    <SelectItem value="charge">
+                    <SelectItem value="CHARGE">
                         Charge
                     </SelectItem>
 
-                    <SelectItem value="refund">
+                    <SelectItem value="REFUND">
                         Refund
                     </SelectItem>
 
-                    <SelectItem value="pause">
+                    <SelectItem value="PAUSE">
                         Pause
                     </SelectItem>
 
-                    <SelectItem value="cancel">
+                    <SelectItem value="RESUME">
+                        Resume
+                    </SelectItem>
+
+                    <SelectItem value="CANCEL">
                         Cancel
+                    </SelectItem>
+
+                    <SelectItem value="RECONCILE">
+                        Reconcile
                     </SelectItem>
 
                 </SelectContent>
@@ -83,6 +146,7 @@ export function PermissionFilters() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled={disabled}
             >
                 <SlidersHorizontal />
                 More filters

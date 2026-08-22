@@ -20,12 +20,32 @@ import {
 
 import type {
     PermissionRecord,
-} from "./permission.types";
+} from "@/types/merchant/permission.types";
+
+function formatDate(
+    value: Date | null,
+) {
+    if (!value) {
+        return "No expiry";
+    }
+
+    return value.toLocaleDateString(
+        undefined,
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        },
+    );
+}
 
 export function PermissionTableRow({
     permission,
+    actionsAvailable,
 }: {
     permission: PermissionRecord;
+
+    actionsAvailable: boolean;
 }) {
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
@@ -55,21 +75,26 @@ export function PermissionTableRow({
             </td>
 
             <td className="px-4 py-4 text-sm text-muted-foreground">
-                {permission.createdAt}
+                {formatDate(
+                    permission.createdAt,
+                )}
             </td>
 
             <td className="px-4 py-4 text-sm text-muted-foreground">
-                {permission.expiresAt || "No expiry"}
+                {formatDate(
+                    permission.expiresAt,
+                )}
             </td>
 
             <td className="px-4 py-4 text-right">
-
                 <PermissionActions
                     permissionId={
                         permission.permissionId
                     }
+                    available={
+                        actionsAvailable
+                    }
                 />
-
             </td>
 
         </tr>

@@ -1,34 +1,34 @@
 import {
-    MoreHorizontal,
-} from "lucide-react";
-
-import {
     Button,
 } from "@/components/ui/button";
 
 import {
-    BillingAmount,
-} from "./BillingAmount";
-
-import {
-    BillingCustomer,
-} from "./BillingCustomer";
-
-import {
-    BillingDate,
-} from "./BillingDate";
+    MoreHorizontal,
+} from "lucide-react";
 
 import {
     BillingIdentity,
 } from "./BillingIdentity";
 
 import {
-    BillingStatusBadge,
-} from "./BillingStatusBadge";
+    BillingCustomer,
+} from "./BillingCustomer";
 
 import {
     BillingSubscription,
 } from "./BillingSubscription";
+
+import {
+    BillingAmount,
+} from "./BillingAmount";
+
+import {
+    BillingDate,
+} from "./BillingDate";
+
+import {
+    BillingStatusBadge,
+} from "./BillingStatusBadge";
 
 import type {
     BillingRecord,
@@ -74,7 +74,9 @@ export function BillingTableRow({
 
             <td className="px-4 py-4">
                 <BillingDate
-                    value={billing.processedAt}
+                    value={
+                        billing.processedAt
+                    }
                 />
             </td>
 

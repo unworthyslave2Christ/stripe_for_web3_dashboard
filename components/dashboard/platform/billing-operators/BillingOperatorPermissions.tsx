@@ -11,7 +11,10 @@ export function BillingOperatorPermissions({
 }: {
     permissions: BillingOperatorPermission[];
 }) {
-    if (permissions.length === 0) {
+    if (
+        permissions.length ===
+        0
+    ) {
         return (
             <span className="text-xs text-muted-foreground">
                 No permissions
@@ -56,7 +59,9 @@ function formatPermission(
         .toLowerCase()
         .replace(
             /^./,
-            (character) =>
+            (
+                character,
+            ) =>
                 character.toUpperCase(),
         );
 }

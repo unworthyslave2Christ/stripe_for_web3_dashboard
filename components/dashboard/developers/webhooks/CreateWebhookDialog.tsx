@@ -1,14 +1,12 @@
 "use client";
 
 import {
-    Check,
-    Copy,
-    Webhook,
-} from "lucide-react";
-
-import {
     useState,
 } from "react";
+
+import {
+    Webhook,
+} from "lucide-react";
 
 import {
     Button,
@@ -34,204 +32,218 @@ import {
 export function CreateWebhookDialog({
     open,
     onOpenChange,
+    available,
+    loading,
+    error,
+    onCreate,
 }: {
     open: boolean;
+
     onOpenChange: (
         open: boolean,
     ) => void;
+
+    available: boolean;
+
+    loading: boolean;
+
+    error: Error | null;
+
+    onCreate: (
+        input: {
+            name: string;
+
+            endpointUrl: string;
+
+            environment:
+                | "TEST"
+                | "LIVE";
+
+            events: string[];
+        },
+    ) => Promise<unknown>;
 }) {
     const [
-        created,
-        setCreated,
-    ] = useState(false);
+        name,
+        setName,
+    ] = useState("");
 
     const [
-        copied,
-        setCopied,
-    ] = useState(false);
+        endpointUrl,
+        setEndpointUrl,
+    ] = useState("");
 
-    const signingSecret =
-        "whsec_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    const [
+        localError,
+        setLocalError,
+    ] = useState<string | null>(null);
 
-    async function copySecret() {
-        await navigator.clipboard.writeText(
-            signingSecret,
-        );
-
-        setCopied(true);
-
-        window.setTimeout(() => {
-            setCopied(false);
-        }, 1500);
+    function reset() {
+        setName("");
+        setEndpointUrl("");
+        setLocalError(null);
     }
 
-    function closeDialog() {
-        setCreated(false);
-        setCopied(false);
+    async function submit() {
+        setLocalError(null);
 
-        onOpenChange(false);
+        if (!name.trim()) {
+            setLocalError(
+                "Enter an endpoint name.",
+            );
+
+            return;
+        }
+
+        if (!endpointUrl.trim()) {
+            setLocalError(
+                "Enter the endpoint URL.",
+            );
+
+            return;
+        }
+
+        try {
+            await onCreate({
+                name:
+                    name.trim(),
+
+                endpointUrl:
+                    endpointUrl.trim(),
+
+                environment:
+                    "LIVE",
+
+                events: [],
+            });
+
+            reset();
+            onOpenChange(false);
+        } catch {
+            // Parent hook owns the canonical error.
+        }
     }
 
     return (
         <Dialog
             open={open}
-            onOpenChange={closeDialog}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    reset();
+                }
+
+                onOpenChange(
+                    nextOpen,
+                );
+            }}
         >
             <DialogContent className="sm:max-w-lg">
 
-                {!created ? (
-                    <>
-                        <DialogHeader>
+                <DialogHeader>
 
-                            <DialogTitle>
-                                Create webhook endpoint
-                            </DialogTitle>
+                    <DialogTitle>
+                        Create webhook endpoint
+                    </DialogTitle>
 
-                            <DialogDescription>
-                                Configure where Stripe for Web3 should send your merchant events.
-                            </DialogDescription>
+                    <DialogDescription>
+                        Configure where Stripe for Web3 should send merchant events.
+                    </DialogDescription>
 
-                        </DialogHeader>
+                </DialogHeader>
 
-                        <div className="space-y-5 py-2">
+                <div className="space-y-5 py-2">
 
-                            <div className="space-y-2">
+                    <div className="space-y-2">
 
-                                <Label htmlFor="webhook-name">
-                                    Endpoint name
-                                </Label>
+                        <Label htmlFor="webhook-name">
+                            Endpoint name
+                        </Label>
 
-                                <Input
-                                    id="webhook-name"
-                                    placeholder="Production backend"
-                                />
+                        <Input
+                            id="webhook-name"
+                            value={name}
+                            onChange={(event) =>
+                                setName(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="Production backend"
+                            disabled={
+                                loading ||
+                                !available
+                            }
+                        />
 
-                            </div>
+                    </div>
 
-                            <div className="space-y-2">
+                    <div className="space-y-2">
 
-                                <Label htmlFor="webhook-url">
-                                    Endpoint URL
-                                </Label>
+                        <Label htmlFor="webhook-url">
+                            Endpoint URL
+                        </Label>
 
-                                <Input
-                                    id="webhook-url"
-                                    placeholder="https://api.example.com/webhooks"
-                                />
+                        <Input
+                            id="webhook-url"
+                            value={endpointUrl}
+                            onChange={(event) =>
+                                setEndpointUrl(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="https://api.example.com/webhooks"
+                            disabled={
+                                loading ||
+                                !available
+                            }
+                        />
 
-                            </div>
+                    </div>
 
-                            <div className="space-y-2">
+                    <div className="rounded-lg border bg-muted/30 p-4">
 
-                                <Label>
-                                    Environment
-                                </Label>
+                        <p className="text-sm font-medium">
+                            Live environment
+                        </p>
 
-                                <div className="rounded-lg border bg-muted/30 p-3 text-sm">
-                                    Live
-                                </div>
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Endpoint creation is currently not exposed by the merchant SDK.
+                            The form is ready for the backend operation when it becomes available.
+                        </p>
 
-                            </div>
+                    </div>
 
-                            <div className="rounded-lg border bg-muted/30 p-4">
-
-                                <p className="text-sm font-medium">
-                                    Event selection
-                                </p>
-
-                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                    You can choose the customer, subscription,
-                                    billing, and refund events this endpoint receives.
-                                </p>
-
-                            </div>
-
+                    {(localError || error) && (
+                        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+                            {localError ??
+                                error?.message}
                         </div>
+                    )}
 
-                        <DialogFooter>
+                </div>
 
-                            <Button
-                                variant="outline"
-                                onClick={closeDialog}
-                            >
-                                Cancel
-                            </Button>
+                <DialogFooter>
 
-                            <Button
-                                onClick={() =>
-                                    setCreated(true)
-                                }
-                            >
-                                <Webhook />
-                                Create endpoint
-                            </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() =>
+                            onOpenChange(false)
+                        }
+                    >
+                        Cancel
+                    </Button>
 
-                        </DialogFooter>
-                    </>
-                ) : (
-                    <>
-                        <DialogHeader>
+                    <Button
+                        disabled={
+                            !available ||
+                            loading
+                        }
+                        onClick={submit}
+                    >
+                        <Webhook />
+                        Create endpoint
+                    </Button>
 
-                            <DialogTitle>
-                                Webhook endpoint created
-                            </DialogTitle>
-
-                            <DialogDescription>
-                                Store the signing secret securely. It is shown only once.
-                            </DialogDescription>
-
-                        </DialogHeader>
-
-                        <div className="space-y-4">
-
-                            <div className="rounded-lg border bg-muted/30 p-4">
-
-                                <code className="break-all font-mono text-xs leading-6">
-                                    {signingSecret}
-                                </code>
-
-                            </div>
-
-                            <Button
-                                variant="outline"
-                                className="w-full"
-                                onClick={copySecret}
-                            >
-                                {copied ? (
-                                    <>
-                                        <Check />
-                                        Copied
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy />
-                                        Copy signing secret
-                                    </>
-                                )}
-                            </Button>
-
-                            <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
-
-                                <p className="text-sm font-medium">
-                                    Verify every webhook
-                                </p>
-
-                                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                    Your server should verify the webhook signature
-                                    using this signing secret before processing events.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <DialogFooter>
-                            <Button onClick={closeDialog}>
-                                Done
-                            </Button>
-                        </DialogFooter>
-                    </>
-                )}
+                </DialogFooter>
 
             </DialogContent>
         </Dialog>

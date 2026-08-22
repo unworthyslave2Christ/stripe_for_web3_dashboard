@@ -13,10 +13,11 @@ export function ActivityEntity({
     entityId: string;
     entityName: string;
 }) {
-    const href = getEntityHref(
-        entityType,
-        entityId,
-    );
+    const href =
+        getEntityHref(
+            entityType,
+            entityId,
+        );
 
     if (!href) {
         return (
@@ -34,7 +35,6 @@ export function ActivityEntity({
 
     return (
         <div className="min-w-0">
-
             <Link
                 href={href}
                 className="block truncate text-sm font-medium hover:underline"
@@ -45,7 +45,6 @@ export function ActivityEntity({
             <p className="truncate text-xs text-muted-foreground">
                 {entityId}
             </p>
-
         </div>
     );
 }
@@ -56,28 +55,28 @@ function getEntityHref(
 ) {
     switch (entityType) {
         case "CUSTOMER":
-            return `/dashboard/customers/${entityId}`;
+            return `/dashboard/platform/customers/${entityId}`;
 
         case "PLAN":
-            return `/dashboard/plans/${entityId}`;
+            return `/dashboard/platform/plans/${entityId}`;
 
         case "SUBSCRIPTION":
-            return `/dashboard/subscriptions/${entityId}`;
+            return `/dashboard/platform/subscriptions/${entityId}`;
 
         case "WEBHOOK":
-            return `/dashboard/webhooks/${entityId}`;
+            return `/dashboard/developers/webhooks/${entityId}`;
 
         case "API_KEY":
             return `/dashboard/developers/api-keys/${entityId}`;
 
         case "NOTIFICATION":
-            return `/dashboard/notifications/${entityId}`;
+            return `/dashboard/developers/notifications/${entityId}`;
 
         case "OPERATOR":
-            return `/dashboard/billing-operators/${entityId}`;
+            return `/dashboard/platform/billing-operators/${entityId}`;
 
         case "PERMISSION":
-            return `/dashboard/permissions/${entityId}`;
+            return `/dashboard/platform/permissions/${entityId}`;
 
         default:
             return null;

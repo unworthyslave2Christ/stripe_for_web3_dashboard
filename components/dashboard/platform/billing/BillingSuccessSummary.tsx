@@ -11,7 +11,16 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-export function BillingSuccessSummary() {
+export function BillingSuccessSummary({
+    available,
+}: {
+    available: boolean;
+}) {
+    const value =
+        available
+            ? "—"
+            : "—";
+
     return (
         <Card>
 
@@ -26,19 +35,19 @@ export function BillingSuccessSummary() {
                 <PerformanceRow
                     icon={CheckCircle2}
                     label="Succeeded"
-                    value="93.8%"
+                    value={value}
                 />
 
                 <PerformanceRow
                     icon={Clock3}
                     label="Pending"
-                    value="1.2%"
+                    value={value}
                 />
 
                 <PerformanceRow
                     icon={XCircle}
                     label="Failed"
-                    value="5.0%"
+                    value={value}
                 />
 
                 <div className="rounded-lg border bg-muted/30 p-4">
@@ -48,7 +57,7 @@ export function BillingSuccessSummary() {
                     </p>
 
                     <p className="mt-1 text-xl font-semibold">
-                        $45,231
+                        {value}
                     </p>
 
                 </div>

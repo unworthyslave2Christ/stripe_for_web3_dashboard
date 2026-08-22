@@ -1,4 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     ActivityStatus,
@@ -24,7 +26,7 @@ export function ActivityStatusBadge({
                 </Badge>
             );
 
-        case "FAILED":
+        default:
             return (
                 <Badge variant="destructive">
                     Failed

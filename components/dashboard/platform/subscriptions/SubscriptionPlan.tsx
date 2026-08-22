@@ -1,19 +1,18 @@
 import Link from "next/link";
 
 import type {
-    SubscriptionRecord,
-} from "./subscription.types";
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionPlan({
     subscription,
 }: {
-    subscription: SubscriptionRecord;
+    subscription: MerchantSubscriptionRecord;
 }) {
     return (
         <div className="min-w-0">
-
             <Link
-                href={`/dashboard/plans/${subscription.planId}`}
+                href={`/dashboard/platform/plans/${subscription.planId}`}
                 className="block truncate text-sm font-medium hover:underline"
             >
                 {subscription.planName}
@@ -22,7 +21,6 @@ export function SubscriptionPlan({
             <p className="text-xs text-muted-foreground">
                 Plan #{subscription.planId}
             </p>
-
         </div>
     );
 }

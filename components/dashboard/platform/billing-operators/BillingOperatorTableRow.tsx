@@ -1,14 +1,14 @@
-import {
-    BillingOperatorActions,
-} from "./BillingOperatorActions";
-
-import {
-    BillingOperatorActivity,
-} from "./BillingOperatorActivity";
+import type {
+    BillingOperatorRecord,
+} from "./billing-operator.types";
 
 import {
     BillingOperatorIdentity,
 } from "./BillingOperatorIdentity";
+
+import {
+    BillingOperatorType,
+} from "./BillingOperatorType";
 
 import {
     BillingOperatorPermissions,
@@ -19,12 +19,12 @@ import {
 } from "./BillingOperatorStatusBadge";
 
 import {
-    BillingOperatorType,
-} from "./BillingOperatorType";
+    BillingOperatorActivity,
+} from "./BillingOperatorActivity";
 
-import type {
-    BillingOperatorRecord,
-} from "./billing-operator.types";
+import {
+    BillingOperatorActions,
+} from "./BillingOperatorActions";
 
 export function BillingOperatorTableRow({
     operator,
@@ -69,13 +69,11 @@ export function BillingOperatorTableRow({
             </td>
 
             <td className="px-4 py-4 text-right">
-
                 <BillingOperatorActions
                     operatorId={
                         operator.operatorId
                     }
                 />
-
             </td>
 
         </tr>

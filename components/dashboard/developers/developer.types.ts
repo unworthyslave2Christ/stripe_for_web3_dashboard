@@ -1,3 +1,5 @@
+// components/dashboard/developers/developer.types.ts
+
 export type DeveloperEnvironment =
     | "TEST"
     | "LIVE";
@@ -25,17 +27,50 @@ export interface ApiKeyRecord {
 
     prefix: string;
 
-    environment: DeveloperEnvironment;
+    environment:
+        DeveloperEnvironment;
 
-    status: ApiKeyStatus;
+    status:
+        ApiKeyStatus;
 
-    scopes: ApiKeyScope[];
+    scopes:
+        ApiKeyScope[];
 
     createdAt: string;
 
-    lastUsedAt: string | null;
+    lastUsedAt:
+        | string
+        | null;
 
-    expiresAt: string | null;
+    expiresAt:
+        | string
+        | null;
 
     createdBy: string;
+}
+
+export interface ApiKeyListState {
+    available: boolean;
+
+    keys: ApiKeyRecord[];
+
+    loading: boolean;
+
+    refreshing: boolean;
+
+    error:
+        | Error
+        | null;
+}
+
+export interface ApiKeyActionAvailability {
+    create: boolean;
+
+    revoke: boolean;
+
+    rotate: boolean;
+
+    reveal: boolean;
+
+    export: boolean;
 }

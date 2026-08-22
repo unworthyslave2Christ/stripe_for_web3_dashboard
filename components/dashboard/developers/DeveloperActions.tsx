@@ -9,13 +9,28 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function DeveloperActions() {
+export function DeveloperActions({
+    refreshAvailable,
+    exportAvailable,
+    refreshing,
+    onRefresh,
+}: {
+    refreshAvailable: boolean;
+
+    exportAvailable: boolean;
+
+    refreshing: boolean;
+
+    onRefresh:
+        () => void;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
             <Button
                 variant="outline"
                 size="sm"
+                disabled={!exportAvailable}
             >
                 <Download />
                 Export
@@ -24,8 +39,19 @@ export function DeveloperActions() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled={
+                    !refreshAvailable ||
+                    refreshing
+                }
+                onClick={onRefresh}
             >
-                <RefreshCw />
+                <RefreshCw
+                    className={
+                        refreshing
+                            ? "animate-spin"
+                            : undefined
+                    }
+                />
                 Refresh
             </Button>
 

@@ -14,7 +14,11 @@ import {
     BillingSearch,
 } from "./BillingSearch";
 
-export function BillingToolbar() {
+export function BillingToolbar({
+    ready,
+}: {
+    ready: boolean;
+}) {
     return (
         <div className="rounded-xl border bg-card p-4">
 
@@ -22,13 +26,19 @@ export function BillingToolbar() {
 
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
 
-                    <BillingSearch />
+                    <BillingSearch
+                        disabled={!ready}
+                    />
 
-                    <BillingActions />
+                    <BillingActions
+                        ready={ready}
+                    />
 
                 </div>
 
-                <BillingFilters />
+                <BillingFilters
+                    disabled={!ready}
+                />
 
             </Stack>
 

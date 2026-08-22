@@ -1,27 +1,9 @@
 import type {
-    SubscriptionRecord,
-} from "./subscription.types";
-
-export function SubscriptionAmount({
-    subscription,
-}: {
-    subscription: SubscriptionRecord;
-}) {
-    return (
-        <div>
-            <p className="font-medium">
-                {subscription.currency} {subscription.amount}
-            </p>
-
-            <p className="mt-1 text-xs text-muted-foreground">
-                / {formatInterval(subscription.interval)}
-            </p>
-        </div>
-    );
-}
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 function formatInterval(
-    interval: SubscriptionRecord["interval"],
+    interval: MerchantSubscriptionRecord["interval"],
 ) {
     switch (interval) {
         case "DAY":
@@ -33,7 +15,27 @@ function formatInterval(
         case "YEAR":
             return "year";
 
+        case "MONTH":
         default:
             return "month";
     }
+}
+
+export function SubscriptionAmount({
+    subscription,
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
+    return (
+        <div>
+            <p className="font-medium">
+                {subscription.currency}{" "}
+                {subscription.amount}
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+                / {formatInterval(subscription.interval)}
+            </p>
+        </div>
+    );
 }

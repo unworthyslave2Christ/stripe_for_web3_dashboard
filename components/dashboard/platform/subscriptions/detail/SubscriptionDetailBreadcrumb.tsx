@@ -1,8 +1,8 @@
-import Link from "next/link";
-
 import {
     ChevronRight,
 } from "lucide-react";
+
+import Link from "next/link";
 
 export function SubscriptionDetailBreadcrumb({
     subscriptionId,
@@ -15,7 +15,7 @@ export function SubscriptionDetailBreadcrumb({
             className="flex items-center gap-2 text-sm"
         >
             <Link
-                href="/dashboard/subscriptions"
+                href="/dashboard/platform/subscriptions"
                 className="text-muted-foreground transition-colors hover:text-foreground"
             >
                 Subscriptions

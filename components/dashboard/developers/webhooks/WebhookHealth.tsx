@@ -1,6 +1,6 @@
 import {
-    CheckCircle2,
     AlertTriangle,
+    CheckCircle2,
 } from "lucide-react";
 
 export function WebhookHealth({
@@ -8,6 +8,7 @@ export function WebhookHealth({
     failedDeliveries,
 }: {
     successfulDeliveries: number;
+
     failedDeliveries: number;
 }) {
     const total =
@@ -18,8 +19,10 @@ export function WebhookHealth({
         total === 0
             ? 100
             : Math.round(
-                  (successfulDeliveries /
-                      total) *
+                  (
+                      successfulDeliveries /
+                      total
+                  ) *
                       1000,
               ) / 10;
 

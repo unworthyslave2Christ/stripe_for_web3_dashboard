@@ -10,14 +10,18 @@ import {
 
 export function ApiKeyActions({
     keyId,
+    available = false,
 }: {
     keyId: string;
+
+    available?: boolean;
 }) {
     return (
         <Button
             variant="ghost"
             size="icon"
             className="size-8"
+            disabled={!available}
             aria-label={`Actions for ${keyId}`}
         >
             <MoreHorizontal />

@@ -9,19 +9,18 @@ import type {
 export function ApiKeyEnvironment({
     environment,
 }: {
-    environment: DeveloperEnvironment;
+    environment:
+        DeveloperEnvironment;
 }) {
-    if (environment === "LIVE") {
-        return (
+    return environment === "LIVE"
+        ? (
             <Badge variant="outline">
                 Live
             </Badge>
+        )
+        : (
+            <Badge variant="secondary">
+                Test
+            </Badge>
         );
-    }
-
-    return (
-        <Badge variant="secondary">
-            Test
-        </Badge>
-    );
 }

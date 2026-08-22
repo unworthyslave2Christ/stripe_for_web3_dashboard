@@ -11,15 +11,15 @@ export function ActivityActor({
 }) {
     return (
         <div>
-
             <p className="text-sm font-medium">
                 {actorName}
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-                {formatActorType(actorType)}
+                {formatActorType(
+                    actorType,
+                )}
             </p>
-
         </div>
     );
 }

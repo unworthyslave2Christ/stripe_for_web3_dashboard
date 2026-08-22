@@ -6,18 +6,24 @@ import {
 } from "lucide-react";
 
 import {
-    Grid,
-} from "@/components/layout/Grid";
-
-import {
     Section,
 } from "@/components/layout/Section";
+
+import {
+    Grid,
+} from "@/components/layout/Grid";
 
 import {
     BillingKpiCard,
 } from "./BillingKpiCard";
 
-export function BillingOverview() {
+interface BillingOverviewProps {
+    available: boolean;
+}
+
+export function BillingOverview({
+    available,
+}: BillingOverviewProps) {
     return (
         <Section
             title="Overview"
@@ -27,35 +33,45 @@ export function BillingOverview() {
 
                 <BillingKpiCard
                     title="Gross billing volume"
-                    value="$48,214"
-                    description="this month"
-                    trend="+16.4%"
-                    trendPositive
+                    value={
+                        available
+                            ? "—"
+                            : "Not available"
+                    }
+                    description="Awaiting billing API"
                     icon={CircleDollarSign}
                 />
 
                 <BillingKpiCard
                     title="Successful billing"
-                    value="$45,231"
-                    description="93.8% of volume"
-                    trend="+14.8%"
-                    trendPositive
+                    value={
+                        available
+                            ? "—"
+                            : "Not available"
+                    }
+                    description="Awaiting billing API"
                     icon={CheckCircle2}
                 />
 
                 <BillingKpiCard
                     title="Failed billing"
-                    value="$2,671"
-                    description="requires attention"
-                    trend="-2.1%"
-                    trendPositive
+                    value={
+                        available
+                            ? "—"
+                            : "Not available"
+                    }
+                    description="Awaiting billing API"
                     icon={XCircle}
                 />
 
                 <BillingKpiCard
                     title="Refunds"
-                    value="$312"
-                    description="this month"
+                    value={
+                        available
+                            ? "—"
+                            : "Not available"
+                    }
+                    description="Awaiting billing API"
                     icon={RotateCcw}
                 />
 

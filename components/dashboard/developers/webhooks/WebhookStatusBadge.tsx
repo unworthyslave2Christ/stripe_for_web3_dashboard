@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     WebhookStatus,
 } from "./webhook.types";
 
-interface WebhookStatusBadgeProps {
-    status: WebhookStatus;
-}
-
 export function WebhookStatusBadge({
     status,
-}: WebhookStatusBadgeProps) {
+}: {
+    status: WebhookStatus;
+}) {
     switch (status) {
         case "ACTIVE":
             return (

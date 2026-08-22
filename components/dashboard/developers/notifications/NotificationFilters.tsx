@@ -16,59 +16,102 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function NotificationFilters() {
+import type {
+    NotificationChannel,
+    NotificationStatus,
+} from "./notification.types";
+
+export function NotificationFilters({
+    status,
+    channel,
+    onStatusChange,
+    onChannelChange,
+}: {
+    status:
+        | "all"
+        | NotificationStatus;
+
+    channel:
+        | "all"
+        | NotificationChannel;
+
+    onStatusChange: (
+        value:
+            | "all"
+            | NotificationStatus,
+    ) => void;
+
+    onChannelChange: (
+        value:
+            | "all"
+            | NotificationChannel,
+    ) => void;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
-
-            <Select defaultValue="all">
+            <Select
+                value={status}
+                onValueChange={(value) =>
+                    onStatusChange(
+                        value as
+                            | "all"
+                            | NotificationStatus,
+                    )
+                }
+            >
                 <SelectTrigger className="w-[145px]">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
 
                 <SelectContent>
-
                     <SelectItem value="all">
                         All statuses
                     </SelectItem>
 
-                    <SelectItem value="active">
+                    <SelectItem value="ACTIVE">
                         Active
                     </SelectItem>
 
-                    <SelectItem value="paused">
+                    <SelectItem value="PAUSED">
                         Paused
                     </SelectItem>
 
-                    <SelectItem value="draft">
+                    <SelectItem value="DRAFT">
                         Draft
                     </SelectItem>
-
                 </SelectContent>
             </Select>
 
-            <Select defaultValue="all">
+            <Select
+                value={channel}
+                onValueChange={(value) =>
+                    onChannelChange(
+                        value as
+                            | "all"
+                            | NotificationChannel,
+                    )
+                }
+            >
                 <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Channel" />
                 </SelectTrigger>
 
                 <SelectContent>
-
                     <SelectItem value="all">
                         All channels
                     </SelectItem>
 
-                    <SelectItem value="email">
+                    <SelectItem value="EMAIL">
                         Email
                     </SelectItem>
 
-                    <SelectItem value="webhook">
+                    <SelectItem value="WEBHOOK">
                         Webhook
                     </SelectItem>
 
-                    <SelectItem value="in-app">
+                    <SelectItem value="IN_APP">
                         In-app
                     </SelectItem>
-
                 </SelectContent>
             </Select>
 
@@ -79,7 +122,6 @@ export function NotificationFilters() {
                 <SlidersHorizontal />
                 Trigger
             </Button>
-
         </div>
     );
 }

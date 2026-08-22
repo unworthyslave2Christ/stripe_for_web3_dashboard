@@ -1,5 +1,3 @@
-"use client";
-
 import {
     Download,
     RefreshCw,
@@ -9,13 +7,18 @@ import {
     Button,
 } from "@/components/ui/button";
 
-export function BillingActions() {
+export function BillingActions({
+    ready,
+}: {
+    ready: boolean;
+}) {
     return (
         <div className="flex flex-wrap items-center gap-2">
 
             <Button
                 variant="outline"
                 size="sm"
+                disabled={!ready}
             >
                 <Download />
                 Export
@@ -24,6 +27,7 @@ export function BillingActions() {
             <Button
                 variant="outline"
                 size="sm"
+                disabled={!ready}
             >
                 <RefreshCw />
                 Refresh

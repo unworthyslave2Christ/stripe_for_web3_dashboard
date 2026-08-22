@@ -1,10 +1,12 @@
-import type {
-    LucideIcon,
-} from "lucide-react";
+// SubscriptionOverviewCard.tsx
 
 import {
     Card,
 } from "@/components/ui/card";
+
+import type {
+    LucideIcon,
+} from "lucide-react";
 
 export function SubscriptionOverviewCard({
     title,
@@ -35,7 +37,9 @@ export function SubscriptionOverviewCard({
                 </div>
 
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+
                     <Icon className="size-4 text-muted-foreground" />
+
                 </div>
 
             </div>

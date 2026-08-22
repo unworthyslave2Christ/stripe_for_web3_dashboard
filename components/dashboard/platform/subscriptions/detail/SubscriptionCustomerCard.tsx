@@ -1,10 +1,12 @@
-import Link from "next/link";
+"use client";
 
 import {
     ExternalLink,
     User,
     Wallet,
 } from "lucide-react";
+
+import Link from "next/link";
 
 import {
     Avatar,
@@ -22,18 +24,15 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface SubscriptionCustomerCardProps {
-    subscription: {
-        customerId: string;
-        customerName: string;
-        customerWallet: string;
-        smartAccount: string;
-    };
-}
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionCustomerCard({
     subscription,
-}: SubscriptionCustomerCardProps) {
+}: {
+    subscription: MerchantSubscriptionRecord;
+}) {
     return (
         <Card>
 
@@ -58,7 +57,7 @@ export function SubscriptionCustomerCard({
                     <div className="min-w-0">
 
                         <Link
-                            href={`/dashboard/customers/${subscription.customerId}`}
+                            href={`/dashboard/platform/customers/${subscription.customerId}`}
                             className="block font-medium hover:underline"
                         >
                             {subscription.customerName}
@@ -77,13 +76,18 @@ export function SubscriptionCustomerCard({
                     <AccountRow
                         icon={Wallet}
                         label="Owner wallet"
-                        value={subscription.customerWallet}
+                        value={
+                            subscription.customerWallet ??
+                            "Not provided"
+                        }
                     />
 
                     <AccountRow
                         icon={User}
                         label="Smart account"
-                        value={subscription.smartAccount}
+                        value={
+                            subscription.smartAccount
+                        }
                     />
 
                 </div>
@@ -91,7 +95,7 @@ export function SubscriptionCustomerCard({
                 <Button
                     render={
                         <Link
-                            href={`/dashboard/customers/${subscription.customerId}`}
+                            href={`/dashboard/platform/customers/${subscription.customerId}`}
                         >
                             View customer
                             <ExternalLink />
@@ -99,9 +103,7 @@ export function SubscriptionCustomerCard({
                     }
                     variant="outline"
                     className="w-full"
-                >
-                    
-                </Button>
+                />
 
             </CardContent>
 

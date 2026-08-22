@@ -12,14 +12,14 @@ import {
     Card,
 } from "@/components/ui/card";
 
+import type {
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
+
 export function SubscriptionBillingSummary({
     subscription,
 }: {
-    subscription: {
-        totalBilled: string;
-        successfulPayments: number;
-        failedPayments: number;
-    };
+    subscription: MerchantSubscriptionRecord;
 }) {
     return (
         <Grid className="grid-cols-1 gap-4 md:grid-cols-3">
@@ -34,7 +34,8 @@ export function SubscriptionBillingSummary({
                 icon={CheckCircle2}
                 title="Successful payments"
                 value={String(
-                    subscription.successfulPayments,
+                    subscription.successfulPayments ??
+                    0,
                 )}
             />
 
@@ -42,7 +43,8 @@ export function SubscriptionBillingSummary({
                 icon={XCircle}
                 title="Failed payments"
                 value={String(
-                    subscription.failedPayments,
+                    subscription.failedPayments ??
+                    0,
                 )}
             />
 

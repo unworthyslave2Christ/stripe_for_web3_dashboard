@@ -1,22 +1,29 @@
 import {
+    Button,
+} from "@/components/ui/button";
+
+import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
 
-import {
-    Button,
-} from "@/components/ui/button";
+export function NotificationsPagination({
+    visible,
+    total,
+}: {
+    visible: number;
+    total: number;
+}) {
+    const hasNext =
+        visible < total;
 
-export function NotificationsPagination() {
     return (
         <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-
             <p className="text-sm text-muted-foreground">
-                Showing 1–8 of 8 notification policies
+                Showing {visible} of {total} notification policies
             </p>
 
             <div className="flex items-center gap-1">
-
                 <Button
                     variant="outline"
                     size="icon"
@@ -38,13 +45,11 @@ export function NotificationsPagination() {
                     variant="outline"
                     size="icon"
                     className="size-8"
-                    disabled
+                    disabled={!hasNext}
                 >
                     <ChevronRight />
                 </Button>
-
             </div>
-
         </div>
     );
 }

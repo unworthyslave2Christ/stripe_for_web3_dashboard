@@ -6,7 +6,7 @@ import {
     Card,
 } from "@/components/ui/card";
 
-interface PermissionKpiCardProps {
+export interface PermissionKpiCardProps {
     title: string;
 
     value: string;
@@ -24,11 +24,9 @@ export function PermissionKpiCard({
 }: PermissionKpiCardProps) {
     return (
         <Card className="p-5">
-
             <div className="flex items-start justify-between gap-4">
 
                 <div className="min-w-0">
-
                     <p className="text-sm text-muted-foreground">
                         {title}
                     </p>
@@ -36,7 +34,6 @@ export function PermissionKpiCard({
                     <p className="mt-2 text-2xl font-semibold tracking-tight">
                         {value}
                     </p>
-
                 </div>
 
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
@@ -48,7 +45,6 @@ export function PermissionKpiCard({
             <p className="mt-4 text-xs text-muted-foreground">
                 {description}
             </p>
-
         </Card>
     );
 }

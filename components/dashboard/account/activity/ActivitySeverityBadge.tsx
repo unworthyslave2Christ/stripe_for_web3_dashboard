@@ -1,16 +1,16 @@
-import { Badge } from "@/components/ui/badge";
+import {
+    Badge,
+} from "@/components/ui/badge";
 
 import type {
     ActivitySeverity,
 } from "./activity.types";
 
-interface ActivitySeverityBadgeProps {
-    severity: ActivitySeverity;
-}
-
 export function ActivitySeverityBadge({
     severity,
-}: ActivitySeverityBadgeProps) {
+}: {
+    severity: ActivitySeverity;
+}) {
     switch (severity) {
         case "SUCCESS":
             return (
@@ -33,7 +33,6 @@ export function ActivitySeverityBadge({
                 </Badge>
             );
 
-        case "INFO":
         default:
             return (
                 <Badge variant="outline">

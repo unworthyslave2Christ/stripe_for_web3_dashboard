@@ -1,39 +1,35 @@
 import Link from "next/link";
-
-import {
-    Avatar,
-    AvatarFallback,
-} from "@/components/ui/avatar";
+import { UserRound } from "lucide-react";
 
 import type {
-    SubscriptionRecord,
-} from "./subscription.types";
+    MerchantSubscriptionRecord,
+} from "@/types/merchant/subscription";
 
 export function SubscriptionCustomer({
     subscription,
 }: {
-    subscription: SubscriptionRecord;
+    subscription: MerchantSubscriptionRecord;
 }) {
-    const initials = subscription.customerName
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase();
+    const initials =
+        subscription.customerName
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((part) => part[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
 
     return (
         <div className="flex items-center gap-3">
-
-            <Avatar className="size-8">
-                <AvatarFallback>
-                    {initials}
-                </AvatarFallback>
-            </Avatar>
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                {initials || (
+                    <UserRound className="size-3.5 text-muted-foreground" />
+                )}
+            </div>
 
             <div className="min-w-0">
-
                 <Link
-                    href={`/dashboard/customers/${subscription.customerId}`}
+                    href={`/dashboard/platform/customers/${subscription.customerId}`}
                     className="block truncate text-sm font-medium hover:underline"
                 >
                     {subscription.customerName}
@@ -42,9 +38,7 @@ export function SubscriptionCustomer({
                 <p className="truncate text-xs text-muted-foreground">
                     {subscription.customerId}
                 </p>
-
             </div>
-
         </div>
     );
 }
