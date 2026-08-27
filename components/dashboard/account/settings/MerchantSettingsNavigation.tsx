@@ -1,7 +1,3 @@
-"use client";
-
-import Link from "next/link";
-
 import {
     Bell,
     Code2,
@@ -10,6 +6,8 @@ import {
     Settings2,
     ShieldAlert,
 } from "lucide-react";
+
+import Link from "next/link";
 
 const items = [
     {
@@ -47,25 +45,25 @@ const items = [
 export function MerchantSettingsNavigation() {
     return (
         <nav className="flex gap-1 overflow-x-auto pb-1 lg:block lg:space-y-1">
-
-            {items.map((item) => {
-                const Icon = item.icon;
-
-                return (
+            {items.map(
+                ({
+                    label,
+                    href,
+                    icon: Icon,
+                }) => (
                     <Link
-                        key={item.href}
-                        href={item.href}
+                        key={href}
+                        href={href}
                         className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                         <Icon className="size-4" />
 
                         <span>
-                            {item.label}
+                            {label}
                         </span>
                     </Link>
-                );
-            })}
-
+                ),
+            )}
         </nav>
     );
 }

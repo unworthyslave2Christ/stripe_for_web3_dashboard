@@ -105,6 +105,8 @@ export default function PlansPage() {
     const page =
         useMerchantPlansPage();
 
+    console.log("Page GRACIOUSLY arrived at");
+
     ////////////////////////////////////////////////////////////
     // MERCHANT ACCOUNT STATES
     ////////////////////////////////////////////////////////////
@@ -125,6 +127,14 @@ export default function PlansPage() {
             </Page>
         );
     }
+
+    // GRACIOUS TODO: Disconnecting a  wallet..
+    // 1. In the midst of onboarding, should result in the onboarding process halted(returned to user form so as to connect back to browser wallet)
+    // 2. While in the dashboard, disconnecting the wallet, should cause the respective dashboard's page return its corresponding skeleton (for a fixed sufficiently short time) then a "Wallet Disconnected" error message ui
+
+    // GRACIOUS TODO: 
+    // There are yet sonner toast-messages to be included in every page for every response, 
+    // GRACIOUS TODO: Graced Error handling
 
     if (
         page.merchant.status ===

@@ -43,36 +43,8 @@ import {
 } from "@/hooks/onboarding/useCustomerOnboardingPage";
 
 export default function CustomerOnboardingPage() {
-
-    const router =
-        useRouter();
-
     const onboarding =
         useCustomerOnboardingPage();
-
-    ////////////////////////////////////////////////////////////
-    // COMPLETE REGISTRATION
-    ////////////////////////////////////////////////////////////
-
-    useEffect(() => {
-
-        if (
-            onboarding.status ===
-            "existing"
-        ) {
-            router.replace(
-                "/portal",
-            );
-        }
-
-    }, [
-        onboarding.status,
-        router,
-    ]);
-
-    ////////////////////////////////////////////////////////////
-    // RENDER
-    ////////////////////////////////////////////////////////////
 
     return (
         <OnboardingShell>
@@ -123,12 +95,12 @@ export default function CustomerOnboardingPage() {
                                             }
 
                                             disabled={
-                                                !onboarding.authenticated
+                                                !onboarding.walletConnected ||
+                                                !onboarding.clientReady
                                             }
 
                                             error={
-                                                onboarding.registrationError
-                                                ??
+                                                onboarding.registrationError ??
                                                 onboarding.customerError
                                             }
                                         />
@@ -136,7 +108,6 @@ export default function CustomerOnboardingPage() {
                                     </CardContent>
 
                                 </Card>
-
                             )}
 
                         </div>

@@ -54,19 +54,8 @@ export function CustomerPortalShell({
         ) {
             return;
         }
-
-        if (
-            !authenticated
-        ) {
-            router.replace(
-                `/customer/onboarding?returnTo=${encodeURIComponent(
-                    pathname,
-                )}`,
-            );
-        }
     }, [
         ready,
-        authenticated,
         router,
         pathname,
     ]);
@@ -79,13 +68,6 @@ export function CustomerPortalShell({
         );
     }
 
-    if (
-        !authenticated
-    ) {
-        return (
-            <PortalShellSkeleton />
-        );
-    }
 
     return (
         <div className="min-h-screen bg-background">

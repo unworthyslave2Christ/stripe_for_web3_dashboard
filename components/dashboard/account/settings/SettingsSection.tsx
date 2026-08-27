@@ -8,9 +8,7 @@ import {
 
 interface SettingsSectionProps {
     title: string;
-
     description: string;
-
     children: React.ReactNode;
 }
 
@@ -21,9 +19,7 @@ export function SettingsSection({
 }: SettingsSectionProps) {
     return (
         <Card>
-
             <CardHeader>
-
                 <CardTitle>
                     {title}
                 </CardTitle>
@@ -31,13 +27,11 @@ export function SettingsSection({
                 <CardDescription>
                     {description}
                 </CardDescription>
-
             </CardHeader>
 
             <CardContent>
                 {children}
             </CardContent>
-
         </Card>
     );
 }

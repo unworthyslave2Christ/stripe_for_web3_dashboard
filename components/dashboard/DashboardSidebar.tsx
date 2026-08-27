@@ -112,12 +112,18 @@ export function DashboardSidebar() {
                     </div>
 
                     <Button
+                        render={
+                            <Link
+                                href={"/"}
+                            >
+                                <LogOut />  
+                            
+                            </Link>
+                        }
                         variant="ghost"
                         size="icon"
                         className="size-8"
-                    >
-                        <LogOut />
-                    </Button>
+                    />
 
                 </div>
 

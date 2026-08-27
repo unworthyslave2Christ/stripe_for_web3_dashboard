@@ -1,12 +1,8 @@
 "use client";
 
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+    SettingsSection,
+} from "./SettingsSection";
 
 import {
     Label,
@@ -20,38 +16,46 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-export function SettingsBilling() {
+export function SettingsBilling({
+    value,
+    editable,
+    onChange,
+}: {
+    value: "test" | "live";
+    editable: boolean;
+    onChange: (
+        value: "test" | "live",
+    ) => void;
+}) {
     return (
-        <Card>
-
-            <CardHeader>
-
-                <CardTitle>
-                    Billing preferences
-                </CardTitle>
-
-                <CardDescription>
-                    Configure default billing behavior for your merchant.
-                </CardDescription>
-
-            </CardHeader>
-
-            <CardContent className="space-y-6">
-
+        <SettingsSection
+            title="Billing preferences"
+            description="Configure default billing behavior for your merchant."
+        >
+            <div className="space-y-6">
                 <div className="space-y-2">
-
                     <Label>
                         Default billing environment
                     </Label>
 
-                    <Select defaultValue="test">
-
+                    <Select
+                        value={value}
+                        onValueChange={(next) => {
+                            if (
+                                next ===
+                                    "test" ||
+                                next === "live"
+                            ) {
+                                onChange(next);
+                            }
+                        }}
+                        disabled={!editable}
+                    >
                         <SelectTrigger>
                             <SelectValue />
                         </SelectTrigger>
 
                         <SelectContent>
-
                             <SelectItem value="test">
                                 Test
                             </SelectItem>
@@ -59,32 +63,27 @@ export function SettingsBilling() {
                             <SelectItem value="live">
                                 Live
                             </SelectItem>
-
                         </SelectContent>
-
                     </Select>
 
                     <p className="text-xs text-muted-foreground">
-                        This does not change existing subscriptions or credentials.
+                        This does not change existing
+                        subscriptions or credentials.
                     </p>
-
                 </div>
 
                 <div className="rounded-lg border bg-muted/30 p-4">
-
                     <p className="text-sm font-medium">
-                        Billing behavior
+                        Billing ownership
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                        Subscription-specific billing settings remain controlled
-                        by individual plans and subscriptions.
+                        Subscription-specific billing
+                        behavior remains controlled by
+                        individual plans and subscriptions.
                     </p>
-
                 </div>
-
-            </CardContent>
-
-        </Card>
+            </div>
+        </SettingsSection>
     );
 }

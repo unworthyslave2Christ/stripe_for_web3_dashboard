@@ -115,10 +115,15 @@ export default function ActivityPage() {
                             Unable to load activity
                         </p>
 
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            {page.error?.message ??
-                                "An unexpected error occurred."}
-                        </p>
+                        {/* {
+                            page?.error && (
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {page.error?.message ??
+                                        "An unexpected error occurred."}
+                                </p>
+                            )
+                        } */}
+                        
 
                         <Button
                             className="mt-4"

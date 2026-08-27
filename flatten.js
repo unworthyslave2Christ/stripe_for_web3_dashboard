@@ -13,8 +13,8 @@ const SOURCE_DIR = path.join(
     PROJECT_ROOT,
     "app",
     "dashboard",
-    "account",
-    "settings",
+    "platform",
+    "plans"
 );
 
 const ENTRY_FILE = path.join(
@@ -26,8 +26,9 @@ const OUTPUT_DIR = path.join(
     PROJECT_ROOT,
     "app",
     "dashboard",
-    "account",
-    "settings-flattened",
+    "platform",
+    // "onboarding",
+    "plans-flattened",
 );
 
 const OUTPUT_FILE = path.join(

@@ -1,6 +1,7 @@
 import {
     CheckCircle2,
     Cloud,
+    LockKeyhole,
 } from "lucide-react";
 
 import {
@@ -9,14 +10,25 @@ import {
 
 export function SettingsStatus({
     dirty = false,
+    editable = false,
 }: {
     dirty?: boolean;
+    editable?: boolean;
 }) {
-    if (dirty) {
+    if (dirty && editable) {
         return (
             <Badge variant="outline">
                 <Cloud />
                 Unsaved changes
+            </Badge>
+        );
+    }
+
+    if (!editable) {
+        return (
+            <Badge variant="outline">
+                <LockKeyhole />
+                Read-only
             </Badge>
         );
     }

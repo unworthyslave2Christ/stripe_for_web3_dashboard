@@ -1,41 +1,35 @@
 "use client";
 
-import {
-    usePrivy,
-} from "@privy-io/react-auth";
+import { useAccount } from "wagmi";
+import { usePrivy } from "@privy-io/react-auth";
 
-////////////////////////////////////////////////////////////
-// RESULT
-////////////////////////////////////////////////////////////
-
-export interface ConnectedWalletState {
-    ready: boolean;
-
-    authenticated: boolean;
-
-    address:
-        | string
-        | undefined;
-}
-
-////////////////////////////////////////////////////////////
-// HOOK
-////////////////////////////////////////////////////////////
-
-export function useConnectedWallet(): ConnectedWalletState {
+export function useConnectedWallet() {
     const {
-        ready,
+        ready: privyReady,
         authenticated,
-        user,
-    } =
-        usePrivy();
+    } = usePrivy();
+
+    const {
+        address,
+        isConnected,
+    } = useAccount();
+
+    const walletConnected =
+        Boolean(
+            isConnected &&
+            address,
+        );
 
     return {
-        ready,
+        ready: privyReady,
 
         authenticated,
 
+        isConnected: walletConnected,
+
         address:
-            user?.wallet?.address,
+            walletConnected
+                ? address
+                : undefined,
     };
 }

@@ -1,16 +1,14 @@
 "use client";
 
-import {
-    useQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import {
-    useConnectedWallet,
-} from "@/hooks/wallet/useConnectedWallet";
+    useAccount,
+} from "wagmi";
 
 import {
     useCustomerClient,
-} from "./useCustomerClient";
+} from "@/hooks/customer/useCustomerClient";
 
 import {
     queryKeys,
@@ -21,23 +19,26 @@ import {
 ////////////////////////////////////////////////////////////
 
 export function useCustomer() {
-
     const {
-        authenticated,
         address,
-    } =
-        useConnectedWallet();
+        isConnected,
+    } = useAccount();
 
     const {
         client,
-        ready:
-            clientReady,
-    } =
-        useCustomerClient();
+        ready: clientReady,
+    } = useCustomerClient();
+
+    const walletConnected =
+        Boolean(
+            isConnected &&
+            address,
+        );
 
     const query =
         useQuery({
             queryKey:
+                walletConnected &&
                 address
                     ? queryKeys.customer.byWallet(
                         address,
@@ -60,19 +61,17 @@ export function useCustomer() {
                     }
 
                     return client.getByWallet(
-                        address as `0x${string}`,
+                        address,
                     );
                 },
 
             enabled:
                 Boolean(
-                    authenticated &&
-                    address &&
+                    walletConnected &&
                     clientReady,
                 ),
 
-            retry:
-                false,
+            retry: false,
         });
 
     ////////////////////////////////////////////////////////////
@@ -87,36 +86,27 @@ export function useCustomer() {
         | "not-created"
         | "error";
 
-    if (!authenticated) {
+    if (!walletConnected) {
 
         status =
             "disconnected";
 
-    } else if (
-        !address ||
-        !clientReady
-    ) {
+    } else if (!clientReady) {
 
         status =
             "waiting";
 
-    } else if (
-        query.isLoading
-    ) {
+    } else if (query.isLoading) {
 
         status =
             "loading";
 
-    } else if (
-        query.isError
-    ) {
+    } else if (query.isError) {
 
         status =
             "error";
 
-    } else if (
-        query.data
-    ) {
+    } else if (query.data) {
 
         status =
             "ready";
@@ -129,8 +119,9 @@ export function useCustomer() {
 
     return {
         customer:
-            query.data ??
-            null,
+            walletConnected
+                ? query.data ?? null
+                : null,
 
         status,
 

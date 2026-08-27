@@ -40,9 +40,12 @@ import {
     useMerchantCustomersPage,
 } from "@/hooks/pages/merchant/useMerchantCustomersPage";
 
+
+
 export default function CustomersPage() {
     const page =
         useMerchantCustomersPage();
+
 
     return (
         <Page>

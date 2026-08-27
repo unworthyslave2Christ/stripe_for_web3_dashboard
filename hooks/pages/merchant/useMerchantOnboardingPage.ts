@@ -2,13 +2,16 @@
 
 import {
     useCallback,
-    useMemo,
     useState,
 } from "react";
 
 import type {
     Address,
 } from "viem";
+
+import type {
+    MerchantRecord,
+} from "@stripe-for-web3/core";
 
 import {
     useMerchant,
@@ -17,10 +20,13 @@ import {
 import {
     useMerchantClient,
 } from "@/hooks/merchant/useMerchantClient";
+import { useAccount } from "wagmi";
 
-import type {
-    MerchantRecord,
-} from "@stripe-for-web3/core";
+
+
+////////////////////////////////////////////////////////////
+// STATUS
+////////////////////////////////////////////////////////////
 
 export type MerchantOnboardingStatus =
     | "disconnected"
@@ -31,30 +37,29 @@ export type MerchantOnboardingStatus =
     | "complete"
     | "error";
 
+////////////////////////////////////////////////////////////
+// HOOK
+////////////////////////////////////////////////////////////
+
 export function useMerchantOnboardingPage() {
+    const merchant = useMerchant();
 
-    ////////////////////////////////////////////////////////////
-    // MERCHANT RESOURCE
-    ////////////////////////////////////////////////////////////
-
-    const merchant =
-        useMerchant();
-
-    ////////////////////////////////////////////////////////////
-    // SDK
-    ////////////////////////////////////////////////////////////
+    const {
+        address,
+        isConnected,
+    } = useAccount();
 
     const {
         client,
+        ready: clientReady,
+    } = useMerchantClient();
 
-        ready:
-            clientReady,
-    } =
-        useMerchantClient();
 
-    ////////////////////////////////////////////////////////////
-    // CREATION STATE
-    ////////////////////////////////////////////////////////////
+    const walletConnected =
+        Boolean(
+            isConnected &&
+            address,
+        );
 
     const [
         creationLoading,
@@ -64,22 +69,12 @@ export function useMerchantOnboardingPage() {
     const [
         creationError,
         setCreationError,
-    ] =
-        useState<Error | null>(
-            null,
-        );
+    ] = useState<Error | null>(null);
 
     const [
         createdMerchant,
         setCreatedMerchant,
-    ] =
-        useState<MerchantRecord | null>(
-            null,
-        );
-
-    ////////////////////////////////////////////////////////////
-    // CREATE
-    ////////////////////////////////////////////////////////////
+    ] = useState<MerchantRecord | null>(null);
 
     const createMerchant =
         useCallback(
@@ -89,98 +84,61 @@ export function useMerchantOnboardingPage() {
                 metadataURI,
             }: {
                 name: string;
-
-                payoutWallet:
-                    Address;
-
-                metadataURI:
-                    string;
+                payoutWallet: Address;
+                metadataURI: string;
             }) => {
 
-                if (
-                    !client
-                ) {
-                    const error =
-                        new Error(
-                            "Merchant client is not ready.",
-                        );
-
-                    setCreationError(
-                        error,
-                    );
-
-                    throw error;
-                }
-
-                if (
-                    !merchant.ownerWallet
-                ) {
+                /*
+                 * IMPORTANT:
+                 * Use the current wagmi address directly.
+                 * Do not depend on merchant.ownerWallet here.
+                 */
+                if (!walletConnected || !address) {
                     const error =
                         new Error(
                             "Connect your merchant wallet first.",
                         );
 
-                    setCreationError(
-                        error,
-                    );
+                    setCreationError(error);
 
                     throw error;
                 }
 
-                setCreationLoading(
-                    true,
-                );
+                if (!client) {
+                    const error =
+                        new Error(
+                            "Merchant client is not ready.",
+                        );
 
-                setCreationError(
-                    null,
-                );
+                    setCreationError(error);
+
+                    throw error;
+                }
+
+                setCreationLoading(true);
+                setCreationError(null);
 
                 try {
-
                     const result =
                         await client.register({
-                            name:
-                                name.trim(),
-
+                            name: name.trim(),
                             payoutWallet,
-
                             metadataURI:
                                 metadataURI.trim(),
                         });
 
-                    /*
-                     * Preserve the SDK's canonical result.
-                     *
-                     * If CreateMerchantResult has a direct merchant
-                     * property, use that exact type when available.
-                     */
                     const record =
-                        extractMerchantRecord(
-                            result,
-                        );
+                        extractMerchantRecord(result);
 
-                    if (
-                        record
-                    ) {
-                        setCreatedMerchant(
-                            record,
-                        );
+                    if (record) {
+                        setCreatedMerchant(record);
                     }
 
-                    /*
-                     * Re-read the canonical API resource.
-                     *
-                     * This is the same principle used by the customer
-                     * onboarding flow.
-                     */
                     await merchant.refresh();
 
                     return result;
 
-                } catch (
-                    cause
-                ) {
-
+                } catch (cause) {
                     const error =
                         cause instanceof Error
                             ? cause
@@ -188,59 +146,59 @@ export function useMerchantOnboardingPage() {
                                 "Unable to create merchant.",
                             );
 
-                    setCreationError(
-                        error,
-                    );
+                    setCreationError(error);
 
                     throw error;
 
                 } finally {
-
-                    setCreationLoading(
-                        false,
-                    );
+                    setCreationLoading(false);
                 }
             },
             [
+                address,
+                walletConnected,
                 client,
-                merchant,
+                merchant.refresh,
             ],
         );
 
     ////////////////////////////////////////////////////////////
-    // STATUS
+    // DERIVED STATUS
     ////////////////////////////////////////////////////////////
 
-    const status:
-        MerchantOnboardingStatus =
-        !merchant.ownerWallet
-            ? "disconnected"
-            : merchant.merchantStatus ===
-                "loading" ||
-                merchant.merchantStatus ===
-                    "waiting" ||
-                !clientReady
-                ? "checking"
-                : creationLoading
-                    ? "creating"
-                    : createdMerchant
-                        ? "complete"
-                        : merchant.merchantStatus ===
-                            "ready"
-                            ? "existing"
-                            : merchant.merchantStatus ===
-                                "not-created"
-                                ? "not-created"
-                                : merchant.merchantStatus ===
-                                    "error"
-                                    ? "error"
-                                    : "checking";
+    const status: MerchantOnboardingStatus =
+    merchant.merchantStatus ===
+        "disconnected"
+        ? "disconnected"
+        : merchant.merchantStatus ===
+              "waiting" ||
+          merchant.merchantStatus ===
+              "loading" ||
+          !clientReady
+        ? "checking"
+        : creationLoading
+        ? "creating"
+        : createdMerchant
+        ? "complete"
+        : merchant.merchantStatus ===
+              "ready"
+        ? "existing"
+        : merchant.merchantStatus ===
+              "not-created"
+        ? "not-created"
+        : merchant.merchantStatus ===
+              "error"
+        ? "error"
+        : "checking";
 
+    
     return {
         status,
 
         ownerWallet:
-            merchant.ownerWallet,
+            walletConnected
+                ? address
+                : undefined,
 
         merchant:
             merchant.merchant,
@@ -254,7 +212,7 @@ export function useMerchantOnboardingPage() {
         refreshing:
             merchant.refreshing,
 
-        customerError:
+        error:
             merchant.error,
 
         clientReady,
@@ -270,16 +228,13 @@ export function useMerchantOnboardingPage() {
     };
 }
 
-/*
- * Temporary compatibility helper.
- *
- * Once CreateMerchantResult is confirmed from the merchant SDK package,
- * replace this with the exact typed property.
- */
+////////////////////////////////////////////////////////////
+// TEMPORARY RESULT NORMALIZATION
+////////////////////////////////////////////////////////////
+
 function extractMerchantRecord(
     result: unknown,
 ): MerchantRecord | null {
-
     if (
         !result ||
         typeof result !==

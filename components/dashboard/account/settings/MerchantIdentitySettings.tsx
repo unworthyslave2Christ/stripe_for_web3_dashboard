@@ -1,12 +1,12 @@
 "use client";
 
 import {
-    Copy,
-} from "lucide-react";
-
-import {
     useState,
 } from "react";
+
+import {
+    Copy,
+} from "lucide-react";
 
 import {
     Button,
@@ -17,45 +17,66 @@ import {
 } from "@/components/ui/input";
 
 import {
-    Label,
-} from "@/components/ui/label";
-
-import {
     Textarea,
 } from "@/components/ui/textarea";
+
+import {
+    Label,
+} from "@/components/ui/label";
 
 import {
     SettingsSection,
 } from "./SettingsSection";
 
 interface MerchantIdentitySettingsProps {
-    merchantId: number;
+    merchantId:
+        | number
+        | string;
 
-    initialName: string;
+    name: string;
 
-    initialMetadataUri: string;
+    metadataUri: string;
+
+    editable: boolean;
+
+    onChange: (
+        patch: {
+            name?: string;
+            metadataUri?: string;
+        },
+    ) => void;
+
+    onSave: () => void;
+
+    saving: boolean;
 }
 
 export function MerchantIdentitySettings({
     merchantId,
-    initialName,
-    initialMetadataUri,
+    name,
+    metadataUri,
+    editable,
+    onChange,
+    onSave,
+    saving,
 }: MerchantIdentitySettingsProps) {
     const [
-        name,
-        setName,
-    ] = useState(initialName);
-
-    const [
-        metadataUri,
-        setMetadataUri,
-    ] = useState(
-        initialMetadataUri,
-    );
+        copied,
+        setCopied,
+    ] = useState(false);
 
     async function copyMerchantId() {
         await navigator.clipboard.writeText(
             String(merchantId),
+        );
+
+        setCopied(true);
+
+        window.setTimeout(
+            () => {
+                setCopied(false);
+            },
+            1200,
         );
     }
 
@@ -64,11 +85,8 @@ export function MerchantIdentitySettings({
             title="Merchant identity"
             description="Configure the public identity information associated with your merchant."
         >
-
             <div className="space-y-6">
-
                 <div className="space-y-2">
-
                     <Label htmlFor="merchant-name">
                         Merchant name
                     </Label>
@@ -76,22 +94,25 @@ export function MerchantIdentitySettings({
                     <Input
                         id="merchant-name"
                         value={name}
+                        disabled={!editable}
                         onChange={(event) =>
-                            setName(
-                                event.target.value,
-                            )
+                            onChange({
+                                name:
+                                    event.target
+                                        .value,
+                            })
                         }
                         placeholder="Your brand name"
                     />
 
                     <p className="text-xs text-muted-foreground">
-                        This is the merchant or brand name displayed throughout Stripe for Web3.
+                        This is the merchant or brand
+                        name displayed throughout
+                        Stripe for Web3.
                     </p>
-
                 </div>
 
                 <div className="space-y-2">
-
                     <Label htmlFor="metadata-uri">
                         Metadata URI
                     </Label>
@@ -99,35 +120,35 @@ export function MerchantIdentitySettings({
                     <Textarea
                         id="metadata-uri"
                         value={metadataUri}
+                        disabled={!editable}
                         onChange={(event) =>
-                            setMetadataUri(
-                                event.target.value,
-                            )
+                            onChange({
+                                metadataUri:
+                                    event.target
+                                        .value,
+                            })
                         }
                         placeholder="ipfs://..."
                         className="min-h-20 font-mono text-xs"
                     />
 
                     <p className="text-xs text-muted-foreground">
-                        URI pointing to the merchant metadata associated with this merchant.
+                        URI pointing to the merchant
+                        metadata associated with this
+                        merchant.
                     </p>
-
                 </div>
 
                 <div className="space-y-2">
-
                     <Label>
                         Merchant ID
                     </Label>
 
                     <div className="flex gap-2">
-
                         <Input
-                            value={
-                                String(
-                                    merchantId,
-                                )
-                            }
+                            value={String(
+                                merchantId,
+                            )}
                             readOnly
                             className="font-mono"
                         />
@@ -142,17 +163,41 @@ export function MerchantIdentitySettings({
                         >
                             <Copy />
                         </Button>
-
                     </div>
 
                     <p className="text-xs text-muted-foreground">
-                        Your protocol-level merchant identifier.
+                        Your canonical merchant
+                        identifier.
                     </p>
-
                 </div>
 
-            </div>
+                <div className="rounded-lg border bg-muted/30 p-4">
+                    <p className="text-sm font-medium">
+                        Persistence status
+                    </p>
 
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                        Merchant update operations are
+                        not yet exposed by the SDK.
+                        Changes can be prepared locally,
+                        but cannot yet be persisted.
+                    </p>
+                </div>
+
+                <div className="flex justify-end">
+                    <Button
+                        disabled={
+                            !editable ||
+                            saving
+                        }
+                        onClick={onSave}
+                    >
+                        {saving
+                            ? "Saving..."
+                            : "Save changes"}
+                    </Button>
+                </div>
+            </div>
         </SettingsSection>
     );
 }

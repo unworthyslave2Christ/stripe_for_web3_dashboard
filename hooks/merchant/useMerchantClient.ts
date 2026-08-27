@@ -1,23 +1,49 @@
 "use client";
 
-import {
-    useMemo,
-} from "react";
+import { useMemo } from "react";
 
 import {
+    useAccount,
     usePublicClient,
     useWalletClient,
 } from "wagmi";
 
-import {
-    createMerchantClient,
-} from "@/lib/sdk/createMerchantClient";
+import type {
+    PublicClient,
+    WalletClient,
+} from "viem";
 
-////////////////////////////////////////////////////////////
-// HOOK
-////////////////////////////////////////////////////////////
+import {
+    MerchantClient,
+} from "@stripe-for-web3/merchant";
+
+import {
+    appConfig,
+} from "@/app/config";
+
+function createMerchantClient({
+    walletClient,
+    publicClient,
+}: {
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+}) {
+    return new MerchantClient({
+        walletClient,
+        publicClient,
+        contractAddress:
+            appConfig.billingContractAddress,
+        apiUrl:
+            appConfig.apiUrl,
+    });
+}
 
 export function useMerchantClient() {
+    const {
+        isConnected,
+        address,
+    } = useAccount();
+
     const {
         data: walletClient,
     } = useWalletClient();
@@ -25,10 +51,16 @@ export function useMerchantClient() {
     const publicClient =
         usePublicClient();
 
+    const connected =
+        Boolean(
+            isConnected &&
+            address,
+        );
+
     const client =
         useMemo(() => {
-
             if (
+                !connected ||
                 !walletClient ||
                 !publicClient
             ) {
@@ -39,8 +71,8 @@ export function useMerchantClient() {
                 walletClient,
                 publicClient,
             });
-
         }, [
+            connected,
             walletClient,
             publicClient,
         ]);
@@ -52,8 +84,11 @@ export function useMerchantClient() {
 
         publicClient,
 
+        connected,
+
         ready:
             Boolean(
+                connected &&
                 walletClient &&
                 publicClient,
             ),

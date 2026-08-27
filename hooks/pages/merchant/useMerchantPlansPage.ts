@@ -94,7 +94,7 @@ export function useMerchantPlansPage() {
                             plan.planId,
                         ).includes(
                             normalizedSearch,
-                        );
+                        ); // TODO: To remove searching by plan Ids to prevent merchants from having read-only unauthorized access to other merchant's plans, perhaps this Gating is to be achieved via API keys
 
                     const matchesStatus =
                         statusFilter ===
@@ -172,7 +172,7 @@ export function useMerchantPlansPage() {
                     1
                 ) *
                     PAGE_SIZE;
-
+        
             return filteredPlans.slice(
                 start,
                 start +
@@ -258,6 +258,8 @@ export function useMerchantPlansPage() {
                                 // ) ||
                                 0,
                             ),
+
+                            // TODO: Every time a charge is executed(during billing),  a monthlyRevenue column (yet unadded) has on each plan an automated increment during billing
                         0,
                     ),
             };

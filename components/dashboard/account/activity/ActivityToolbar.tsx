@@ -14,15 +14,10 @@ import {
 
 import {
     ActivityFilters,
+    type EntityFilter,
+    type SeverityFilter,
+    type PeriodFilter,
 } from "@/components/dashboard/account/activity/ActivityFilters";
-
-
-import type {
-    EntityFilter,
-    SeverityFilter,
-    PeriodFilter,
-} from "./ActivityFilters";
-import { useState } from "react";
 
 export interface ActivityToolbarProps {
     search: string;
@@ -56,12 +51,9 @@ export interface ActivityToolbarProps {
     refreshAvailable: boolean;
 }
 
-
 export function ActivityToolbar(
     props: ActivityToolbarProps,
 ) {
-
-
     return (
         <div className="rounded-xl border bg-card p-4">
             <Stack gap={4}>
@@ -88,23 +80,43 @@ export function ActivityToolbar(
 
                 <ActivityFilters
                     values={{
-                        entity,
-                        severity,
-                        period,
+                        entity:
+                            props.entity,
+
+                        severity:
+                            props.severity,
+
+                        period:
+                            props.period,
                     }}
-                    onEntityChange={(value) => {
-                        if (value) {
-                            onEntityChange(value);
+
+                    onEntityChange={(
+                        value,
+                    ) => {
+                        if (value !== null) {
+                            props.onEntityChange(
+                                value,
+                            );
                         }
                     }}
-                    onSeverityChange={(value) => {
-                        if (value) {
-                            onSeverityChange(value);
+
+                    onSeverityChange={(
+                        value,
+                    ) => {
+                        if (value !== null) {
+                            props.onSeverityChange(
+                                value,
+                            );
                         }
                     }}
-                    onPeriodChange={(value) => {
-                        if (value) {
-                            onPeriodChange(value);
+
+                    onPeriodChange={(
+                        value,
+                    ) => {
+                        if (value !== null) {
+                            props.onPeriodChange(
+                                value,
+                            );
                         }
                     }}
                 />

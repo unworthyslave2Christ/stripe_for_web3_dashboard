@@ -9,6 +9,10 @@ import {
 } from "@privy-io/react-auth";
 
 import {
+    useAccount,
+} from "wagmi";
+
+import {
     queryKeys,
 } from "@/lib/query/queryKeys";
 
@@ -24,32 +28,59 @@ export type MerchantResourceStatus =
     | "not-created"
     | "error";
 
+function isNotFoundError(error: unknown) {
+    if (!error) {
+        return false;
+    }
+
+    if (
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error
+    ) {
+        return (
+            (error as { status?: number }).status === 404
+        );
+    }
+
+    return false;
+}
+
 export function useMerchant() {
     const {
-        ready:
-            privyReady,
-
+        ready: privyReady,
         authenticated,
+    } = usePrivy();
 
-        user,
-    } =
-        usePrivy();
-
-    const address =
-        user?.wallet?.address;
+    const {
+        address,
+        isConnected,
+    } = useAccount();
 
     const {
         client,
+        ready: clientReady,
+    } = useMerchantClient();
 
-        ready:
-            clientReady,
-    } =
-        useMerchantClient();
+    // const walletConnected =
+    //     Boolean(
+    //         privyReady &&
+    //         authenticated &&
+    //         isConnected &&
+    //         address,
+    //     );
+
+    const walletConnected =
+        Boolean(
+            privyReady &&
+            isConnected &&
+            address,
+        );
 
     const query =
         useQuery({
             queryKey:
-                address
+                walletConnected && address
                     ? queryKeys.merchant.byOwnerWallet(
                         address,
                     )
@@ -70,67 +101,60 @@ export function useMerchant() {
                     }
 
                     return client.getByOwnerWallet(
-                        address as `0x${string}`,
+                        address,
                     );
                 },
 
             enabled:
                 Boolean(
-                    privyReady &&
-                    authenticated &&
-                    address &&
+                    walletConnected &&
                     clientReady,
                 ),
 
-            retry:
-                false,
+            retry: false,
         });
 
-    let status:
+    let merchantStatus:
         MerchantResourceStatus;
 
-    if (
-        !privyReady ||
-        !authenticated
-    ) {
-        status =
+    console.log("!walletConnected: ", !walletConnected);
+    console.log("privyReady: ", privyReady);
+    console.log("authenticated: ", authenticated);
+
+    if (!walletConnected) {
+        merchantStatus =
             "disconnected";
-    } else if (
-        !address ||
-        !clientReady
-    ) {
-        status =
+    } else if (!clientReady) {
+        merchantStatus =
             "waiting";
-    } else if (
-        query.isLoading
-    ) {
-        status =
+    } else if (query.isLoading) {
+        merchantStatus =
             "loading";
     } else if (
-        query.isError
+        query.isError &&
+        isNotFoundError(query.error)
     ) {
-        status =
-            "error";
-    } else if (
-        query.data
-    ) {
-        status =
-            "ready";
+        merchantStatus = "not-created";
+    } else if (query.isError) {
+        merchantStatus = "error";
+    } else if (query.data) {
+        merchantStatus = "ready";
     } else {
-        status =
-            "not-created";
+        merchantStatus = "not-created";
     }
 
     return {
         merchant:
-            query.data ??
-            null,
+            walletConnected
+                ? query.data ?? null
+                : null,
 
-        merchantStatus:
-            status,
+        merchantStatus,
 
         ownerWallet:
-            address,
+            walletConnected
+                ? address
+                : undefined,
 
         loading:
             query.isLoading,

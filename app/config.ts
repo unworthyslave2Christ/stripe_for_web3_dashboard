@@ -36,4 +36,4 @@ export function validateAppConfig() {
             "BILLING_CONTRACT_ADDRESS is not configured.",
         );
     }
-}
+}        

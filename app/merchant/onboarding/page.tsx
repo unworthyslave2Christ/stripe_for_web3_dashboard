@@ -51,6 +51,7 @@ export default function MerchantOnboardingPage() {
 
     const onboarding =
         useMerchantOnboardingPage();
+        
 
     useEffect(
         () => {
@@ -77,18 +78,6 @@ export default function MerchantOnboardingPage() {
                 <Container className="py-12">
 
                     <div className="mx-auto max-w-2xl">
-
-                        <div className="flex items-center gap-2">
-
-                            <Badge variant="secondary">
-                                Merchant onboarding
-                            </Badge>
-
-                            <Badge variant="outline">
-                                Secure setup
-                            </Badge>
-
-                        </div>
 
                         <OnboardingHeader
                             eyebrow="Merchant onboarding"
@@ -139,7 +128,7 @@ export default function MerchantOnboardingPage() {
 
                                             error={
                                                 onboarding.creationError ??
-                                                onboarding.customerError
+                                                onboarding.error
                                             }
                                         />
 

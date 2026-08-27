@@ -85,13 +85,15 @@ export function LandingNavbar() {
                 <div className="hidden items-center gap-2 sm:flex">
 
                     <Button
+                        nativeButton={false}
                         render={
-                            <Link href="/get-started">
-                                Sign in
+                            <Link href="/merchant/onboarding">
+                                Become a merchant
                             </Link>
                         }
-                        variant="ghost"
-                    />
+                    >
+                        Become a merchant
+                    </Button>
 
                     <Button 
                         render={

@@ -39,6 +39,35 @@ export function MerchantOnboardingState({
 
     if (
         status ===
+        "disconnected"
+    ) {
+        return (
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                <div className="flex items-start gap-3">
+
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <WalletCards className="size-4 text-primary" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+
+                        <p className="text-sm font-medium">
+                            Connect your merchant wallet
+                        </p>
+
+                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Connect the wallet that owns or will create your
+                            Stripe for Web3 merchant account to continue.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (
+        status ===
         "checking"
     ) {
         return (

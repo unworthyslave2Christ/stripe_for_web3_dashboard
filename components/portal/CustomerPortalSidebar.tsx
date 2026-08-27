@@ -19,6 +19,11 @@ import {
     useCustomer,
 } from "@/hooks/customer/useCustomer";
 
+import {
+    Button,
+} from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+
 function getInitials(
     name?: string,
 ) {
@@ -115,15 +120,33 @@ export function CustomerPortalSidebar() {
 
             <Separator />
 
-            <div className="p-3">
+            <div className="flex items-center gap-3 rounded-lg p-2">
 
-                <p className="px-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                    Powered by
-                </p>
+                <div className="p-3">
 
-                <p className="mt-1 px-2 text-sm font-medium">
-                    Stripe for Web3
-                </p>
+                    <p className="px-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Powered by
+                    </p>
+
+                    <p className="mt-1 px-2 text-sm font-medium">
+                        Stripe for Web3
+                    </p>
+
+                </div>
+
+                <Button
+                    render={
+                        <Link
+                            href={"/"}
+                        >
+                            <LogOut />  
+                        
+                        </Link>
+                    }
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                />
 
             </div>
 

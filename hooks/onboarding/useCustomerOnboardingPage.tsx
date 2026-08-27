@@ -6,8 +6,8 @@ import {
 } from "react";
 
 import {
-    useConnectedWallet,
-} from "@/hooks/wallet/useConnectedWallet";
+    useAccount,
+} from "wagmi";
 
 import {
     useCustomerClient,
@@ -29,7 +29,6 @@ export type CustomerOnboardingStatus =
     | "registering"
     | "complete"
     | "error";
-    
 
 ////////////////////////////////////////////////////////////
 // HOOK
@@ -42,29 +41,18 @@ export function useCustomerOnboardingPage() {
     ////////////////////////////////////////////////////////////
 
     const {
-        ready:
-            walletReady,
-
-        authenticated,
-
         address,
-    } =
-        useConnectedWallet();
+        isConnected,
+    } = useAccount();
+
+    const walletConnected =
+        Boolean(
+            isConnected &&
+            address,
+        );
 
     ////////////////////////////////////////////////////////////
-    // SDK
-    ////////////////////////////////////////////////////////////
-
-    const {
-        client,
-
-        ready:
-            clientReady,
-    } =
-        useCustomerClient();
-
-    ////////////////////////////////////////////////////////////
-    // CUSTOMER RESOURCE
+    // CUSTOMER
     ////////////////////////////////////////////////////////////
 
     const {
@@ -83,6 +71,18 @@ export function useCustomerOnboardingPage() {
             refreshCustomer,
     } =
         useCustomer();
+
+    ////////////////////////////////////////////////////////////
+    // CLIENT
+    ////////////////////////////////////////////////////////////
+
+    const {
+        client,
+
+        ready:
+            clientReady,
+    } =
+        useCustomerClient();
 
     ////////////////////////////////////////////////////////////
     // REGISTRATION
@@ -117,10 +117,13 @@ export function useCustomerOnboardingPage() {
                 email: string;
             }) => {
 
-                if (!client) {
+                if (
+                    !walletConnected ||
+                    !address
+                ) {
                     const error =
                         new Error(
-                            "Customer client is not ready.",
+                            "Connect your customer wallet first.",
                         );
 
                     setRegistrationError(
@@ -130,10 +133,13 @@ export function useCustomerOnboardingPage() {
                     throw error;
                 }
 
-                if (!address) {
+                if (
+                    !clientReady ||
+                    !client
+                ) {
                     const error =
                         new Error(
-                            "Connect your wallet first.",
+                            "Customer client is not ready.",
                         );
 
                     setRegistrationError(
@@ -162,11 +168,6 @@ export function useCustomerOnboardingPage() {
                                 email.trim(),
                         });
 
-                    ////////////////////////////////////////////////////
-                    // IMPORTANT
-                    // Re-read canonical customer state from the API.
-                    ////////////////////////////////////////////////////
-
                     await refreshCustomer();
 
                     return result;
@@ -194,25 +195,22 @@ export function useCustomerOnboardingPage() {
                 }
             },
             [
-                client,
-
+                walletConnected,
                 address,
-
+                client,
+                clientReady,
                 refreshCustomer,
             ],
         );
 
     ////////////////////////////////////////////////////////////
-    // DERIVED STATUS
+    // STATUS
     ////////////////////////////////////////////////////////////
 
     let status:
         CustomerOnboardingStatus;
 
-    if (
-        !walletReady ||
-        !authenticated
-    ) {
+    if (!walletConnected) {
 
         status =
             "disconnected";
@@ -265,11 +263,9 @@ export function useCustomerOnboardingPage() {
     return {
         status,
 
-        walletReady,
-
-        authenticated,
-
         address,
+
+        walletConnected,
 
         clientReady,
 
