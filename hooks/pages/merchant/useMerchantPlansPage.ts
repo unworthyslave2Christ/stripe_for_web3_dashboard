@@ -18,6 +18,9 @@ import type {
     BillingInterval,
     PlanStatus,
 } from "@/components/dashboard/platform/plans/plan.types";
+import { useMutation } from "@tanstack/react-query";
+import { PlanRecord } from "@stripe-for-web3/core";
+import { useMerchantClient } from "@/hooks/merchant/useMerchantClient";
 
 const PAGE_SIZE = 10;
 
@@ -31,6 +34,72 @@ export function useMerchantPlansPage() {
 
     const plans =
         useMerchantPlans();
+
+    const {
+        client,
+        ready: clientReady,
+    } = useMerchantClient();
+
+    const pausePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.pausePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+
+    const activatePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.resumePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+
+    const archivePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.archivePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+        
 
     ////////////////////////////////////////////////////////////
     // UI STATE
@@ -352,5 +421,16 @@ export function useMerchantPlansPage() {
         error:
             merchant.error ??
             plans.error,
+
+        planActions: {
+            pause: pausePlan.mutate,
+            activate: activatePlan.mutate,
+            archive: archivePlan.mutate,
+
+            pending:
+                pausePlan.isPending ||
+                activatePlan.isPending ||
+                archivePlan.isPending,
+        },
     };
 }

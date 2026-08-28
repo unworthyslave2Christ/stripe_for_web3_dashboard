@@ -1,16 +1,14 @@
-import {
-    Badge,
-} from "@/components/ui/badge";
+import type { PlanRecord } from "@stripe-for-web3/core";
 
-import type {
-    PlanRecord,
-} from "@stripe-for-web3/core";
+import { Badge } from "@/components/ui/badge";
+
+interface PlanStatusBadgeProps {
+    status: PlanRecord["status"];
+}
 
 export function PlanStatusBadge({
     status,
-}: {
-    status: PlanRecord["status"];
-}) {
+}: PlanStatusBadgeProps) {
     switch (status) {
         case "ACTIVE":
             return (

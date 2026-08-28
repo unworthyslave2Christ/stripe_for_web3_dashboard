@@ -1,37 +1,36 @@
-import type {
-    PlanRecord,
-} from "@stripe-for-web3/core";
+import type { PlanRecord } from "@stripe-for-web3/core";
 
 function formatInterval(
     interval: PlanRecord["billingPeriodNamed"],
 ) {
-    switch (interval as string) {
+    switch (String(interval)) {
         case "DAY":
             return "day";
 
         case "WEEK":
             return "week";
 
-        case "YEAR":
-            return "year";
-
         case "MONTH":
             return "month";
+
+        case "YEAR":
+            return "year";
 
         default:
             return String(interval).toLowerCase();
     }
 }
 
+interface PlanPricingProps {
+    plan: PlanRecord;
+}
+
 export function PlanPricing({
     plan,
-}: {
-    plan: PlanRecord;
-}) {
+}: PlanPricingProps) {
     return (
         <div>
             <p className="font-medium">
-                {/* {plan.currency} {plan.amount} */}
                 {plan.amount}
             </p>
 
@@ -39,7 +38,9 @@ export function PlanPricing({
                 / {formatInterval(
                     plan.billingPeriodNamed,
                 )}
+
                 {" · "}
+
                 {plan.paymentToken}
             </p>
         </div>

@@ -17,6 +17,8 @@ import {
 } from "./useMerchantClient";
 
 export function useMerchantPlans() {
+
+    
     const {
         merchant,
         merchantStatus,

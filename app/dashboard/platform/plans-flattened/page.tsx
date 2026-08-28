@@ -20,22 +20,18 @@ import {
     Layers3,
     Users,
 } from "lucide-react";
-import type {
-    PlanRecord,
-} from "@stripe-for-web3/core";
+import type { PlanRecord } from "@stripe-for-web3/core";
 import Link from "next/link";
+import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+
+
 import { mergeProps } from "@base-ui/react/merge-props"
 
 import { useRender } from "@base-ui/react/use-render"
 
-import { Input as InputPrimitive } from "@base-ui/react/input"
-
-
-import { Select as SelectPrimitive } from "@base-ui/react/select"
-
-
 import {
-    useQuery,
+    useMutation,
+    useQueryClient,
 } from "@tanstack/react-query";
 import {
     usePrivy,
@@ -50,6 +46,12 @@ import type {
 import {
     MerchantClient,
 } from "@stripe-for-web3/merchant";
+import { Input as InputPrimitive } from "@base-ui/react/input"
+
+
+import { Select as SelectPrimitive } from "@base-ui/react/select"
+
+
 
 /* ============================================================
    FLATTENED SOURCE: app\dashboard\platform\plans\page.tsx
@@ -886,91 +888,252 @@ function PlansPagination({
 
 
 /* ============================================================
-   FLATTENED SOURCE: components\dashboard\platform\plans\PlanIdentity.tsx
+   FLATTENED SOURCE: components\ui\dropdown-menu.tsx
    ============================================================ */
 
 
 
-function PlanIdentity({
-    plan,
-}: {
-    plan: PlanRecord;
-}) {
-    return (
-        <div className="flex min-w-0 items-center gap-3">
-
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
-                <Layers3 className="size-4 text-muted-foreground" />
-            </div>
-
-            <div className="min-w-0">
-
-                <Link
-                    href={`/dashboard/platform/plans/${plan.planId}`}
-                    className="block truncate text-sm font-medium hover:underline"
-                >
-                    {plan.name}
-                </Link>
-
-                <p className="truncate text-xs text-muted-foreground">
-                    Plan #{plan.planId}
-                </p>
-
-            </div>
-
-        </div>
-    );
+function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
+  return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
 }
 
-
-/* ============================================================
-   FLATTENED SOURCE: components\dashboard\platform\plans\PlanPricing.tsx
-   ============================================================ */
-
-
-
-function formatInterval(
-    interval: PlanRecord["billingPeriodNamed"],
-) {
-    switch (interval as string) {
-        case "DAY":
-            return "day";
-
-        case "WEEK":
-            return "week";
-
-        case "YEAR":
-            return "year";
-
-        case "MONTH":
-            return "month";
-
-        default:
-            return String(interval).toLowerCase();
-    }
+function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
+  return <MenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
 }
 
-function PlanPricing({
-    plan,
-}: {
-    plan: PlanRecord;
-}) {
-    return (
-        <div>
-            <p className="font-medium">
-                {/* {plan.currency} {plan.amount} */}
-                {plan.amount}
-            </p>
+function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
+  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
+}
 
-            <p className="mt-1 text-xs text-muted-foreground">
-                / {formatInterval(
-                    plan.billingPeriodNamed,
-                )}
-                {" · "}
-                {plan.paymentToken}
-            </p>
-        </div>
-    );
+function DropdownMenuContent({
+  align = "start",
+  alignOffset = 0,
+  side = "bottom",
+  sideOffset = 4,
+  className,
+  ...props
+}: MenuPrimitive.Popup.Props &
+  Pick<
+    MenuPrimitive.Positioner.Props,
+    "align" | "alignOffset" | "side" | "sideOffset"
+  >) {
+  return (
+    <MenuPrimitive.Portal>
+      <MenuPrimitive.Positioner
+        className="isolate z-50 outline-none"
+        align={align}
+        alignOffset={alignOffset}
+        side={side}
+        sideOffset={sideOffset}
+      >
+        <MenuPrimitive.Popup
+          data-slot="dropdown-menu-content"
+          className={cn("z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95", className )}
+          {...props}
+        />
+      </MenuPrimitive.Positioner>
+    </MenuPrimitive.Portal>
+  )
+}
+
+function DropdownMenuGroup({ ...props }: MenuPrimitive.Group.Props) {
+  return <MenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
+}
+
+function DropdownMenuLabel({
+  className,
+  inset,
+  ...props
+}: MenuPrimitive.GroupLabel.Props & {
+  inset?: boolean
+}) {
+  return (
+    <MenuPrimitive.GroupLabel
+      data-slot="dropdown-menu-label"
+      data-inset={inset}
+      className={cn(
+        "px-1.5 py-1 text-xs font-medium text-muted-foreground data-inset:pl-7",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}: MenuPrimitive.Item.Props & {
+  inset?: boolean
+  variant?: "default" | "destructive"
+}) {
+  return (
+    <MenuPrimitive.Item
+      data-slot="dropdown-menu-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "group/dropdown-menu-item relative flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuSub({ ...props }: MenuPrimitive.SubmenuRoot.Props) {
+  return <MenuPrimitive.SubmenuRoot data-slot="dropdown-menu-sub" {...props} />
+}
+
+function DropdownMenuSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}: MenuPrimitive.SubmenuTrigger.Props & {
+  inset?: boolean
+}) {
+  return (
+    <MenuPrimitive.SubmenuTrigger
+      data-slot="dropdown-menu-sub-trigger"
+      data-inset={inset}
+      className={cn(
+        "flex cursor-default items-center gap-1.5 rounded-md px-1.5 py-1 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-popup-open:bg-accent data-popup-open:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <ChevronRightIcon className="ml-auto" />
+    </MenuPrimitive.SubmenuTrigger>
+  )
+}
+
+function DropdownMenuSubContent({
+  align = "start",
+  alignOffset = -3,
+  side = "right",
+  sideOffset = 0,
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuContent>) {
+  return (
+    <DropdownMenuContent
+      data-slot="dropdown-menu-sub-content"
+      className={cn("w-auto min-w-[96px] rounded-lg bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
+      align={align}
+      alignOffset={alignOffset}
+      side={side}
+      sideOffset={sideOffset}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  inset,
+  ...props
+}: MenuPrimitive.CheckboxItem.Props & {
+  inset?: boolean
+}) {
+  return (
+    <MenuPrimitive.CheckboxItem
+      data-slot="dropdown-menu-checkbox-item"
+      data-inset={inset}
+      className={cn(
+        "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      checked={checked}
+      {...props}
+    >
+      <span
+        className="pointer-events-none absolute right-2 flex items-center justify-center"
+        data-slot="dropdown-menu-checkbox-item-indicator"
+      >
+        <MenuPrimitive.CheckboxItemIndicator>
+          <CheckIcon
+          />
+        </MenuPrimitive.CheckboxItemIndicator>
+      </span>
+      {children}
+    </MenuPrimitive.CheckboxItem>
+  )
+}
+
+function DropdownMenuRadioGroup({ ...props }: MenuPrimitive.RadioGroup.Props) {
+  return (
+    <MenuPrimitive.RadioGroup
+      data-slot="dropdown-menu-radio-group"
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuRadioItem({
+  className,
+  children,
+  inset,
+  ...props
+}: MenuPrimitive.RadioItem.Props & {
+  inset?: boolean
+}) {
+  return (
+    <MenuPrimitive.RadioItem
+      data-slot="dropdown-menu-radio-item"
+      data-inset={inset}
+      className={cn(
+        "relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-7 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <span
+        className="pointer-events-none absolute right-2 flex items-center justify-center"
+        data-slot="dropdown-menu-radio-item-indicator"
+      >
+        <MenuPrimitive.RadioItemIndicator>
+          <CheckIcon
+          />
+        </MenuPrimitive.RadioItemIndicator>
+      </span>
+      {children}
+    </MenuPrimitive.RadioItem>
+  )
+}
+
+function DropdownMenuSeparator({
+  className,
+  ...props
+}: MenuPrimitive.Separator.Props) {
+  return (
+    <MenuPrimitive.Separator
+      data-slot="dropdown-menu-separator"
+      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="dropdown-menu-shortcut"
+      className={cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 
@@ -1032,11 +1195,13 @@ function Badge({
 
 
 
+interface PlanStatusBadgeProps {
+    status: PlanRecord["status"];
+}
+
 function PlanStatusBadge({
     status,
-}: {
-    status: PlanRecord["status"];
-}) {
+}: PlanStatusBadgeProps) {
     switch (status) {
         case "ACTIVE":
             return (
@@ -1069,75 +1234,743 @@ function PlanStatusBadge({
 }
 
 
+/* ============================================================
+   FLATTENED SOURCE: components\dashboard\platform\plans\PlanPricing.tsx
+   ============================================================ */
+
+
+
+function formatInterval(
+    interval: PlanRecord["billingPeriodNamed"],
+) {
+    switch (String(interval)) {
+        case "DAY":
+            return "day";
+
+        case "WEEK":
+            return "week";
+
+        case "MONTH":
+            return "month";
+
+        case "YEAR":
+            return "year";
+
+        default:
+            return String(interval).toLowerCase();
+    }
+}
+
+interface PlanPricingProps {
+    plan: PlanRecord;
+}
+
+function PlanPricing({
+    plan,
+}: PlanPricingProps) {
+    return (
+        <div>
+            <p className="font-medium">
+                {plan.amount}
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+                / {formatInterval(
+                    plan.billingPeriodNamed,
+                )}
+
+                {" · "}
+
+                {plan.paymentToken}
+            </p>
+        </div>
+    );
+}
+
+
+/* ============================================================
+   FLATTENED SOURCE: hooks\merchant\useMerchantPlanActions.ts
+   ============================================================ */
+
+
+/* ============================================================
+   FLATTENED SOURCE: lib\query\queryKeys.ts
+   ============================================================ */
+
+
+
+const queryKeys = {
+    customer: {
+        all:
+            ["customer"] as const,
+
+        byWallet: (
+            wallet: string,
+        ) => [
+            "customer",
+            "wallet",
+            wallet,
+        ] as const,
+
+        byId: (
+            customerId: number | string,
+        ) => [
+            "customer",
+            "id",
+            customerId,
+        ] as const,
+
+        subscriptions: (
+            customerId: number | string,
+        ) => [
+            "customer",
+            "subscriptions",
+            customerId,
+        ] as const,
+
+        subscription: (
+            subscriptionId: number,
+        ) => [
+            "customer",
+            "subscription",
+            subscriptionId,
+        ] as const,
+
+        plan: (
+            planId: number,
+        ) => [
+            "customer",
+            "plan",
+            planId,
+        ] as const,
+    },
+
+    merchant: {
+        all:
+            ["merchant"] as const,
+
+        byOwnerWallet: (
+            wallet: string,
+        ) => [
+            "merchant",
+            "owner-wallet",
+            wallet,
+        ] as const,
+
+        byId: (
+            merchantId: number | string,
+        ) => [
+            "merchant",
+            "id",
+            merchantId,
+        ] as const,
+
+        plans: (
+            merchantId: number | string,
+        ) => [
+            "merchant",
+            "plans",
+            merchantId,
+        ] as const,
+
+        plan: (planId: number) =>
+            [
+                "merchant",
+                "plan",
+                planId,
+            ] as const,
+
+        customers: (
+            merchantId: number | string,
+            params: {
+                page: number;
+                pageSize: number;
+                search: string;
+                status: string;
+            },
+        ) => [
+            "merchant",
+            "customers",
+            merchantId,
+            params,
+        ] as const,
+
+        notifications: (
+            merchantId: number,
+        ) => [
+            "merchant",
+            merchantId,
+            "notifications",
+        ] as const,
+    },
+} as const;
+
+
+/* ============================================================
+   FLATTENED SOURCE: hooks\merchant\useMerchant.ts
+   ============================================================ */
+
+
+/* ============================================================
+   FLATTENED SOURCE: hooks\merchant\useMerchantClient.ts
+   ============================================================ */
+
+
+/* ============================================================
+   FLATTENED SOURCE: app\config.ts
+   ============================================================ */
+
+
+
+////////////////////////////////////////////////////////////
+// APPLICATION CONFIGURATION
+////////////////////////////////////////////////////////////
+
+const appConfig = {
+    name:
+        "Stripe for Web3",
+
+    apiUrl:
+        process.env.NEXT_PUBLIC_API_URL as string,
+
+    billingContractAddress:
+        process.env.NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as Address,
+
+    demoMode:
+        process.env .NEXT_PUBLIC_DEMO_MODE === "true",
+};
+
+////////////////////////////////////////////////////////////
+// CONFIGURATION VALIDATION
+////////////////////////////////////////////////////////////
+
+function validateAppConfig() {
+    if (!appConfig.apiUrl) {
+        throw new Error(
+            "API_URL is not configured.",
+        );
+    }
+
+    if (
+        !appConfig.billingContractAddress
+    ) {
+        throw new Error(
+            "BILLING_CONTRACT_ADDRESS is not configured.",
+        );
+    }
+}
+
+
+
+function createMerchantClient({
+    walletClient,
+    publicClient,
+}: {
+    walletClient: WalletClient;
+    publicClient: PublicClient;
+}) {
+    return new MerchantClient({
+        walletClient,
+        publicClient,
+        contractAddress:
+            appConfig.billingContractAddress,
+        apiUrl:
+            appConfig.apiUrl,
+    });
+}
+
+function useMerchantClient() {
+    const {
+        isConnected,
+        address,
+    } = useAccount();
+
+    const {
+        data: walletClient,
+    } = useWalletClient();
+
+    const publicClient =
+        usePublicClient();
+
+    const connected =
+        Boolean(
+            isConnected &&
+            address,
+        );
+
+    const client =
+        useMemo(() => {
+            if (
+                !connected ||
+                !walletClient ||
+                !publicClient
+            ) {
+                return null;
+            }
+
+            return createMerchantClient({
+                walletClient,
+                publicClient,
+            });
+        }, [
+            connected,
+            walletClient,
+            publicClient,
+        ]);
+
+    return {
+        client,
+
+        walletClient,
+
+        publicClient,
+
+        connected,
+
+        ready:
+            Boolean(
+                connected &&
+                walletClient &&
+                publicClient,
+            ),
+    };
+}
+
+
+
+type MerchantResourceStatus =
+    | "disconnected"
+    | "waiting"
+    | "loading"
+    | "ready"
+    | "not-created"
+    | "error";
+
+function isNotFoundError(error: unknown) {
+    if (!error) {
+        return false;
+    }
+
+    if (
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error
+    ) {
+        return (
+            (error as { status?: number }).status === 404
+        );
+    }
+
+    return false;
+}
+
+function useMerchant() {
+    const {
+        ready: privyReady,
+        authenticated,
+    } = usePrivy();
+
+    const {
+        address,
+        isConnected,
+    } = useAccount();
+
+    const {
+        client,
+        ready: clientReady,
+    } = useMerchantClient();
+
+    // const walletConnected =
+    //     Boolean(
+    //         privyReady &&
+    //         authenticated &&
+    //         isConnected &&
+    //         address,
+    //     );
+
+    const walletConnected =
+        Boolean(
+            privyReady &&
+            isConnected &&
+            address,
+        );
+
+    const query =
+        useQuery({
+            queryKey:
+                walletConnected && address
+                    ? queryKeys.merchant.byOwnerWallet(
+                        address,
+                    )
+                    : queryKeys.merchant.all,
+
+            queryFn:
+                async () => {
+                    if (!client) {
+                        throw new Error(
+                            "Merchant client is not ready.",
+                        );
+                    }
+
+                    if (!address) {
+                        throw new Error(
+                            "Merchant wallet is not connected.",
+                        );
+                    }
+
+                    return client.getByOwnerWallet(
+                        address,
+                    );
+                },
+
+            enabled:
+                Boolean(
+                    walletConnected &&
+                    clientReady,
+                ),
+
+            retry: false,
+        });
+
+    let merchantStatus:
+        MerchantResourceStatus;
+
+    console.log("!walletConnected: ", !walletConnected);
+    console.log("privyReady: ", privyReady);
+    console.log("authenticated: ", authenticated);
+
+    if (!walletConnected) {
+        merchantStatus =
+            "disconnected";
+    } else if (!clientReady) {
+        merchantStatus =
+            "waiting";
+    } else if (query.isLoading) {
+        merchantStatus =
+            "loading";
+    } else if (
+        query.isError &&
+        isNotFoundError(query.error)
+    ) {
+        merchantStatus = "not-created";
+    } else if (query.isError) {
+        merchantStatus = "error";
+    } else if (query.data) {
+        merchantStatus = "ready";
+    } else {
+        merchantStatus = "not-created";
+    }
+
+    return {
+        merchant:
+            walletConnected
+                ? query.data ?? null
+                : null,
+
+        merchantStatus,
+
+        ownerWallet:
+            walletConnected
+                ? address
+                : undefined,
+
+        loading:
+            query.isLoading,
+
+        refreshing:
+            query.isFetching &&
+            !query.isLoading,
+
+        error:
+            query.error instanceof Error
+                ? query.error
+                : null,
+
+        refresh:
+            query.refetch,
+    };
+}
+
+
+
+function useMerchantPlanActions(
+    planId: number,
+) {
+    const queryClient =
+        useQueryClient();
+
+    const {
+        merchant,
+    } = useMerchant();
+
+    const {
+        client,
+        ready,
+    } =
+        useMerchantClient();
+
+    const merchantId =
+        merchant?.merchantId ?? null;
+
+    const mutation =
+        useMutation({
+            mutationFn:
+                async (
+                    action:
+                        | "activate"
+                        | "pause"
+                        | "archive",
+                ) => {
+                    if (!ready || !client) {
+                        throw new Error(
+                            "Merchant client is not ready.",
+                        );
+                    }
+
+                    if (
+                        merchantId === null
+                    ) {
+                        throw new Error(
+                            "Merchant account is not available.",
+                        );
+                    }
+
+                    switch (action) {
+                        case "activate":
+                            return client.activatePlan(
+                                planId,
+                            );
+
+                        case "pause":
+                            return client.pausePlan(
+                                planId,
+                            );
+
+                        case "archive":
+                            return client.archivePlan(
+                                planId,
+                            );
+                    }
+                },
+
+            onSuccess:
+                async () => {
+                    if (
+                        merchantId ===
+                        null
+                    ) {
+                        return;
+                    }
+
+                    await Promise.all([
+                        queryClient.invalidateQueries({
+                            queryKey:
+                                queryKeys.merchant.plans(
+                                    merchantId,
+                                ),
+                        }),
+
+                        queryClient.invalidateQueries({
+                            queryKey:
+                                queryKeys.merchant.plan(
+                                    planId,
+                                ),
+                        }),
+                    ]);
+                },
+        });
+
+    return {
+        activate:
+            () =>
+                mutation.mutateAsync(
+                    "activate",
+                ),
+
+        pause:
+            () =>
+                mutation.mutateAsync(
+                    "pause",
+                ),
+
+        archive:
+            () =>
+                mutation.mutateAsync(
+                    "archive",
+                ),
+
+        pending:
+            mutation.isPending,
+
+        error:
+            mutation.error instanceof Error
+                ? mutation.error
+                : null,
+
+        reset:
+            mutation.reset,
+    };
+}
+
+
+
+interface PlanTableRowProps {
+    plan: PlanRecord;
+}
 
 function PlanTableRow({
     plan,
-}: {
-    plan: PlanRecord;
-}) {
+}: PlanTableRowProps) {
+    const {
+        activate,
+        pause,
+        archive,
+        pending,
+    } = useMerchantPlanActions(plan.planId);
+
     return (
         <tr className="border-b transition-colors hover:bg-muted/40 last:border-0">
-
             <td className="px-4 py-4">
-                <PlanIdentity plan={plan} />
+                <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/40">
+                        <Layers3 className="size-4 text-muted-foreground" />
+                    </div>
+
+                    <div className="min-w-0">
+                        <Link
+                            href={`/dashboard/merchant/plans/${plan.planId}`}
+                            className="block truncate text-sm font-medium hover:underline"
+                        >
+                            {plan.name}
+                        </Link>
+
+                        <p className="truncate text-xs text-muted-foreground">
+                            Plan #{plan.planId}
+                        </p>
+                    </div>
+                </div>
             </td>
 
             <td className="px-4 py-4">
                 <PlanPricing plan={plan} />
             </td>
 
-            <td className="px-4 py-4 text-sm">
-                0
-                {/* {plan.activeSubscribers} */}
+            {/* <td className="px-4 py-4 text-sm">
+                {plan.activeSubscribers}
             </td>
 
             <td className="px-4 py-4 text-sm">
-                {/* {plan.monthlyRevenue} */}
-                0
-            </td>
+                {plan.monthlyRevenue}
+            </td> */}
 
             <td className="px-4 py-4">
-                <PlanStatusBadge
-                    status={plan.status}
-                />
+                <PlanStatusBadge status={plan.status} />
             </td>
 
             <td className="px-4 py-4 text-sm text-muted-foreground">
-                {plan.createdAt.toLocaleDateString()}
+                {new Date(plan.createdAt).toLocaleDateString()}
             </td>
 
             <td className="px-4 py-4 text-right">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8"
-                    disabled
-                    aria-label={`Actions for ${plan.name}`}
-                >
-                    <MoreHorizontal />
-                </Button>
-            </td>
+                <DropdownMenu>
+                    <DropdownMenuTrigger
+                        render={
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-8"
+                                disabled={pending}
+                                aria-label={`Actions for ${plan.name}`}
+                            >
+                                <MoreHorizontal />
+                            </Button>
+                        }
+                    />
 
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                            render={
+                                <Link
+                                    href={`/dashboard/merchant/plans/${plan.planId}`}
+                                >
+                                    View plan
+                                </Link>
+                            }
+                        />
+
+                        <DropdownMenuItem
+                            render={
+                                <Link
+                                    href={`/dashboard/merchant/plans/${plan.planId}/edit`}
+                                >
+                                    Edit plan
+                                </Link>
+                            }
+                        />
+
+                        <DropdownMenuSeparator />
+
+                        {plan.status === "ACTIVE" && (
+                            <DropdownMenuItem
+                                disabled={pending}
+                                onClick={() => {
+                                    void pause();
+                                }}
+                            >
+                                <Pause />
+                                Pause plan
+                            </DropdownMenuItem>
+                        )}
+
+                        {plan.status === "PAUSED" && (
+                            <DropdownMenuItem
+                                disabled={pending}
+                                onClick={() => {
+                                    void activate();
+                                }}
+                            >
+                                <Check />
+                                Activate plan
+                            </DropdownMenuItem>
+                        )}
+
+                        {plan.status !== "ARCHIVED" && (
+                            <>
+                                <DropdownMenuSeparator />
+
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    disabled={pending}
+                                    onClick={() => {
+                                        void archive();
+                                    }}
+                                >
+                                    <Archive />
+                                    Archive plan
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </td>
         </tr>
     );
 }
 
 
 
+interface PlansTableProps {
+    plans: PlanRecord[];
+}
+
 function PlansTable({
     plans,
-}: {
-    plans: PlanRecord[];
-}) {
+}: PlansTableProps) {
     return (
         <Card className="overflow-hidden">
-
             <CardContent className="p-0">
-
                 <div className="overflow-x-auto">
-
                     <table className="w-full min-w-[1000px]">
-
                         <thead>
                             <tr className="border-b bg-muted/30">
                                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
@@ -1169,20 +2002,22 @@ function PlansTable({
                         </thead>
 
                         <tbody>
-                            {plans.map((plan) => (
-                                <PlanTableRow
-                                    key={plan.planId}
-                                    plan={plan}
-                                />
-                            ))}
+                            {plans.map(
+                                (plan) => (
+                                    <PlanTableRow
+                                        key={
+                                            plan.planId
+                                        }
+                                        plan={
+                                            plan
+                                        }
+                                    />
+                                ),
+                            )}
                         </tbody>
-
                     </table>
-
                 </div>
-
             </CardContent>
-
         </Card>
     );
 }
@@ -1257,17 +2092,17 @@ function PlansSearch({
 
 
 
+interface PlanActionsProps {
+    refreshing: boolean;
+    onRefresh: () => void;
+}
+
 function PlanActions({
     refreshing,
     onRefresh,
-}: {
-    refreshing: boolean;
-
-    onRefresh: () => void;
-}) {
+}: PlanActionsProps) {
     return (
         <div className="flex flex-wrap items-center gap-2">
-
             <Button
                 variant="outline"
                 size="sm"
@@ -1281,9 +2116,7 @@ function PlanActions({
                 variant="outline"
                 size="sm"
                 onClick={onRefresh}
-                disabled={
-                    refreshing
-                }
+                disabled={refreshing}
             >
                 <RefreshCw
                     className={
@@ -1292,6 +2125,7 @@ function PlanActions({
                             : undefined
                     }
                 />
+
                 {refreshing
                     ? "Refreshing"
                     : "Refresh"}
@@ -1299,12 +2133,13 @@ function PlanActions({
 
             <Button
                 size="sm"
-                disabled
-            >
-                <Plus />
-                Create plan
-            </Button>
-
+                render={
+                    <Link href="/dashboard/merchant/plans/create">
+                        <Plus />
+                        Create plan
+                    </Link>
+                }
+            />
         </div>
     );
 }
@@ -1770,411 +2605,14 @@ function PlansToolbar({
 
 
 /* ============================================================
-   FLATTENED SOURCE: hooks\merchant\useMerchant.ts
-   ============================================================ */
-
-
-/* ============================================================
-   FLATTENED SOURCE: lib\query\queryKeys.ts
-   ============================================================ */
-
-
-
-const queryKeys = {
-    customer: {
-        all:
-            ["customer"] as const,
-
-        byWallet: (
-            wallet: string,
-        ) => [
-            "customer",
-            "wallet",
-            wallet,
-        ] as const,
-
-        byId: (
-            customerId: number | string,
-        ) => [
-            "customer",
-            "id",
-            customerId,
-        ] as const,
-
-        subscriptions: (
-            customerId: number | string,
-        ) => [
-            "customer",
-            "subscriptions",
-            customerId,
-        ] as const,
-
-        subscription: (
-            subscriptionId: number,
-        ) => [
-            "customer",
-            "subscription",
-            subscriptionId,
-        ] as const,
-
-        plan: (
-            planId: number,
-        ) => [
-            "customer",
-            "plan",
-            planId,
-        ] as const,
-    },
-
-    merchant: {
-        all:
-            ["merchant"] as const,
-
-        byOwnerWallet: (
-            wallet: string,
-        ) => [
-            "merchant",
-            "owner-wallet",
-            wallet,
-        ] as const,
-
-        byId: (
-            merchantId: number | string,
-        ) => [
-            "merchant",
-            "id",
-            merchantId,
-        ] as const,
-
-        plans: (
-            merchantId: number | string,
-        ) => [
-            "merchant",
-            "plans",
-            merchantId,
-        ] as const,
-
-        plan: (planId: number) =>
-            [
-                "merchant",
-                "plan",
-                planId,
-            ] as const,
-
-        customers: (
-            merchantId: number | string,
-            params: {
-                page: number;
-                pageSize: number;
-                search: string;
-                status: string;
-            },
-        ) => [
-            "merchant",
-            "customers",
-            merchantId,
-            params,
-        ] as const,
-
-        notifications: (
-            merchantId: number,
-        ) => [
-            "merchant",
-            merchantId,
-            "notifications",
-        ] as const,
-    },
-} as const;
-
-
-/* ============================================================
-   FLATTENED SOURCE: hooks\merchant\useMerchantClient.ts
-   ============================================================ */
-
-
-/* ============================================================
-   FLATTENED SOURCE: app\config.ts
-   ============================================================ */
-
-
-
-////////////////////////////////////////////////////////////
-// APPLICATION CONFIGURATION
-////////////////////////////////////////////////////////////
-
-const appConfig = {
-    name:
-        "Stripe for Web3",
-
-    apiUrl:
-        process.env.NEXT_PUBLIC_API_URL as string,
-
-    billingContractAddress:
-        process.env.NEXT_PUBLIC_BILLING_CONTRACT_ADDRESS! as Address,
-
-    demoMode:
-        process.env .NEXT_PUBLIC_DEMO_MODE === "true",
-};
-
-////////////////////////////////////////////////////////////
-// CONFIGURATION VALIDATION
-////////////////////////////////////////////////////////////
-
-function validateAppConfig() {
-    if (!appConfig.apiUrl) {
-        throw new Error(
-            "API_URL is not configured.",
-        );
-    }
-
-    if (
-        !appConfig.billingContractAddress
-    ) {
-        throw new Error(
-            "BILLING_CONTRACT_ADDRESS is not configured.",
-        );
-    }
-}
-
-
-
-function createMerchantClient({
-    walletClient,
-    publicClient,
-}: {
-    walletClient: WalletClient;
-    publicClient: PublicClient;
-}) {
-    return new MerchantClient({
-        walletClient,
-        publicClient,
-        contractAddress:
-            appConfig.billingContractAddress,
-        apiUrl:
-            appConfig.apiUrl,
-    });
-}
-
-function useMerchantClient() {
-    const {
-        isConnected,
-        address,
-    } = useAccount();
-
-    const {
-        data: walletClient,
-    } = useWalletClient();
-
-    const publicClient =
-        usePublicClient();
-
-    const connected =
-        Boolean(
-            isConnected &&
-            address,
-        );
-
-    const client =
-        useMemo(() => {
-            if (
-                !connected ||
-                !walletClient ||
-                !publicClient
-            ) {
-                return null;
-            }
-
-            return createMerchantClient({
-                walletClient,
-                publicClient,
-            });
-        }, [
-            connected,
-            walletClient,
-            publicClient,
-        ]);
-
-    return {
-        client,
-
-        walletClient,
-
-        publicClient,
-
-        connected,
-
-        ready:
-            Boolean(
-                connected &&
-                walletClient &&
-                publicClient,
-            ),
-    };
-}
-
-
-
-type MerchantResourceStatus =
-    | "disconnected"
-    | "waiting"
-    | "loading"
-    | "ready"
-    | "not-created"
-    | "error";
-
-function isNotFoundError(error: unknown) {
-    if (!error) {
-        return false;
-    }
-
-    if (
-        typeof error === "object" &&
-        error !== null &&
-        "status" in error
-    ) {
-        return (
-            (error as { status?: number }).status === 404
-        );
-    }
-
-    return false;
-}
-
-function useMerchant() {
-    const {
-        ready: privyReady,
-        authenticated,
-    } = usePrivy();
-
-    const {
-        address,
-        isConnected,
-    } = useAccount();
-
-    const {
-        client,
-        ready: clientReady,
-    } = useMerchantClient();
-
-    // const walletConnected =
-    //     Boolean(
-    //         privyReady &&
-    //         authenticated &&
-    //         isConnected &&
-    //         address,
-    //     );
-
-    const walletConnected =
-        Boolean(
-            privyReady &&
-            isConnected &&
-            address,
-        );
-
-    const query =
-        useQuery({
-            queryKey:
-                walletConnected && address
-                    ? queryKeys.merchant.byOwnerWallet(
-                        address,
-                    )
-                    : queryKeys.merchant.all,
-
-            queryFn:
-                async () => {
-                    if (!client) {
-                        throw new Error(
-                            "Merchant client is not ready.",
-                        );
-                    }
-
-                    if (!address) {
-                        throw new Error(
-                            "Merchant wallet is not connected.",
-                        );
-                    }
-
-                    return client.getByOwnerWallet(
-                        address,
-                    );
-                },
-
-            enabled:
-                Boolean(
-                    walletConnected &&
-                    clientReady,
-                ),
-
-            retry: false,
-        });
-
-    let merchantStatus:
-        MerchantResourceStatus;
-
-    console.log("!walletConnected: ", !walletConnected);
-    console.log("privyReady: ", privyReady);
-    console.log("authenticated: ", authenticated);
-
-    if (!walletConnected) {
-        merchantStatus =
-            "disconnected";
-    } else if (!clientReady) {
-        merchantStatus =
-            "waiting";
-    } else if (query.isLoading) {
-        merchantStatus =
-            "loading";
-    } else if (
-        query.isError &&
-        isNotFoundError(query.error)
-    ) {
-        merchantStatus = "not-created";
-    } else if (query.isError) {
-        merchantStatus = "error";
-    } else if (query.data) {
-        merchantStatus = "ready";
-    } else {
-        merchantStatus = "not-created";
-    }
-
-    return {
-        merchant:
-            walletConnected
-                ? query.data ?? null
-                : null,
-
-        merchantStatus,
-
-        ownerWallet:
-            walletConnected
-                ? address
-                : undefined,
-
-        loading:
-            query.isLoading,
-
-        refreshing:
-            query.isFetching &&
-            !query.isLoading,
-
-        error:
-            query.error instanceof Error
-                ? query.error
-                : null,
-
-        refresh:
-            query.refetch,
-    };
-}
-
-
-/* ============================================================
    FLATTENED SOURCE: hooks\merchant\useMerchantPlans.ts
    ============================================================ */
 
 
 
 function useMerchantPlans() {
+
+    
     const {
         merchant,
         merchantStatus,
@@ -2271,6 +2709,72 @@ function useMerchantPlansPage() {
 
     const plans =
         useMerchantPlans();
+
+    const {
+        client,
+        ready: clientReady,
+    } = useMerchantClient();
+
+    const pausePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.pausePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+
+    const activatePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.resumePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+
+    const archivePlan = useMutation({
+        mutationFn: async (
+            plan: PlanRecord,
+        ) => {
+            if (!client) {
+                throw new Error(
+                    "Merchant client is not ready.",
+                );
+            }
+
+            return client.archivePlan(
+                plan,
+            );
+        },
+
+        onSuccess: async () => {
+            await plans.refresh();
+        },
+    });
+        
 
     ////////////////////////////////////////////////////////////
     // UI STATE
@@ -2592,6 +3096,17 @@ function useMerchantPlansPage() {
         error:
             merchant.error ??
             plans.error,
+
+        planActions: {
+            pause: pausePlan.mutate,
+            activate: activatePlan.mutate,
+            archive: archivePlan.mutate,
+
+            pending:
+                pausePlan.isPending ||
+                activatePlan.isPending ||
+                archivePlan.isPending,
+        },
     };
 }
 
@@ -2678,6 +3193,8 @@ function PlansPage() {
     // GRACIOUS TODO: 
     // There are yet sonner toast-messages to be included in every page for every response, 
     // GRACIOUS TODO: Graced Error handling
+
+    // GRACIOUS TODO: A gracious todo involves including a chat feature into the app(rooms are identified by plan), the chat rooms are also monitored, for support across merchants, customers and the protocol, in-app chats are also considered.
 
     if (
         page.merchant.status ===
@@ -2769,8 +3286,13 @@ function PlansPage() {
                                 </Button>
 
                                 <Button
-                                    disabled
+                                    render={
+                                        <Link href="/dashboard/platform/plans/create">
+                                            Create plan
+                                        </Link>
+                                    }
                                 >
+                                    <Plus />
                                     Create plan
                                 </Button>
 
@@ -2859,8 +3381,18 @@ function PlansPage() {
                             ) : (
                                 <>
                                     <PlansTable
-                                        plans={
-                                            page.plans.data
+                                        plans={page.plans.data}
+
+                                        onPause={
+                                            page.planActions.pause
+                                        }
+
+                                        onActivate={
+                                            page.planActions.activate
+                                        }
+
+                                        onArchive={
+                                            page.planActions.archive
                                         }
                                     />
 

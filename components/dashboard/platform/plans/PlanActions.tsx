@@ -1,24 +1,21 @@
-import {
-    Download,
-    Plus,
-    RefreshCw,
-} from "lucide-react";
+"use client";
 
-import {
-    Button,
-} from "@/components/ui/button";
+import { Download, Plus, RefreshCw } from "lucide-react";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
+interface PlanActionsProps {
+    refreshing: boolean;
+    onRefresh: () => void;
+}
 
 export function PlanActions({
     refreshing,
     onRefresh,
-}: {
-    refreshing: boolean;
-
-    onRefresh: () => void;
-}) {
+}: PlanActionsProps) {
     return (
         <div className="flex flex-wrap items-center gap-2">
-
             <Button
                 variant="outline"
                 size="sm"
@@ -32,9 +29,7 @@ export function PlanActions({
                 variant="outline"
                 size="sm"
                 onClick={onRefresh}
-                disabled={
-                    refreshing
-                }
+                disabled={refreshing}
             >
                 <RefreshCw
                     className={
@@ -43,6 +38,7 @@ export function PlanActions({
                             : undefined
                     }
                 />
+
                 {refreshing
                     ? "Refreshing"
                     : "Refresh"}
@@ -50,12 +46,13 @@ export function PlanActions({
 
             <Button
                 size="sm"
-                disabled
-            >
-                <Plus />
-                Create plan
-            </Button>
-
+                render={
+                    <Link href="/dashboard/merchant/plans/create">
+                        <Plus />
+                        Create plan
+                    </Link>
+                }
+            />
         </div>
     );
 }

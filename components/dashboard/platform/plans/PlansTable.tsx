@@ -1,22 +1,42 @@
-import {
-    Card,
-    CardContent,
-} from "@/components/ui/card";
+"use client";
 
 import type {
     PlanRecord,
 } from "@stripe-for-web3/core";
 
 import {
-    PlanTableRow,
-} from "./PlanTableRow";
+    Card,
+    CardContent,
+} from "@/components/ui/card";
+import { PlanTableRow } from "./PlanTableRow";
+
+
+interface PlansTableProps {
+    plans: PlanRecord[];
+
+    onPause: (
+        plan: PlanRecord,
+    ) => void;
+
+    onActivate: (
+        plan: PlanRecord,
+    ) => void;
+
+    onArchive: (
+        plan: PlanRecord,
+    ) => void;
+}
+
 
 export function PlansTable({
     plans,
-}: {
-    plans: PlanRecord[];
-}) {
+    onPause,
+    onActivate,
+    onArchive,
+}: PlansTableProps) {
+
     return (
+
         <Card className="overflow-hidden">
 
             <CardContent className="p-0">
@@ -26,7 +46,9 @@ export function PlansTable({
                     <table className="w-full min-w-[1000px]">
 
                         <thead>
+
                             <tr className="border-b bg-muted/30">
+
                                 <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">
                                     Plan
                                 </th>
@@ -52,16 +74,38 @@ export function PlansTable({
                                 </th>
 
                                 <th className="px-4 py-3" />
+
                             </tr>
+
                         </thead>
 
+
                         <tbody>
-                            {plans.map((plan) => (
-                                <PlanTableRow
-                                    key={plan.planId}
-                                    plan={plan}
-                                />
-                            ))}
+
+                            {plans.map(
+                                (plan) => (
+
+                                    <PlanTableRow
+                                        key={
+                                            plan.planId
+                                        }
+                                        plan={
+                                            plan
+                                        }
+                                        onPause={
+                                            onPause
+                                        }
+                                        onActivate={
+                                            onActivate
+                                        }
+                                        onArchive={
+                                            onArchive
+                                        }
+                                    />
+
+                                ),
+                            )}
+
                         </tbody>
 
                     </table>
@@ -71,5 +115,6 @@ export function PlansTable({
             </CardContent>
 
         </Card>
+
     );
 }
